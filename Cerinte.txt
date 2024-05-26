@@ -1,0 +1,50 @@
+﻿2. Aplicația va conține un meniu (în consolă) prin care utilizatorul poate
+alege diverse opțiuni (import/export date, citire obiect nou de la tastatură,
+diverse functionalități ale aplicației) de tip Singleton
+
+
+3. Folosirea a cel putin o clasa Template (Nu aveti voie cu clasa Template
+exemplificata la laborator)
+
+
+4. Folosirea a cel putin 2 metode Template
+
+
+5. Proiectul trebuie sa trateze toate exceptiile posibile care pot aparea la
+executarea codului (codul trebuie sa arunce cel putin 6 exceptii dintre care
+minim 3 diferite).
+
+
+6. Exemplificarea conceptelor de upcasting si downcasting
+(trebuie sa foloseasca si dynamic_cast)
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+1. Să se implementeze din librăria STL cel puțin un vector, un set, o listă și
+un map pentru a gestiona datele aplicației.
+
+X - vector
+X - set
+X - list
+X - map
+
+7. Exemplificarea conceptului de mostenire pana la nepot.
+(Parint->Copil->Nepot)
+
+8. Exemplificare HasA si IsA
+
+9. Fiecare clasa sa contina :
+ - Constructorul fara parametri
+ - Constructorul cu toti parametri
+ - Copy Constructorul
+ - Operator egal
+ - Destructor
+ - Operator de citire
+ - Operator de afisare
