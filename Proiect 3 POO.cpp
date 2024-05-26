@@ -1,4 +1,4 @@
-/*
+﻿/*
 
 IDE: Visual Studio
 Platform toolset: Visual Studio 2022 (v143)
@@ -16,6 +16,7 @@ Platform toolset: Visual Studio 2022 (v143)
 
 using namespace std;
 
+class Vehicul;
 
 // --------- CLASA IOINTERFACEVEHICUL ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -30,13 +31,15 @@ public:
 
 class InterfaceVehicul
 {
-
+	virtual double valoareaRealaVehicul() const = 0;
+	virtual double costFolosireSiIntretinere() const = 0;
+	virtual Vehicul* clone() const = 0;
 };
 
 
 // --------- CLASA VEHICUL ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class Vehicul : public IOInterfaceVehicul
+class Vehicul : public IOInterfaceVehicul, public InterfaceVehicul
 {
 
 protected:
@@ -81,6 +84,23 @@ public:
 
 	// OPERATORUL <<
 	ostream& afisareVehicul(ostream&) const override;
+
+	// FUNCTIE VALOARE REALA VEHICUL
+	virtual double valoareaRealaVehicul() const override;
+
+	// FUNCTIE COST FOLOSIRE SI INTRETINERE
+	virtual double costFolosireSiIntretinere() const override;
+
+	// FUNCTIE CLONE
+	virtual Vehicul* clone() const override;
+
+	// GET PRET
+	double getPret() const;
+
+	// SET PRET
+	void setPret(double pret);
+
+	
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -192,10 +212,52 @@ ostream& operator <<(ostream& out, const Vehicul& obj)
 	return obj.afisareVehicul(out);
 }
 
+// FUNCTIE VALOARE REALA VEHICUL
+double Vehicul::valoareaRealaVehicul() const
+{
+	int vechime = 2024 - anFabricatie;
+	double indiceVechime = 1 - (0.1 * vechime);
+	double indiceMarca = marca == "Audi" || marca == "Mercedes-Benz" || marca == "BMW" ? 1.2 : 1.0;
+	if (pret * indiceVechime * indiceMarca > pret)
+		return pret;
+	else
+		return pret * indiceVechime * indiceMarca;
+}
+
+// FUNCTIE COST FOLOSIRE SI INTRETINERE
+double Vehicul::costFolosireSiIntretinere() const
+{
+	double cost = 0;
+	for (pair<string, int> p : istoricRulaj)
+	{
+		if (p.second > 200000)
+			cost += 0.1 * pret;
+	}
+	return cost;
+}
+
+// FUNCTIE CLONE
+Vehicul* Vehicul::clone() const
+{
+	return new Vehicul(*this);
+}
+
+// GET PRET
+double Vehicul::getPret() const
+{
+	return pret;
+}
+
+// SET PRET
+void Vehicul::setPret(double pret)
+{
+	this->pret = pret;
+}
+
 
 // --------- CLASA VEHICULCARBURANT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class VehiculCarburant : public Vehicul
+class VehiculCarburant : public Vehicul 
 {
 protected:
 
@@ -224,6 +286,17 @@ public:
 
 	// OPERATORUL <<
 	ostream& afisareVehicul(ostream&) const override;
+
+	// FUNCTIE VALOARE REALA VEHICUL
+	double valoareaRealaVehicul() const override;
+
+	// FUNCTIE COST FOLOSIRE SI INTRETINERE
+	double costFolosireSiIntretinere() const override;
+
+	// FUNCTIE CLONE
+	Vehicul* clone() const override;
+
+	
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -278,6 +351,34 @@ ostream& operator <<(ostream& out, const VehiculCarburant& obj)
 	return obj.afisareVehicul(out);
 }
 
+// FUNCTIE VALOARE REALA VEHICUL
+double VehiculCarburant::valoareaRealaVehicul() const
+{
+	double valoare = Vehicul::valoareaRealaVehicul();
+	if (tipCarburant == "benzina")
+		valoare += 0.1 * valoare;
+	else
+		if (tipCarburant == "motorina")
+			valoare += 0.2 * valoare;
+	return valoare;
+}
+
+// FUNCTIE COST FOLOSIRE SI INTRETINERE
+double VehiculCarburant::costFolosireSiIntretinere() const
+{
+	double cost = Vehicul::costFolosireSiIntretinere();
+	if (consum > 10)
+		cost += 0.1 * pret;
+	return cost;
+}
+
+// FUNCTIE CLONE
+Vehicul* VehiculCarburant::clone() const
+{
+	return new VehiculCarburant(*this);
+}
+
+
 
 // --------- CLASA VEHICULHIBRID ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -309,6 +410,15 @@ public:
 
 	// OPERATORUL <<
 	ostream& afisareVehicul(ostream&) const override;
+
+	// FUNCTIE VALOARE REALA VEHICUL
+	double valoareaRealaVehicul() const override;
+
+	// FUNCTIE COST FOLOSIRE SI INTRETINERE
+	double costFolosireSiIntretinere() const override;
+	
+	// FUNCTIE CLONE
+	Vehicul* clone() const override;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -402,6 +512,63 @@ ostream& VehiculHibrid::afisareVehicul(ostream& out) const
 	return out;
 }
 
+// FUNCTIE VALOARE REALA VEHICUL
+double VehiculHibrid::valoareaRealaVehicul() const
+{
+	double valoare = VehiculCarburant::valoareaRealaVehicul();
+	if (tipHibrid == 'P')
+		valoare += 0.1 * valoare;
+	return valoare;
+}
+
+// FUNCTIE COST FOLOSIRE SI INTRETINERE
+double VehiculHibrid::costFolosireSiIntretinere() const
+{
+	double cost = VehiculCarburant::costFolosireSiIntretinere();
+	if (tipHibrid == 'P')
+		cost += 0.1 * pret;
+	return cost;
+}
+
+// FUNCTIE CLONE
+Vehicul* VehiculHibrid::clone() const
+{
+	return new VehiculHibrid(*this);
+}
+
+// --------- CLASA INFOVEHICUL ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+template <class T = Vehicul>
+class InfoVehicul
+{
+public:
+
+	template <class T>
+	void info(const T obj)
+	{
+		cout << "INFORMATII VEHICUL:\n\nUn vehicul este o masina sau un mijloc de transport care permite oamenilor sa se deplaseze de la un loc la altul.\nAcestea pot fi autoturisme, camioane, autobuze, motociclete, biciclete sau chiar nave si avioane.\nVehiculele sunt esentiale pentru mobilitatea noastra in societatea moderna, facilitând transportul de persoane si bunuri.\n";
+	}
+
+	template <>
+	void info(const VehiculCarburant obj)
+	{
+		cout << "Un vehicul cu carburant utilizeaza combustibili lichizi, precum benzina sau motorina, pentru a functiona.\nAceste tipuri de vehicule sunt echipate cu motoare cu ardere interna care transforma energia chimica a carburantului in energie mecanica,\npropulsând vehiculul pe drumurile publice. Desi exista si vehicule hibride care combina motoare electrice cu motoare cu ardere interna,\ncele cu carburant ramân o optiune populara pentru transportul personal si comercial.\n";
+		cout << obj;
+		cout << "Valoarea reala a vehiculului: " << obj.valoareaRealaVehicul() << "\n";
+		cout << "Costul folosirii si intretinerii vehiculului: " << obj.costFolosireSiIntretinere() << "\n";
+	}
+
+	template <>
+	void info(const VehiculHibrid obj)
+	{
+		cout << "Un vehicul hibrid este un vehicul care utilizeaza doua sau mai multe surse de energie pentru a functiona.\nAcestea includ motoare electrice, motoare cu ardere interna si alte surse de energie regenerabila, precum energia solara sau hidrogenul.\nVehiculele hibride sunt o optiune populara pentru cei care doresc sa reduca emisiile de gaze cu efect de sera si sa economiseasca combustibil.\n";
+		cout << "In showroom-urile noastre se gasesc vehicule hibride de tipul plug-in si mild.\nPlug-in reprezinta vehiculele hibride care pot fi incarcate la priza si pot merge doar pe baza motorului electric,\nin timp ce mild hibridele sunt echipate cu motoare electrice care asista motoarele cu ardere interna pentru a reduce consumul de combustibil.\nAstfel, vehiculele plug-in beneficiaza si de specificatiile timp incarcare si autonomie electric.\n";
+		cout << obj;
+		cout << "Valoarea reala a vehiculului: " << obj.valoareaRealaVehicul() << "\n";
+		cout << "Costul folosirii si intretinerii vehiculului: " << obj.costFolosireSiIntretinere() << "\n";
+	}
+};
+
 
 // --------- CLASA CLIENT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -435,7 +602,6 @@ public:
 
 	// OPERATORUL <<
 	friend ostream& operator <<(ostream&, const Client&);
-
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -446,7 +612,15 @@ Client::Client(string nume, int nrVehiculeCumparate, vector <Vehicul*> vehiculeC
 	nume(nume), nrVehiculeCumparate(nrVehiculeCumparate), vehiculeCumparate(vehiculeCumparate), plataRamasa(plataRamasa), istoricPlati(istoricPlati) {}
 
 // COPY CONSTRUCTOR
-Client::Client(const Client& obj) : nume(obj.nume), nrVehiculeCumparate(obj.nrVehiculeCumparate), vehiculeCumparate(obj.vehiculeCumparate), plataRamasa(obj.plataRamasa), istoricPlati(obj.istoricPlati) {}
+Client::Client(const Client& obj) : nume(obj.nume), nrVehiculeCumparate(obj.nrVehiculeCumparate), plataRamasa(obj.plataRamasa),
+istoricPlati(obj.istoricPlati)
+{
+	this->vehiculeCumparate.clear();
+	for (int i = 0; i < nrVehiculeCumparate; i++)
+	{
+		this->vehiculeCumparate.push_back(obj.vehiculeCumparate[i]->clone());
+	}
+}
 
 // OPERATORUL =
 Client& Client::operator=(const Client& obj)
@@ -455,7 +629,15 @@ Client& Client::operator=(const Client& obj)
 	{
 		this->nume = obj.nume;
 		this->nrVehiculeCumparate = obj.nrVehiculeCumparate;
-		this->vehiculeCumparate = obj.vehiculeCumparate;
+		for (int i = 0; i < this->vehiculeCumparate.size(); i++)
+		{
+			delete this->vehiculeCumparate[i];
+		}
+		vehiculeCumparate.clear();
+		for (int i = 0; i < obj.vehiculeCumparate.size(); i++)
+		{
+			this->vehiculeCumparate.push_back(obj.vehiculeCumparate[i]->clone());
+		}
 		this->plataRamasa = obj.plataRamasa;
 		this->istoricPlati = obj.istoricPlati;
 	}
@@ -588,6 +770,9 @@ public:
 
 	// OPERATORUL <<
 	friend ostream& operator <<(ostream&, const Showroom&);
+
+	// FUNCTIE MAJORARE PRET VEHICUL CU 10% LA INDEX DAT
+	void majorarePretVehicul(int);
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -598,7 +783,14 @@ Showroom::Showroom(string nume, int nrVehiculeDisponibile, list <Vehicul*> vehic
 	nume(nume), nrVehiculeDisponibile(nrVehiculeDisponibile), vehiculeDisponibile(vehiculeDisponibile) {}
 
 // COPY CONSTRUCTOR
-Showroom::Showroom(const Showroom& obj) : nume(obj.nume), nrVehiculeDisponibile(obj.nrVehiculeDisponibile), vehiculeDisponibile(obj.vehiculeDisponibile) {}
+Showroom::Showroom(const Showroom& obj) : nume(obj.nume), nrVehiculeDisponibile(obj.nrVehiculeDisponibile) 
+{
+	this->vehiculeDisponibile.clear();
+	for (Vehicul* v : obj.vehiculeDisponibile)
+	{
+		this->vehiculeDisponibile.push_back(v->clone());
+	}
+}
 
 // OPERATORUL =
 Showroom& Showroom::operator=(const Showroom& obj)
@@ -607,7 +799,15 @@ Showroom& Showroom::operator=(const Showroom& obj)
 	{
 		this->nume = obj.nume;
 		this->nrVehiculeDisponibile = obj.nrVehiculeDisponibile;
-		this->vehiculeDisponibile = obj.vehiculeDisponibile;
+		for (Vehicul* v : this->vehiculeDisponibile)
+		{
+			delete v;
+		}
+		vehiculeDisponibile.clear();
+		for (Vehicul* v : obj.vehiculeDisponibile)
+		{
+			this->vehiculeDisponibile.push_back(v->clone());
+		}
 	}
 	return *this;
 }
@@ -684,6 +884,15 @@ ostream& operator <<(ostream& out, const Showroom& obj)
 }
 
 
+// FUNCTIE MAJORARE PRET VEHICUL CU 10% LA INDEX DAT
+void Showroom::majorarePretVehicul(int index)
+{
+	list <Vehicul*>::iterator it = vehiculeDisponibile.begin();
+	advance(it, index - 1);
+	(*it)->setPret((*it)->getPret() * 1.1);
+}
+
+
 // --------- CLASA TRANZACTIE ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class Tranzactie
@@ -726,7 +935,21 @@ Tranzactie::Tranzactie(Client client, Vehicul* vehiculCumparat, double sumaPlati
 	idTranzactie(++nrTranzactii + 2000), client(client), vehiculCumparat(vehiculCumparat), sumaPlatita(sumaPlatita) {}
 
 // COPY CONSTRUCTOR
-Tranzactie::Tranzactie(const Tranzactie& obj) : idTranzactie(obj.idTranzactie), client(obj.client), vehiculCumparat(obj.vehiculCumparat), sumaPlatita(obj.sumaPlatita) {}
+Tranzactie::Tranzactie(const Tranzactie& obj) : idTranzactie(obj.idTranzactie), client(obj.client), sumaPlatita(obj.sumaPlatita) 
+{
+	if (this->vehiculCumparat)
+	{
+		delete this->vehiculCumparat;
+	}
+	if (obj.vehiculCumparat)
+	{
+		this->vehiculCumparat = obj.vehiculCumparat->clone();
+	}
+	else
+	{
+		this->vehiculCumparat = nullptr;
+	}
+}
 
 // OPERATORUL =
 Tranzactie& Tranzactie::operator=(const Tranzactie& obj)
@@ -734,7 +957,18 @@ Tranzactie& Tranzactie::operator=(const Tranzactie& obj)
 	if (this != &obj)
 	{
 		this->client = obj.client;
-		this->vehiculCumparat = obj.vehiculCumparat;
+		if (this->vehiculCumparat)
+		{
+			delete this->vehiculCumparat;
+		}
+		if (obj.vehiculCumparat)
+		{
+			this->vehiculCumparat = obj.vehiculCumparat->clone();
+		}
+		else
+		{
+			this->vehiculCumparat = nullptr;
+		}
 		this->sumaPlatita = obj.sumaPlatita;
 	}
 	return *this;
@@ -801,6 +1035,9 @@ int Tranzactie::nrTranzactii = 0;
 int main()
 {
 
-	
+	Client obj;
+	//I info;
+    InfoVehicul<> info;
+    info.info(obj);
 	return 0;
 }
