@@ -1155,6 +1155,21 @@ public:
 
 	// FUNCTIE MAJORARE PRET VEHICUL CU 10% LA INDEX DAT
 	void majorarePretVehicul(int);
+
+	// GET NUME SHOWROOM
+	string getNumeShowroom() const;
+
+	// OPERATIA SHOWROOM + VEHICUL
+	Showroom operator+(Vehicul*);
+
+	// OPERATIA SHOWROOM - VEHICUL
+	Showroom operator-(int);
+
+	// SET NUME
+	void setNume(string nume);
+
+	// GET VEHICULE DISPONIBILE
+	list <Vehicul*> getVehiculeDisponibile() const;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -1299,6 +1314,74 @@ void Showroom::majorarePretVehicul(int index)
 	(*it)->setPret((*it)->getPret() * 1.1);
 }
 
+// GET NUME SHOWROOM
+string Showroom::getNumeShowroom() const
+{
+	return nume;
+}
+
+// OPERATIA SHOWROOM + VEHICUL*
+Showroom Showroom::operator+(Vehicul* obj)
+{
+	Showroom copie = *this;
+	copie.vehiculeDisponibile.push_back(obj->clone()); // clone ?
+	copie.nrVehiculeDisponibile++;
+	return copie;
+}
+
+// OPERATIA SHOWROOM - VEHICUL* (SE VA TRANSMITE CA PARAMETRU INDEX-UL VEHICULULUI DIN VECTORUL DE VEHICULE DISPONIBILE)
+Showroom Showroom::operator-(int index)
+{
+	try {
+		if (index > nrVehiculeDisponibile)
+		{
+			throw 1;
+		}
+		if (index < 0)
+		{
+			throw 2;
+		}
+		Showroom copie = *this;
+		list<Vehicul*>::iterator it = copie.vehiculeDisponibile.begin();
+		std::advance(it, index);
+		delete *it;
+		copie.vehiculeDisponibile.erase(it); 
+		copie.nrVehiculeDisponibile--;
+		return copie;
+
+	}
+	catch (int var)
+	{
+		if (var == 1)
+		{
+			cout << "\n****************************************************************EROARE****************************************************************\n";
+			cout << "\nEroare!\nIn operatia de stergere al unui vehicul din showroom, index-ul introdus este mai mare decat numarul de vehicule disponibile.\nVectorul de vehicule din " << this->getNumeShowroom() << " a ramas nemodificat.\n";
+			cout << "\n****************************************************************EROARE****************************************************************\n";
+			return *this;
+		}
+		else
+			if (var == 2)
+			{
+				cout << "\n*********************************************EROARE*********************************************\n";
+				cout << "\nEroare!\nIn operatia de stergere al unui vehicul din showroom index-ul introdus este negativ.\nVectorul de vehicule din " << this->getNumeShowroom() << " a ramas nemodificat.\n";
+				cout << "\n*********************************************EROARE*********************************************\n";
+				return *this;
+			}
+	}
+	return *this;
+}
+
+// SET NUME
+void Showroom::setNume(string nume)
+{
+	this->nume = nume;
+}
+
+// GET VEHICULE DISPONIBILE
+list <Vehicul*> Showroom::getVehiculeDisponibile() const
+{
+	return vehiculeDisponibile;
+}
 
 // --------- CLASA TRANZACTIE ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1344,13 +1427,9 @@ Tranzactie::Tranzactie(Client client, Vehicul* vehiculCumparat, double sumaPlati
 // COPY CONSTRUCTOR
 Tranzactie::Tranzactie(const Tranzactie& obj) : idTranzactie(obj.idTranzactie), client(obj.client), sumaPlatita(obj.sumaPlatita) 
 {
-	if (this->vehiculCumparat)
-	{
-		delete this->vehiculCumparat;
-	}
 	if (obj.vehiculCumparat)
 	{
-		this->vehiculCumparat = obj.vehiculCumparat->clone();
+		this->vehiculCumparat = new Vehicul(*obj.vehiculCumparat);
 	}
 	else
 	{
@@ -1503,9 +1582,9 @@ public:
 	void printObject(const Vehicul* obj);
 
 	// MODIFICARE OBIECTE DIN MENIU
-	void modificareObject(Tranzactie obj);
+	void modificareObject(Tranzactie& obj);
 
-	void modificareObject(Showroom obj);
+	void modificareObject(Showroom& obj);
 
 	void modificareObject(Client& obj);
 
@@ -1667,6 +1746,55 @@ void Singleton::modificareObject(Client& obj)
 		}
 	}
 
+}
+
+void Singleton::modificareObject(Showroom& obj)
+{
+		int k = 1;
+		while (k == 1)
+		{
+		int comanda;
+		cout << "\n1. Modificare nume\n";
+		cout << "2. Modificare vehicule disponibile\n";
+		cout << "\n3. Iesire din submeniu\n";
+		cout << endl << "> ";
+		cin >> comanda;
+		switch (comanda)
+		{
+
+		case 1:
+		{
+			string nume;
+			cout << "Nume nou: ";
+			cin.get();
+			getline(cin, nume);
+			obj.setNume(nume);
+			break;
+		}
+		case 2:
+		{
+			int index;
+			cout << "Indexul vehiculului de modificat: ";
+			cin >> index;
+			list <Vehicul*> vehiculeObj = obj.getVehiculeDisponibile();
+			list<Vehicul*>::iterator it = vehiculeObj.begin();
+			std::advance(it, index - 1);
+			modificareObject(*it);
+			break;
+		}
+		case 3:
+		{
+			k = 0;
+			break;
+		}
+		default:
+		{
+			cout << "\nComanda invalida.\n";
+			break;
+		}
+
+		}
+	}
 }
 
 // MODIFICARE OBIECTE DIN MENIU VEHICUL*
@@ -2024,82 +2152,94 @@ void Singleton::startMenu()
 							else
 								printObject(v);
 					}
+					if(vehicule.size() == 0)
+						cout << "\nNu exista vehicule de afisat.\n";
 					break;
 				}
 				case 3:
 				{
-					int index = 1;
-					for (Vehicul* v : vehicule)
+					if (vehicule.size() != 0)
 					{
-						cout << "\nVehiculul " << index++ << ":\n";
-						cout << v->getMarca() << " " << v->getModel() << "\n";
-					}
-
-					index = 0;
-					cout << "\nIndexul vehiculului: ";
-					cin >> index;
-					
-					if (typeid(*vehicule[index - 1]) == typeid(VehiculCarburant))
-					{
-						InfoVehicul <VehiculCarburant> infoCarburant;
-                        infoCarburant.info(dynamic_cast<VehiculCarburant&>(*vehicule[index - 1]));
-					}
-					else
-						if (typeid(*vehicule[index - 1]) == typeid(VehiculHibrid))
+						int index = 1;
+						for (Vehicul* v : vehicule)
 						{
-							InfoVehicul <VehiculHibrid> infoHibrid;
-							infoHibrid.info(dynamic_cast<VehiculHibrid&>(*vehicule[index - 1]));
+							cout << "\nVehiculul " << index++ << ":\n";
+							cout << v->getMarca() << " " << v->getModel() << "\n";
+						}
+
+						index = 0;
+						cout << "\nIndexul vehiculului: ";
+						cin >> index;
+
+						if (typeid(*vehicule[index - 1]) == typeid(VehiculCarburant))
+						{
+							InfoVehicul <VehiculCarburant> infoCarburant;
+							infoCarburant.info(dynamic_cast<VehiculCarburant&>(*vehicule[index - 1]));
 						}
 						else
-						{
-							int exceptie = 0;
-							InfoVehicul <Vehicul> info;
-							info.info(exceptie);
-						}
+							if (typeid(*vehicule[index - 1]) == typeid(VehiculHibrid))
+							{
+								InfoVehicul <VehiculHibrid> infoHibrid;
+								infoHibrid.info(dynamic_cast<VehiculHibrid&>(*vehicule[index - 1]));
+							}
+					}
+					else
+						cout << "\nNu exista vehicule de afisat.\n";
+					break;
 				}
 				case 4:
 				{
 					int index = 1;
-					for (Vehicul* v : vehicule)
+					if (vehicule.size() != 0)
 					{
-						cout << "\n\nVehiculul " << index++ << ":\n";
-						if (typeid(*v) == typeid(VehiculCarburant))
-							printObject(*(dynamic_cast<VehiculCarburant*>(v)));
-						else
-							if (typeid(*v) == typeid(VehiculHibrid))
-								printObject(*(dynamic_cast<VehiculHibrid*>(v)));
+						for (Vehicul* v : vehicule)
+						{
+							cout << "\n\nVehiculul " << index++ << ":\n";
+							if (typeid(*v) == typeid(VehiculCarburant))
+								printObject(*(dynamic_cast<VehiculCarburant*>(v)));
 							else
-								printObject(v);
-					}
+								if (typeid(*v) == typeid(VehiculHibrid))
+									printObject(*(dynamic_cast<VehiculHibrid*>(v)));
+								else
+									printObject(v);
+						}
 
-					index = 0;
-					cout << "\nIndexul vehiculului de sters: ";
-					cin >> index;
-					delete vehicule[index - 1];
-					vehicule.erase(vehicule.begin() + index - 1);
-					cout << "\nVehiculul a fost sters cu succes.\n";
+						index = 0;
+						cout << "\nIndexul vehiculului de sters: ";
+						cin >> index;
+						delete vehicule[index - 1];
+						vehicule.erase(vehicule.begin() + index - 1);
+						cout << "\nVehiculul a fost sters cu succes.\n";
+					}
+					else
+						cout << "\nNu exista vehicule de sters.\n";
 					break;
 				}
 				case 5:
 				{
 					int index = 1;
-					for (Vehicul* v : vehicule)
+					if (vehicule.size() != 0)
 					{
-						cout << "\n\nVehiculul " << index++ << ":\n";
-						if (typeid(*v) == typeid(VehiculCarburant))
-							printObject(*(dynamic_cast<VehiculCarburant*>(v)));
-						else
-							if (typeid(*v) == typeid(VehiculHibrid))
-								printObject(*(dynamic_cast<VehiculHibrid*>(v)));
+						for (Vehicul* v : vehicule)
+						{
+							cout << "\n\nVehiculul " << index++ << ":\n";
+							if (typeid(*v) == typeid(VehiculCarburant))
+								printObject(*(dynamic_cast<VehiculCarburant*>(v)));
 							else
-								printObject(v);
-					}
+								if (typeid(*v) == typeid(VehiculHibrid))
+									printObject(*(dynamic_cast<VehiculHibrid*>(v)));
+								else
+									printObject(v);
+						}
 
-					index = 0;
-					cout << "\nIndexul vehiculului de modificat: ";
-					cin >> index;
-					modificareObject(vehicule[index - 1]);
-					cout << "\nVehiculul a fost modificat cu succes.\n";
+						index = 0;
+						cout << "\nIndexul vehiculului de modificat: ";
+						cin >> index;
+						modificareObject(vehicule[index - 1]);
+						cout << "\nVehiculul a fost modificat cu succes.\n";
+					}
+					else
+						cout << "\nNu exista vehicule de modificat.\n";
 					break;
 				}
 				case 6:
@@ -2152,38 +2292,50 @@ void Singleton::startMenu()
 						cout << "\n\nClientul " << index++ << ":\n";
 						printObject(c);
 					}
+					if (clienti.size() == 0)
+						cout << "\nNu exista clienti de afisat.\n";
 					break;
 				}
 				case 3:
 				{
 					int index = 1;
-					for (Client c : clienti)
+					if (clienti.size() != 0)
 					{
-						cout << "\n\nClientul " << index++ << ":\n";
-						printObject(c);
-					}
+						for (Client c : clienti)
+						{
+							cout << "\n\nClientul " << index++ << ":\n";
+							printObject(c);
+						}
 
-					index = 0;
-					cout << "\nIndexul clientului de sters: ";
-					cin >> index;
-					clienti.erase(clienti.begin() + index - 1);
-					cout << "\nClientul a fost sters cu succes.\n";
+						index = 0;
+						cout << "\nIndexul clientului de sters: ";
+						cin >> index;
+						clienti.erase(clienti.begin() + index - 1);
+						cout << "\nClientul a fost sters cu succes.\n";
+					}
+					else
+						cout << "\nNu exista clienti de sters.\n";
 					break;
 				}
 				case 4:
 				{
 					int index = 1;
-					for (Client c : clienti)
+					if (clienti.size() != 0)
 					{
-						cout << "\n\nClientul " << index++ << ":\n";
-						printObject(c);
-					}
+						for (Client c : clienti)
+						{
+							cout << "\n\nClientul " << index++ << ":\n";
+							printObject(c);
+						}
 
-					index = 0;
-					cout << "\nIndexul clientului de modificat: ";
-					cin >> index;
-					modificareObject(clienti[index - 1]);
-					cout << "\nClientul a fost modificat cu succes.\n";
+						index = 0;
+						cout << "\nIndexul clientului de modificat: ";
+						cin >> index;
+						modificareObject(clienti[index - 1]);
+						cout << "\nClientul a fost modificat cu succes.\n";
+					}
+					else
+						cout << "\nNu exista clienti de modificat.\n";
 					break;
 				}
 				case 5:
@@ -2215,7 +2367,8 @@ void Singleton::startMenu()
 				cout << "3. Stergere showroom\n";
 				cout << "4. Modificare showroom\n";
 				cout << "5. Majorare pret vehicul\n";
-				cout << "\n6. Iesire din submeniul Showroom\n";
+				cout << "6. Adaugare vehicul din lista cu modele de vehicule\n";
+				cout << "\n7. Iesire din submeniul Showroom\n";
 				cout << endl << "> ";
 				cin >> comandaShowroom;
 				switch (comandaShowroom)
@@ -2259,13 +2412,89 @@ void Singleton::startMenu()
 				}
 				case 4:
 				{
+					int index = 1;
+					for (Showroom s : showroomuri)
+					{
+						cout << "\n\nShowroomul " << index++ << ":\n";
+						printObject(s);
+					}
 
+					index = 0;
+					cout << "\nIndexul showroomului de modificat: ";
+					cin >> index;
+					modificareObject(showroomuri[index - 1]);
+					cout << "\nShowroomul a fost modificat cu succes.\n";
+					break;
 				}
 				case 5:
 				{
+					cout << "\nFunctia nu este implementata.\n";
+					// ?
+					/*int index = 1;
+					for (Showroom s : showroomuri)
+					{
+						cout << "\n\nShowroomul " << index++ << ":\n";
+						printObject(s);
+					}
 
+					index = 0;
+					cout << "\nIndexul showroomului la care se va majora pretul: ";
+					cin >> index;
+					int indexVehicul = 1;
+					cout << "\nVehiculele disponibile in showroom:\n";
+					list<Vehicul*> vehiculeObj = showroomuri[index - 1].getVehiculeDisponibile();	
+					for (Vehicul* v : vehiculeObj)
+					{
+						cout << "\n\nVehiculul " << indexVehicul++ << ":\n";
+						if (typeid(*v) == typeid(VehiculCarburant))
+							printObject(*(dynamic_cast<VehiculCarburant*>(v)));
+						else
+							if (typeid(*v) == typeid(VehiculHibrid))
+								printObject(*(dynamic_cast<VehiculHibrid*>(v)));
+							else
+								printObject(v);
+					}
+					indexVehicul = 0;
+					cout << "\nIndexul vehiculului la care se va majora pretul: ";
+					cin >> indexVehicul;
+					showroomuri[index].majorarePretVehicul(indexVehicul);
+					cout << "\nPretul vehiculului a fost majorat cu succes.\n";*/
+					break;
 				}
 				case 6:
+				{
+					int index = 1;
+					for (Showroom s : showroomuri)
+					{
+						cout << "\n\nShowroomul " << index++ << ":\n";
+						printObject(s);
+					}
+					index = 0;
+					cout << "\nIndexul showroomului la care se va adauga vehiculul: ";
+					cin >> index;
+					cout << "\nVehiculele disponibile in meniu:\n";
+					int indexVehicul = 1;
+					for (Vehicul* v : vehicule)
+					{
+						cout << "\n\nVehiculul " << indexVehicul++ << ":\n";
+						if (typeid(*v) == typeid(VehiculCarburant))
+							printObject(*(dynamic_cast<VehiculCarburant*>(v)));
+						else
+							if (typeid(*v) == typeid(VehiculHibrid))
+								printObject(*(dynamic_cast<VehiculHibrid*>(v)));
+							else
+								printObject(v);
+					}
+					indexVehicul = 0;
+					cout << "\nIndexul vehiculului de adaugat: ";
+					cin >> indexVehicul;
+					Vehicul* v = vehicule[indexVehicul - 1]->clone();
+					showroomuri[index - 1] = showroomuri[index - 1] + v;
+					cout << "\nVehiculul a fost adaugat cu succes.\n";
+					break;
+
+				}
+				case 7:
 				{
 					ramaiInShowroom = 0;
 					break;
@@ -2301,11 +2530,23 @@ void Singleton::startMenu()
 
 				case 1:
 				{
-
+					cin.get();
+					Tranzactie t = creareObject<Tranzactie>();
+					adaugareObiect(t);
+					cout << "\nTranzactia a fost adaugata cu succes.\n";
+					break;
 				}
 				case 2:
 				{
-
+					int index = 1;
+					for (Tranzactie t : tranzactii)
+					{
+						cout << "\n\nTranzactia " << index++ << ":\n";
+						printObject(t);
+					}
+					if(tranzactii.size() == 0)
+						cout << "\nNu exista tranzactii de afisat.\n";
+					break;
 				}
 				case 3:
 				{
@@ -2381,6 +2622,8 @@ int main()
 	Client c2("Marin Gheorghe", 0, {}, 0, { {"01-01-2024", 1000}, {"01-02-2024", 1000} });
 
 	Showroom s1("Showroom masini", 0, {});
+	s1 = s1 + pv1;
+	s1 = s1 + pv2;
 
 
 	Singleton* s = Singleton::getInstance();
