@@ -500,6 +500,9 @@ public:
 
 	// SET TIP HIBRID
 	void setTipHibrid(char tipHibrid);
+
+	// GET TIP HIBRID
+	char getTipHibrid() const;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -674,6 +677,12 @@ void VehiculHibrid::setTipHibrid(char tipHibrid)
 			// ?
 			throw "Tip hibrid invalid!";
 		}
+}
+
+// GET TIP HIBRID
+char VehiculHibrid::getTipHibrid() const
+{
+	return tipHibrid;
 }
 
 // --------- CLASA INFOVEHICUL ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -906,6 +915,18 @@ public:
 
 	// OPERATORUL <<
 	friend ostream& operator <<(ostream&, const Client&);
+
+	// SET NUME
+	void setNume(string nume);
+
+	// SET PLATA RAMASA
+	void setPlataRamasa(double plataRamasa);
+
+	// INSERARE PLATA IN ISTORIC PLATI
+	void inserareIstoricPlati(string data, double suma);
+
+	// GET VEHICULE CUMPARATE
+	vector <Vehicul*> getVehiculeCumparate() const;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -1069,6 +1090,36 @@ ostream& operator <<(ostream& out, const Client& obj)
 		out << "Plata " << index++ << ": " << p.first << " " << p.second << "\n";
 	}
 	return out;
+}
+
+// SET NUME
+void Client::setNume(string nume)
+{
+	this->nume = nume;
+}
+
+// SET PLATA RAMASA
+void Client::setPlataRamasa(double plataRamasa)
+{
+	this->plataRamasa = plataRamasa;
+}
+
+// INSERARE PLATA IN ISTORIC PLATI
+void Client::inserareIstoricPlati(string data, double suma)
+{
+	if (suma > plataRamasa)
+	{
+		throw  "Suma platita este mai mare decat plata ramasa!";
+		return;
+	}
+	istoricPlati.insert({ data, suma });
+	plataRamasa -= suma;
+}
+
+// GET VEHICULE CUMPARATE
+vector <Vehicul*> Client::getVehiculeCumparate() const
+{
+	return vehiculeCumparate;
 }
 
 // --------- CLASA SHOWROOM ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1449,11 +1500,13 @@ public:
 	void printObject(const Vehicul* obj);
 
 	// MODIFICARE OBIECTE DIN MENIU
-	template <class T>
-	void modificareObject(T& obj);
+	void modificareObject(Tranzactie obj);
+
+	void modificareObject(Showroom obj);
+
+	void modificareObject(Client& obj);
 
 	// MODIFICARE OBIECTE DIN MENIU VEHICUL*
-	template <>
 	void modificareObject(Vehicul*& obj);
 
 	// ADAUGARE OBIECTE DEJA CREATE IN VECTORII MENIULUI
@@ -1536,14 +1589,84 @@ void Singleton::printObject(const Vehicul* obj)
 }
 
 // MODIFICARE OBIECTE DIN MENIU
-template <class T>
-void Singleton::modificareObject(T& obj)
+void Singleton::modificareObject(Client& obj)
 {
-	// de completat
+		int k = 1;
+		while (k == 1)
+		{
+		int comanda;
+		cout << "\n1. Modificare nume\n";
+		cout << "2. Modificare vehicule cumparate\n";
+		cout << "3. Modificare plata ramasa\n";
+		cout << "4. Inserare informatie in istoric plati\n";
+		cout << "\n5. Iesire din submeniu\n";
+		cout << endl << "> ";
+		cin >> comanda;
+		switch (comanda)
+		{
+
+		case 1:
+		{
+			string nume;
+			cout << "Nume nou: ";
+			cin.get();
+			getline(cin, nume);
+			obj.setNume(nume);
+			break;
+		}
+		case 2:
+		{
+			int index;
+			cout << "Indexul vehiculului cumparat de modificat: ";
+			cin >> index;
+			
+			vector<Vehicul*> vehiculeObj = obj.getVehiculeCumparate();
+			if (index - 1 < 0 || index - 1 >= vehiculeObj.size())
+			{
+				throw "Index invalid!\n";
+				break;
+			}
+			else
+			{
+				Vehicul* vehicul = vehiculeObj[index - 1];
+				modificareObject(vehicul);
+			}
+			break;
+			
+		}
+		case 3:
+		{
+			double plataRamasa;
+			cout << "Plata ramasa noua: ";
+			cin >> plataRamasa;
+			obj.setPlataRamasa(plataRamasa);
+			break;
+		}
+		case 4:
+		{
+			string data;
+			double suma;
+			cout << "Data si suma platita, separate printr-un spatiu: ";
+			cin >> data >> suma;
+			obj.inserareIstoricPlati(data, suma);
+			break;
+		}
+		case 5:
+		{
+			k = 0;
+			break;
+		}
+		default:
+		{
+			cout << "\nComanda invalida.\n";
+			break;
+		}
+		}
+	}
+
 }
 
 // MODIFICARE OBIECTE DIN MENIU VEHICUL*
-template <>
 void Singleton::modificareObject(Vehicul*& obj)
 {
 	if (typeid(*obj) == typeid(VehiculCarburant))
@@ -1759,19 +1882,29 @@ void Singleton::modificareObject(Vehicul*& obj)
 				}
 				case 10:
 				{
-					double autonomieElectrica;
-					cout << "Autonomie electrica noua: ";
-					cin >> autonomieElectrica;
-					objHibrid->setAutonomieElectric(autonomieElectrica);
+					if (objHibrid->getTipHibrid() == 'P')
+					{
+						double autonomieElectrica;
+						cout << "Autonomie electrica noua: ";
+						cin >> autonomieElectrica;
+						objHibrid->setAutonomieElectric(autonomieElectrica);
+					}
+					else
+						throw "Autonomie electrica se poate modifica doar pentru Plug-In Hybrid!";
 					break;
 
 				}
 				case 11:
 				{
-					double timpIncarcare;
-					cout << "Timp incarcare nou: ";
-					cin >> timpIncarcare;
-					objHibrid->setTimpIncarcare(timpIncarcare);
+					if (objHibrid->getTipHibrid() == 'P')
+					{
+						double timpIncarcare;
+						cout << "Timp incarcare nou: ";
+						cin >> timpIncarcare;
+						objHibrid->setTimpIncarcare(timpIncarcare);
+					}
+					else
+						throw "Timp incarcare se poate modifica doar pentru Plug-In Hybrid!";
 					break;
 				}
 				case 12:
@@ -1983,9 +2116,9 @@ void Singleton::startMenu()
 		}
 		case 2:
 		{
-						int ramaiInClient = 1;
-						while (ramaiInClient == 1)
-						{
+			int ramaiInClient = 1;
+			while (ramaiInClient == 1)
+			{
 				int comandaClient;
 				cout << endl;
 				cout << "// ------------------------------------------------------------------------------------------------------------------ //";
@@ -2002,19 +2135,53 @@ void Singleton::startMenu()
 
 				case 1:
 				{
-
+					cin.get();
+					Client c = creareObject<Client>();
+					adaugareObiect(c);
+					cout << "\nClientul a fost adaugat cu succes.\n";
+					break;
 				}
 				case 2:
 				{
-
+					int index = 1;
+					for (Client c : clienti)
+					{
+						cout << "\n\nClientul " << index++ << ":\n";
+						printObject(c);
+					}
+					break;
 				}
 				case 3:
 				{
+					int index = 1;
+					for (Client c : clienti)
+					{
+						cout << "\n\nClientul " << index++ << ":\n";
+						printObject(c);
+					}
 
+					index = 0;
+					cout << "\nIndexul clientului de sters: ";
+					cin >> index;
+					clienti.erase(clienti.begin() + index - 1);
+					cout << "\nClientul a fost sters cu succes.\n";
+					break;
 				}
 				case 4:
 				{
+					int index = 1;
+					for (Client c : clienti)
+					{
+						cout << "\n\nClientul " << index++ << ":\n";
+						printObject(c);
+					}
 
+					index = 0;
+					cout << "\nIndexul clientului de modificat: ";
+					cin >> index;
+					modificareObject(clienti[index - 1]);
+					cout << "\nClientul a fost modificat cu succes.\n";
+					break;
 				}
 				case 5:
 				{
@@ -2164,7 +2331,7 @@ int Tranzactie::nrTranzactii = 0;
 
 int main()
 {
-	
+
 	map<string, int> istoricRulaj1;
 	istoricRulaj1["01-01-2017"] = 20000;
 	istoricRulaj1["01-01-2020"] = 50000;
