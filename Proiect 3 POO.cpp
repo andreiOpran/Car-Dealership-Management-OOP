@@ -1278,11 +1278,14 @@ ostream& operator <<(ostream& out, const Showroom& obj)
 
 	out << "\nNume: " << obj.nume << "\n";
 	out << "Numar vehicule disponibile: " << obj.nrVehiculeDisponibile << "\n";
-	out << "Vehicule disponibile:\n";
-	for (Vehicul* v : obj.vehiculeDisponibile)
+	if (obj.vehiculeDisponibile.size())
 	{
-		out << "\nVehiculul " << index++ << ":\n";
-		out << *v;
+		out << "Vehicule disponibile:\n";
+		for (Vehicul* v : obj.vehiculeDisponibile)
+		{
+			out << "\nVehiculul " << index++ << ":\n";
+			out << *v;
+		}
 	}
 	return out;
 }
@@ -2220,15 +2223,39 @@ void Singleton::startMenu()
 
 				case 1:
 				{
-
+					cin.get();
+					Showroom s = creareObject<Showroom>();
+					adaugareObiect(s);
+					cout << "\nShowroomul a fost adaugat cu succes.\n";
+					break;
 				}
 				case 2:
 				{
-
+					int index = 1;
+					for (Showroom s : showroomuri)
+					{
+						cout << "\n\nShowroomul " << index++ << ":\n";
+						printObject(s);
+					}
+					if(showroomuri.size() == 0)
+						cout << "\nNu exista showroomuri de afisat.\n";
+					break;
 				}
 				case 3:
 				{
+					int index = 1;
+					for (Showroom s : showroomuri)
+					{
+						cout << "\n\nShowroomul " << index++ << ":\n";
+						printObject(s);
+					}
 
+					index = 0;
+					cout << "\nIndexul showroomului de sters: ";
+					cin >> index;
+					showroomuri.erase(showroomuri.begin() + index - 1);
+					cout << "\nShowroomul a fost sters cu succes.\n";
+					break;
 				}
 				case 4:
 				{
