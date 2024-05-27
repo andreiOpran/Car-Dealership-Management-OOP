@@ -927,6 +927,12 @@ public:
 
 	// GET VEHICULE CUMPARATE
 	vector <Vehicul*> getVehiculeCumparate() const;
+
+	// OPERATIA CLIENT + VEHICUL*
+	Client operator+(Vehicul*);
+
+	// GET PLATA RAMASA
+	double getPlataRamasa() const;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -1120,6 +1126,21 @@ void Client::inserareIstoricPlati(string data, double suma)
 vector <Vehicul*> Client::getVehiculeCumparate() const
 {
 	return vehiculeCumparate;
+}
+
+// OPERATIA CLIENT + VEHICUL*
+Client Client::operator+(Vehicul* obj)
+{
+	Client copie = *this;
+	copie.vehiculeCumparate.push_back(obj);
+	copie.nrVehiculeCumparate++;
+	return copie;
+}
+
+// GET PLATA RAMASA
+double Client::getPlataRamasa() const 
+{
+	return plataRamasa;
 }
 
 // --------- CLASA SHOWROOM ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1415,6 +1436,21 @@ public:
 
 	// OPERATORUL <<
 	friend ostream& operator <<(ostream&, const Tranzactie&);
+
+	// GET CLIENT
+	Client getClient() const;
+
+	// GET VEHICUL CUMPARAT
+	Vehicul* getVehiculCumparat() const;
+
+	// SET SUMA PLATITA
+	void setSumaPlatita(double sumaPlatita);
+
+	// SET CLIENT
+	void setClient(Client client);
+
+	// SET VEHICUL CUMPARAT
+	void setVehiculCumparat(Vehicul* vehiculCumparat);
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -1425,11 +1461,12 @@ Tranzactie::Tranzactie(Client client, Vehicul* vehiculCumparat, double sumaPlati
 	idTranzactie(++nrTranzactii + 2000), client(client), vehiculCumparat(vehiculCumparat), sumaPlatita(sumaPlatita) {}
 
 // COPY CONSTRUCTOR
-Tranzactie::Tranzactie(const Tranzactie& obj) : idTranzactie(obj.idTranzactie), client(obj.client), sumaPlatita(obj.sumaPlatita) 
+Tranzactie::Tranzactie(const Tranzactie& obj) : idTranzactie(obj.idTranzactie), client(obj.client), sumaPlatita(obj.sumaPlatita)
 {
+	
 	if (obj.vehiculCumparat)
 	{
-		this->vehiculCumparat = new Vehicul(*obj.vehiculCumparat);
+		this->vehiculCumparat = obj.vehiculCumparat->clone();
 	}
 	else
 	{
@@ -1463,6 +1500,8 @@ Tranzactie& Tranzactie::operator=(const Tranzactie& obj)
 // DESTRUCTOR
 Tranzactie::~Tranzactie() 
 {
+	// ?
+	// incearca sa stearga ceva ce a fost sters deja
 	delete vehiculCumparat;
 }
 
@@ -1487,7 +1526,7 @@ istream& operator >> (istream& in, Tranzactie& obj)
 		{
 			Vehicul* v = new VehiculHibrid();
 			in >> *v;
-			obj.vehiculCumparat = v;
+			obj.vehiculCumparat = v->clone();
 		}
 		else
 		{
@@ -1539,13 +1578,43 @@ ostream& operator <<(ostream& out, const Tranzactie& obj)
 	return out;
 }
 
+// GET CLIENT
+Client Tranzactie::getClient() const
+{
+	return client;
+}
+
+// GET VEHICUL CUMPARAT
+Vehicul* Tranzactie::getVehiculCumparat() const
+{
+	return vehiculCumparat;
+}
+
+// SET SUMA PLATITA
+void Tranzactie::setSumaPlatita(double sumaPlatita)
+{
+	this->sumaPlatita = sumaPlatita;
+}
+
+// SET CLIENT
+void Tranzactie::setClient(Client client)
+{
+	this->client = client;
+}
+
+// SET VEHICUL CUMPARAT
+void Tranzactie::setVehiculCumparat(Vehicul* vehiculCumparat)
+{
+	this->vehiculCumparat = vehiculCumparat;
+}
+
 // --------- CLASA SINGLETON ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 class Singleton
 {
 	static Singleton* instance;
 	
-	vector <Tranzactie> tranzactii;
+	vector <Tranzactie*> tranzactii;
 	vector <Showroom> showroomuri;
 	vector <Client> clienti;
 	vector <Vehicul*> vehicule;
@@ -1573,6 +1642,10 @@ public:
 	template <>
 	Vehicul* creareObject();
 
+	// CREARE OBIECTE DIN MENIU TRANZACTIE*
+	template <>
+	Tranzactie* creareObject();
+
 	// AFISARE OBIECTE DIN MENIU
 	template <class T>
 	void printObject(const T obj);
@@ -1592,7 +1665,7 @@ public:
 	void modificareObject(Vehicul*& obj);
 
 	// ADAUGARE OBIECTE DEJA CREATE IN VECTORII MENIULUI
-	void adaugareObiect(Tranzactie obj);
+	void adaugareObiect(Tranzactie* obj);
 
 	void adaugareObiect(Showroom obj);
 
@@ -1656,6 +1729,15 @@ Vehicul* Singleton::creareObject()
 	return obj;
 }
 
+// CREARE OBIECTE DIN MENIU TRANZACTIE*
+template <>
+Tranzactie* Singleton::creareObject()
+{
+	Tranzactie* obj = new Tranzactie();
+	cin >> *obj;
+	return obj;
+}
+
 // AFISARE OBIECTE DIN MENIU
 template <class T>
 void Singleton::printObject(const T obj)
@@ -1668,133 +1750,6 @@ template <>
 void Singleton::printObject(const Vehicul* obj)
 {
 	cout << *obj;
-}
-
-// MODIFICARE OBIECTE DIN MENIU
-void Singleton::modificareObject(Client& obj)
-{
-		int k = 1;
-		while (k == 1)
-		{
-		int comanda;
-		cout << "\n1. Modificare nume\n";
-		cout << "2. Modificare vehicule cumparate\n";
-		cout << "3. Modificare plata ramasa\n";
-		cout << "4. Inserare informatie in istoric plati\n";
-		cout << "\n5. Iesire din submeniu\n";
-		cout << endl << "> ";
-		cin >> comanda;
-		switch (comanda)
-		{
-
-		case 1:
-		{
-			string nume;
-			cout << "Nume nou: ";
-			cin.get();
-			getline(cin, nume);
-			obj.setNume(nume);
-			break;
-		}
-		case 2:
-		{
-			int index;
-			cout << "Indexul vehiculului cumparat de modificat: ";
-			cin >> index;
-			
-			vector<Vehicul*> vehiculeObj = obj.getVehiculeCumparate();
-			if (index - 1 < 0 || index - 1 >= vehiculeObj.size())
-			{
-				throw "Index invalid!\n";
-				break;
-			}
-			else
-			{
-				Vehicul* vehicul = vehiculeObj[index - 1];
-				modificareObject(vehicul);
-			}
-			break;
-			
-		}
-		case 3:
-		{
-			double plataRamasa;
-			cout << "Plata ramasa noua: ";
-			cin >> plataRamasa;
-			obj.setPlataRamasa(plataRamasa);
-			break;
-		}
-		case 4:
-		{
-			string data;
-			double suma;
-			cout << "Data si suma platita, separate printr-un spatiu: ";
-			cin >> data >> suma;
-			obj.inserareIstoricPlati(data, suma);
-			break;
-		}
-		case 5:
-		{
-			k = 0;
-			break;
-		}
-		default:
-		{
-			cout << "\nComanda invalida.\n";
-			break;
-		}
-		}
-	}
-
-}
-
-void Singleton::modificareObject(Showroom& obj)
-{
-		int k = 1;
-		while (k == 1)
-		{
-		int comanda;
-		cout << "\n1. Modificare nume\n";
-		cout << "2. Modificare vehicule disponibile\n";
-		cout << "\n3. Iesire din submeniu\n";
-		cout << endl << "> ";
-		cin >> comanda;
-		switch (comanda)
-		{
-
-		case 1:
-		{
-			string nume;
-			cout << "Nume nou: ";
-			cin.get();
-			getline(cin, nume);
-			obj.setNume(nume);
-			break;
-		}
-		case 2:
-		{
-			int index;
-			cout << "Indexul vehiculului de modificat: ";
-			cin >> index;
-			list <Vehicul*> vehiculeObj = obj.getVehiculeDisponibile();
-			list<Vehicul*>::iterator it = vehiculeObj.begin();
-			std::advance(it, index - 1);
-			modificareObject(*it);
-			break;
-		}
-		case 3:
-		{
-			k = 0;
-			break;
-		}
-		default:
-		{
-			cout << "\nComanda invalida.\n";
-			break;
-		}
-
-		}
-	}
 }
 
 // MODIFICARE OBIECTE DIN MENIU VEHICUL*
@@ -2051,14 +2006,201 @@ void Singleton::modificareObject(Vehicul*& obj)
 
 				}
 			}
-			
+
 		}
 }
 
-// ADAUGARE OBIECTE DEJA CREATE IN VECTORII MENIULUI
-void Singleton::adaugareObiect(Tranzactie obj)
+// MODIFICARE OBIECTE DIN MENIU
+void Singleton::modificareObject(Client& obj)
 {
-	tranzactii.push_back(obj);
+		int k = 1;
+		while (k == 1)
+		{
+		int comanda;
+		cout << "\n1. Modificare nume\n";
+		cout << "2. Modificare vehicule cumparate\n";
+		cout << "3. Modificare plata ramasa\n";
+		cout << "4. Inserare informatie in istoric plati\n";
+		cout << "\n5. Iesire din submeniu\n";
+		cout << endl << "> ";
+		cin >> comanda;
+		switch (comanda)
+		{
+
+		case 1:
+		{
+			string nume;
+			cout << "Nume nou: ";
+			cin.get();
+			getline(cin, nume);
+			obj.setNume(nume);
+			break;
+		}
+		case 2:
+		{
+			int index;
+			cout << "Indexul vehiculului cumparat de modificat: ";
+			cin >> index;
+			
+			vector<Vehicul*> vehiculeObj = obj.getVehiculeCumparate();
+			if (index - 1 < 0 || index - 1 >= vehiculeObj.size())
+			{
+				throw "Index invalid!\n";
+				break;
+			}
+			else
+			{
+				Vehicul* vehicul = vehiculeObj[index - 1];
+				modificareObject(vehicul);
+			}
+			break;
+			
+		}
+		case 3:
+		{
+			double plataRamasa;
+			cout << "Plata ramasa noua: ";
+			cin >> plataRamasa;
+			obj.setPlataRamasa(plataRamasa);
+			break;
+		}
+		case 4:
+		{
+			string data;
+			double suma;
+			cout << "Data si suma platita, separate printr-un spatiu: ";
+			cin >> data >> suma;
+			obj.inserareIstoricPlati(data, suma);
+			break;
+		}
+		case 5:
+		{
+			k = 0;
+			break;
+		}
+		default:
+		{
+			cout << "\nComanda invalida.\n";
+			break;
+		}
+		}
+	}
+
+}
+
+void Singleton::modificareObject(Showroom& obj)
+{
+		int k = 1;
+		while (k == 1)
+		{
+		int comanda;
+		cout << "\n1. Modificare nume\n";
+		cout << "2. Modificare vehicule disponibile\n";
+		cout << "\n3. Iesire din submeniu\n";
+		cout << endl << "> ";
+		cin >> comanda;
+		switch (comanda)
+		{
+
+		case 1:
+		{
+			string nume;
+			cout << "Nume nou: ";
+			cin.get();
+			getline(cin, nume);
+			obj.setNume(nume);
+			break;
+		}
+		case 2:
+		{
+			int index;
+			cout << "Indexul vehiculului de modificat: ";
+			cin >> index;
+			list <Vehicul*> vehiculeObj = obj.getVehiculeDisponibile();
+			list<Vehicul*>::iterator it = vehiculeObj.begin();
+			std::advance(it, index - 1);
+			modificareObject(*it);
+			break;
+		}
+		case 3:
+		{
+			k = 0;
+			break;
+		}
+		default:
+		{
+			cout << "\nComanda invalida.\n";
+			break;
+		}
+
+		}
+	}
+}
+
+void Singleton::modificareObject(Tranzactie& obj)
+{
+	int k = 1;
+	while (k == 1)
+	{
+		int comanda;
+		cout << "\n1. Modificare client\n";
+		cout << "2. Modificare vehicul cumparat\n";
+		cout << "3. Modificare suma platita\n";
+		cout << "\n4. Iesire din submeniu\n";
+		cout << endl << "> ";
+		cin >> comanda;
+		switch (comanda)
+		{
+
+		case 1:
+		{
+			Client aux;
+			aux = obj.getClient();
+			modificareObject(aux);
+			obj.setClient(aux);
+			break;
+		}
+		case 2:
+		{
+			Vehicul* aux;
+			aux = obj.getVehiculCumparat();
+			cout << typeid(*obj.getVehiculCumparat()).name();
+			cout << *aux;
+			modificareObject(aux);
+
+			obj.setVehiculCumparat(aux);
+			break;
+		}
+		case 3:
+		{
+			double sumaPlatita;
+			cout << "Suma platita noua: ";
+			cin >> sumaPlatita;
+			obj.setSumaPlatita(sumaPlatita);
+			break;
+		}
+		case 4:
+		{
+			k = 0;
+			break;
+		}
+		default:
+		{
+			cout << "\nComanda invalida.\n";
+			break;
+		}
+
+		}
+	}
+}
+
+// MODIFICARE OBIECTE DIN MENIU VEHICUL*
+
+
+// ADAUGARE OBIECTE DEJA CREATE IN VECTORII MENIULUI
+void Singleton::adaugareObiect(Tranzactie* obj)
+{
+    tranzactii.push_back(obj);
 }
 
 void Singleton::adaugareObiect(Showroom obj)
@@ -2531,18 +2673,18 @@ void Singleton::startMenu()
 				case 1:
 				{
 					cin.get();
-					Tranzactie t = creareObject<Tranzactie>();
-					adaugareObiect(t);
+                    Tranzactie* t = creareObject<Tranzactie*>();
+                    adaugareObiect(t);
 					cout << "\nTranzactia a fost adaugata cu succes.\n";
 					break;
 				}
 				case 2:
 				{
 					int index = 1;
-					for (Tranzactie t : tranzactii)
+					for(Tranzactie* t : tranzactii)
 					{
 						cout << "\n\nTranzactia " << index++ << ":\n";
-						printObject(t);
+						printObject(*t);
 					}
 					if(tranzactii.size() == 0)
 						cout << "\nNu exista tranzactii de afisat.\n";
@@ -2550,11 +2692,35 @@ void Singleton::startMenu()
 				}
 				case 3:
 				{
+					int index = 1;
+					for (Tranzactie* t : tranzactii)
+					{
+						cout << "\n\nTranzactia " << index++ << ":\n";
+						printObject(*t);
+					}
 
+					index = 0;
+					cout << "\nIndexul tranzactiei de sters: ";
+					cin >> index;
+					tranzactii.erase(tranzactii.begin() + index - 1);
+					cout << "\nTranzactia a fost stearsa cu succes.\n";
+					break;
 				}
 				case 4:
 				{
+					int index = 1;
+					for (Tranzactie* t : tranzactii)
+					{
+						cout << "\n\nTranzactia " << index++ << ":\n";
+						printObject(*t);
+					}
 
+					index = 0;
+					cout << "\nIndexul tranzactiei de modificat: ";
+					cin >> index;
+                    modificareObject(*tranzactii[index - 1]);
+					cout << "\nTranzactia a fost modificata cu succes.\n";
+					break;
 				}
 				case 5:
 				{
@@ -2573,7 +2739,78 @@ void Singleton::startMenu()
 		}
 		case 5:
 		{
-			// de completat
+			int indexShowroom = 1;
+			for (Showroom s : showroomuri)
+			{
+				cout << "\n\nShowroomul " << indexShowroom++ << ":\n";
+				printObject(s);
+			}
+			if (showroomuri.size() == 0)
+			{
+				cout << "\nNu exista showroomuri de afisat.\n";
+				break;
+			}
+			cout << "\nIndexul showroomului: ";
+			cin >> indexShowroom;
+
+			int indexVehicul = 1;
+			list<Vehicul*> vehiculeObj = showroomuri[indexShowroom - 1].getVehiculeDisponibile();
+			for (Vehicul* v : vehiculeObj)
+			{
+				cout << "\n\nVehiculul " << indexVehicul++ << ":\n";
+				if (typeid(*v) == typeid(VehiculCarburant))
+					printObject(*(dynamic_cast<VehiculCarburant*>(v)));
+				else
+					if (typeid(*v) == typeid(VehiculHibrid))
+						printObject(*(dynamic_cast<VehiculHibrid*>(v)));
+					else
+						printObject(v);
+			}
+			if (vehiculeObj.size() == 0)
+			{
+				cout << "\nNu exista vehicule de afisat.\n";
+				break;
+			}
+			cout << "\nIndexul vehiculului: ";
+			cin >> indexVehicul;
+
+			int indexClient = 1;
+			for (Client c : clienti)
+			{
+				cout << "\n\nClientul " << indexClient++ << ":\n";
+				printObject(c);
+			}
+			if (clienti.size() == 0)
+			{
+				cout << "\nNu exista clienti de afisat.\n";
+				break;
+			}
+			cout << "\nIndexul clientului: ";
+			cin >> indexClient;
+
+			double sumaPlatita;
+			cout << "\nSuma platita: ";
+			cin >> sumaPlatita;
+
+			Vehicul* auxVehicul;
+			list<Vehicul*>::iterator it = vehiculeObj.begin();
+			std::advance(it, indexVehicul - 1);
+			auxVehicul = *it;
+			Tranzactie* t = new Tranzactie(clienti[indexClient - 1], auxVehicul->clone(), sumaPlatita);
+			Vehicul* auxVehicul2;
+			list <Vehicul*>::iterator it2 = vehiculeObj.begin();
+			std::advance(it2, indexVehicul - 1);
+			auxVehicul2 = *it2;
+			clienti[indexClient - 1] = clienti[indexClient - 1] + auxVehicul2->clone();
+			showroomuri[indexShowroom - 1] = showroomuri[indexShowroom - 1] - (indexVehicul - 1);
+
+			adaugareObiect(t);
+
+			clienti[indexClient - 1].setPlataRamasa(clienti[indexClient - 1].getPlataRamasa() + sumaPlatita);
+
+			cout << "\nTranzactia a fost adaugata cu succes.\n";
+
+			break;
 		}
 		case 6:
 		{
@@ -2633,7 +2870,6 @@ int main()
 	s->adaugareObiect(c1);
 	s->adaugareObiect(c2);
 	s->adaugareObiect(s1);
-
 
 	s->startMenu();
 
