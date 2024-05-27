@@ -468,8 +468,27 @@ istream& VehiculHibrid::citireVehicul(istream& in)
 	VehiculCarburant::citireVehicul(in);
 	cout << "Tip hibrid (P - plug-in, M - mild): ";
 	
-	bool introducereTip = false;
+	
 	string tip;
+	in.get();
+	getline(in, tip);
+	if (tip == "P")
+	{
+		tipHibrid = 'P';
+	}
+	else
+		if (tip == "M")
+		{
+			tipHibrid = 'M';
+		}
+		else
+		{
+			// ?
+			throw "Tip hibrid invalid!";
+		}
+
+
+	/*bool introducereTip = false;
 	while (introducereTip == false)
 	{
 		in >> tip;
@@ -488,7 +507,8 @@ istream& VehiculHibrid::citireVehicul(istream& in)
 			{
 				cout << "Tip hibrid invalid! Introduceti din nou tipul hibridului (P - plug-in, M - mild): ";
 			}
-	}
+	}*/
+
 	if (tipHibrid == 'P')
 	{
 		cout << "Autonomie electric (km): ";
@@ -568,6 +588,170 @@ public:
 		cout << "Costul folosirii si intretinerii vehiculului: " << obj.costFolosireSiIntretinere() << "\n";
 	}
 };
+
+// --------- CLASA COLECTIEVEHICULE ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+template <class T = Vehicul>
+class ColectieVehicule
+{
+	vector <T*> vehicule;
+
+public:
+
+	// CONSTRUCTOR FARA PARAMETRI
+	ColectieVehicule();
+
+	// CONSTRUCTOR CU PARAMETRI
+	ColectieVehicule(vector <T*>);
+
+	// COPY CONSTRUCTOR
+	ColectieVehicule(const ColectieVehicule&);
+
+	// OPERATORUL =
+	ColectieVehicule& operator=(const ColectieVehicule&);
+
+	// DESTRUCTOR
+	~ColectieVehicule();
+
+	// OPERATORUL >>
+	friend istream& operator >>(istream&, ColectieVehicule&);
+
+	// OPERATORUL <<
+	friend ostream& operator <<(ostream&, const ColectieVehicule&);
+
+	// FUNCTIE ADAUGARE VEHICUL
+	void adaugareVehicul(T*);
+
+	// FUNCTIE STERGERE VEHICUL
+	void stergereVehicul(int);
+};
+
+// CONSTRUCTOR FARA PARAMETRI
+template <class T>
+ColectieVehicule<T>::ColectieVehicule() : vehicule() {}
+
+// CONSTRUCTOR CU PARAMETRI
+template <class T>
+ColectieVehicule<T>::ColectieVehicule(vector <T*> vehicule) : vehicule(vehicule) {}
+
+// COPY CONSTRUCTOR
+template <class T>
+ColectieVehicule<T>::ColectieVehicule(const ColectieVehicule& obj)
+{
+	this->vehicule.clear();
+	for (T* v : obj.vehicule)
+	{
+		this->vehicule.push_back(v->clone());
+	}
+}
+
+// OPERATORUL =
+template <class T>
+ColectieVehicule<T>& ColectieVehicule<T>::operator=(const ColectieVehicule& obj)
+{
+	if (this != &obj)
+	{
+		for (T* v : this->vehicule)
+		{
+			delete v;
+		}
+		this->vehicule.clear();
+		for (T* v : obj.vehicule)
+		{
+			this->vehicule.push_back(v->clone());
+		}
+	}
+	return *this;
+}
+
+// DESTRUCTOR
+template <class T>
+ColectieVehicule<T>::~ColectieVehicule()
+{
+	for (T* v : vehicule)
+	{
+		delete v;
+	}
+	vehicule.clear();
+}
+
+// OPERATORUL >>
+template <class T>
+istream& operator >>(istream& in, ColectieVehicule<T>& obj)
+{
+	int index = 0;
+
+	cout << "Numar vehicule: ";
+	in >> index;
+	obj.vehicule.clear();
+	for (int i = 0; i < index; i++)
+	{
+		cout << "\nVehiculul " << i + 1 << ":\n";
+		cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
+		bool introducereTip = false;
+		string tip;
+		in.get();
+		while (introducereTip == false)
+		{
+			getline(in, tip);
+			if (tip == "C")
+			{
+				T* v = new VehiculCarburant();
+				in >> *v;
+				obj.vehicule.push_back(v);
+				introducereTip = true;
+			}
+			else
+				if (tip == "H")
+				{
+					T* v = new VehiculHibrid();
+					in >> *v;
+					obj.vehicule.push_back(v);
+					introducereTip = true;
+				}
+				else
+				{
+					cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
+				}
+		}
+	}
+	return in;
+}
+
+// OPERATORUL <<
+template <class T>
+ostream& operator <<(ostream& out, const ColectieVehicule<T>& obj)
+{
+	int index = 1;
+
+	out << "\nNumar vehicule: " << obj.vehicule.size() << "\n";
+	for (T* v : obj.vehicule)
+	{
+		out << "\nVehiculul " << index++ << ":\n";
+		out << *v;
+	}
+	return out;
+}
+
+// FUNCTIE ADAUGARE VEHICUL
+template <class T>
+void ColectieVehicule<T>::adaugareVehicul(T* v)
+{
+	vehicule.push_back(v);
+}
+
+// FUNCTIE STERGERE VEHICUL
+template <class T>
+void ColectieVehicule<T>::stergereVehicul(int index)
+{
+	if (index < 0 || index >= vehicule.size())
+	{
+		cout << "Index invalid!\n";
+		return;
+	}
+	delete vehicule[index];
+	vehicule.erase(vehicule.begin() + index);
+}
 
 
 // --------- CLASA CLIENT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -654,8 +838,9 @@ Client::~Client()
 	vehiculeCumparate.clear();
 }
 
+
 // OPERATORUL >>
-istream& operator >>(istream& in, Client& obj)
+istream& operator>>(istream& in, Client& obj)
 {
 	int index = 0;
 
@@ -668,55 +853,77 @@ istream& operator >>(istream& in, Client& obj)
 	{
 		cout << "\nVehiculul " << i + 1 << ":\n";
 		cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
-		bool introducereTip = false;
 		string tip;
 		cin.get();
-		while (introducereTip == false)
+		getline(in, tip);
+		if (tip == "C")
 		{
-			getline(in, tip);
-			if (tip == "C")
+			Vehicul* v = new VehiculCarburant();
+			in >> *v;
+			obj.vehiculeCumparate.push_back(v);
+		}
+		else
+			if (tip == "H")
 			{
-				Vehicul* v = new VehiculCarburant();
+				Vehicul* v = new VehiculHibrid();
 				in >> *v;
 				obj.vehiculeCumparate.push_back(v);
-				introducereTip = true;
 			}
 			else
-				if (tip == "H")
-				{
-					Vehicul* v = new VehiculHibrid();
-					in >> *v;
-					obj.vehiculeCumparate.push_back(v);
-					introducereTip = true;
-				}
-				else
-				{
-					//throw "Tip vehicul invalid!";
-					cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
-				}
-		}
-	}
-	cout << "Plata ramasa: ";
-	in >> obj.plataRamasa;
+			{
+				// ?
+				throw "Tip vehicul invalid!";
+			}
 
-	obj.istoricPlati.clear();
+		//	bool introducereTip = false;
+		//	while (introducereTip == false)
+		//	{
+		//		getline(in, tip);
+		//		if (tip == "C")
+		//		{
+		//			Vehicul* v = new VehiculCarburant();
+		//			in >> *v;
+		//			obj.vehiculeCumparate.push_back(v);
+		//			introducereTip = true;
+		//		}
+		//		else
+		//			if (tip == "H")
+		//			{
+		//				Vehicul* v = new VehiculHibrid();
+		//				in >> *v;
+		//				obj.vehiculeCumparate.push_back(v);
+		//				introducereTip = true;
+		//			}
+		//			else
+		//			{
+		//				//throw "Tip vehicul invalid!";
+		//				cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
+		//			}
+		//	}
+		//}
 
-	cout << "Istoric plati:\n";
-	cout << "Numar inserari in istoric plati: ";
-	in >> index;
-	if (index)
-	{
-		cout << "Data si suma platita, separate printr-un spatiu:\n";
-		string data;
-		double suma;
-		for (int i = 0; i < index; i++)
+		cout << "Plata ramasa: ";
+		in >> obj.plataRamasa;
+
+		obj.istoricPlati.clear();
+
+		cout << "Istoric plati:\n";
+		cout << "Numar inserari in istoric plati: ";
+		in >> index;
+		if (index)
 		{
-			in >> data >> suma;
-			obj.istoricPlati.insert({ data, suma });
+			cout << "Data si suma platita, separate printr-un spatiu:\n";
+			string data;
+			double suma;
+			for (int i = 0; i < index; i++)
+			{
+				in >> data >> suma;
+				obj.istoricPlati.insert({ data, suma });
+			}
 		}
-	}
-	return in;
+		return in;
 }
+
 
 // OPERATORUL <<
 ostream& operator <<(ostream& out, const Client& obj)
@@ -836,33 +1043,55 @@ istream& operator >>(istream& in, Showroom& obj)
 	{
 		cout << "\nVehiculul " << i + 1 << ":\n";
 		cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
-		bool introducereTip = false;
 		string tip;
 		cin.get();
-		while (introducereTip == false)
+		getline(in, tip);
+		if (tip == "C")
 		{
-			getline(in, tip);
-			if (tip == "C")
+			Vehicul* v = new VehiculCarburant();
+			in >> *v;
+			obj.vehiculeDisponibile.push_back(v);
+		}
+		else
+			if (tip == "H")
 			{
-				Vehicul* v = new VehiculCarburant();
+				Vehicul* v = new VehiculHibrid();
 				in >> *v;
 				obj.vehiculeDisponibile.push_back(v);
-				introducereTip = true;
 			}
 			else
-				if (tip == "H")
-				{
-					Vehicul* v = new VehiculHibrid();
-					in >> *v;
-					obj.vehiculeDisponibile.push_back(v);
-					introducereTip = true;
-				}
-				else
-				{
-					//throw "Tip vehicul invalid!";
-					cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
-				}
-		}
+			{
+				// ?
+				throw "Tip vehicul invalid!";
+			}
+
+
+		// ?
+		//bool introducereTip = false;
+		//while (introducereTip == false)
+		//{
+		//	getline(in, tip);
+		//	if (tip == "C")
+		//	{
+		//		Vehicul* v = new VehiculCarburant();
+		//		in >> *v;
+		//		obj.vehiculeDisponibile.push_back(v);
+		//		introducereTip = true;
+		//	}
+		//	else
+		//		if (tip == "H")
+		//		{
+		//			Vehicul* v = new VehiculHibrid();
+		//			in >> *v;
+		//			obj.vehiculeDisponibile.push_back(v);
+		//			introducereTip = true;
+		//		}
+		//		else
+		//		{
+		//			//throw "Tip vehicul invalid!";
+		//			cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
+		//		}
+		//}
 	}
 	return in;
 }
@@ -987,33 +1216,56 @@ istream& operator >> (istream& in, Tranzactie& obj)
 	in >> obj.client;
 	cout << "Vehiculul cumparat:\n";
 	cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
-	bool introducereTip = false;
 	string tip;
 	cin.get();
-	while (introducereTip == false)
+	getline(in, tip);
+	if (tip == "C")
 	{
-		getline(in, tip);
-		if (tip == "C")
+		Vehicul* v = new VehiculCarburant();
+		in >> *v;
+		obj.vehiculCumparat = v;
+	}
+	else
+		if (tip == "H")
 		{
-			Vehicul* v = new VehiculCarburant();
+			Vehicul* v = new VehiculHibrid();
 			in >> *v;
 			obj.vehiculCumparat = v;
-			introducereTip = true;
 		}
 		else
-			if (tip == "H")
-			{
-				Vehicul* v = new VehiculHibrid();
-				in >> *v;
-				obj.vehiculCumparat = v;
-				introducereTip = true;
-			}
-			else
-			{
-				//throw "Tip vehicul invalid!";
-				cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
-			}
-	}
+		{
+			// ?
+			throw "Tip vehicul invalid!";
+		}
+
+
+	// ?
+	//bool introducereTip = false;
+	//while (introducereTip == false)
+	//{
+	//	getline(in, tip);
+	//	if (tip == "C")
+	//	{
+	//		Vehicul* v = new VehiculCarburant();
+	//		in >> *v;
+	//		obj.vehiculCumparat = v;
+	//		introducereTip = true;
+	//	}
+	//	else
+	//		if (tip == "H")
+	//		{
+	//			Vehicul* v = new VehiculHibrid();
+	//			in >> *v;
+	//			obj.vehiculCumparat = v;
+	//			introducereTip = true;
+	//		}
+	//		else
+	//		{
+	//			//throw "Tip vehicul invalid!";
+	//			cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
+	//		}
+	//}
+
 	cout << "Suma platita: ";
 	in >> obj.sumaPlatita;
 	return in;
@@ -1028,6 +1280,66 @@ ostream& operator <<(ostream& out, const Tranzactie& obj)
 	out << "Suma platita: " << obj.sumaPlatita << "\n";
 	return out;
 }
+
+// --------- CLASA SINGLETON ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class Singleton
+{
+	static Singleton* instance;
+	
+	vector <Tranzactie*> tranzactii;
+	vector <Showroom*> showroomuri;
+	vector <Client*> clienti;
+	vector <Vehicul*> vehicule;
+	
+public:
+
+	Singleton(const Singleton&) = delete;
+	Singleton& operator=(const Singleton&) = delete;
+
+	Singleton() = default;
+
+	static Singleton* getInstance()
+	{
+		if (Singleton::instance != NULL)
+			return Singleton::instance;
+		else
+		{
+			instance = new Singleton();
+			return instance;
+		}
+	}
+	
+	void adaugareTranzactie(Tranzactie* obj)
+	{
+		tranzactii.push_back(obj);
+	}
+
+	void adaugareShowroom(Showroom* obj)
+	{
+		showroomuri.push_back(obj);
+	}
+
+	void adaugareClient(Client* obj)
+	{
+		clienti.push_back(obj);
+	}
+
+	void adaugareVehicul(Vehicul* obj)
+	{
+		vehicule.push_back(obj);
+	}
+
+	template <class T>
+	T createObject()
+	{
+		return T();
+	}
+	
+
+};
+
+Singleton* Singleton::instance = NULL;
 
 int Vehicul::nrVehicule = 0;
 int Tranzactie::nrTranzactii = 0;
