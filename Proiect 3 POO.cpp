@@ -100,7 +100,33 @@ public:
 	// SET PRET
 	void setPret(double pret);
 
+	// SET MARCA
+	void setMarca(string marca);
+
+	// SET MODEL
+	void setModel(string model);
+
+	// SET AN FABRICATIE
+	void setAnFabricatie(int anFabricatie);
+
+	// INSERARE IN ISTORIC RULAJ
+	void inserareIstoricRulaj(string data, int rulaj);
 	
+	// INSERARE DOTARE
+	void inserareDotare(string dotare);
+	
+	// GET MARCA
+	string getMarca() const
+	{
+		return marca;
+	}
+
+	// GET MODEL
+	string getModel() const
+	{
+		return model;
+	}
+
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -254,6 +280,37 @@ void Vehicul::setPret(double pret)
 	this->pret = pret;
 }
 
+// SET MARCA
+void Vehicul::setMarca(string marca)
+{
+	this->marca = marca;
+}
+
+// SET MODEL
+void Vehicul::setModel(string model)
+{
+	this->model = model;
+}
+
+// SET AN FABRICATIE
+void Vehicul::setAnFabricatie(int anFabricatie)
+{
+	this->anFabricatie = anFabricatie;
+}
+
+// INSERARE IN ISTORIC RULAJ
+void Vehicul::inserareIstoricRulaj(string data, int rulaj)
+{
+	istoricRulaj.insert({ data, rulaj });
+}
+
+// INSERARE DOTARE
+void Vehicul::inserareDotare(string dotare)
+{
+	dotari.insert(dotare);
+}
+
+
 
 // --------- CLASA VEHICULCARBURANT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -296,6 +353,11 @@ public:
 	// FUNCTIE CLONE
 	Vehicul* clone() const override;
 
+	// SET TIP CARBURANT
+	void setTipCarburant(string tipCarburant);
+
+	// SET CONSUM
+	void setConsum(double consum);
 	
 };
 
@@ -378,7 +440,17 @@ Vehicul* VehiculCarburant::clone() const
 	return new VehiculCarburant(*this);
 }
 
+// SET TIP CARBURANT
+void VehiculCarburant::setTipCarburant(string tipCarburant)
+{
+	this->tipCarburant = tipCarburant;
+}
 
+// SET CONSUM
+void VehiculCarburant::setConsum(double consum)
+{
+	this->consum = consum;
+}
 
 // --------- CLASA VEHICULHIBRID ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -419,6 +491,15 @@ public:
 	
 	// FUNCTIE CLONE
 	Vehicul* clone() const override;
+
+	// SET AUTONOMIE ELECTRIC PLUG-IN
+	void setAutonomieElectric(double autonomieElectricPlugIn);
+
+	// SET TIMP INCARCARE PLUG-IN
+	void setTimpIncarcare(double timpIncarcarePlugIn);
+
+	// SET TIP HIBRID
+	void setTipHibrid(char tipHibrid);
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -438,6 +519,7 @@ VehiculHibrid::VehiculHibrid(string marca, string model, int anFabricatie, int n
 	else
 		if (tipHibrid != 'P')
 		{
+			// ?
 			throw "Tip hibrid invalid!";
 		}
 }
@@ -556,6 +638,44 @@ Vehicul* VehiculHibrid::clone() const
 	return new VehiculHibrid(*this);
 }
 
+// SET AUTONOMIE ELECTRIC PLUG-IN
+void VehiculHibrid::setAutonomieElectric(double autonomieElectricPlugIn)
+{
+	this->autonomieElectricPlugIn = autonomieElectricPlugIn;
+}
+
+// SET TIMP INCARCARE PLUG-IN
+void VehiculHibrid::setTimpIncarcare(double timpIncarcarePlugIn)
+{
+	this->timpIncarcarePlugIn = timpIncarcarePlugIn;
+}
+
+// SET TIP HIBRID
+void VehiculHibrid::setTipHibrid(char tipHibrid)
+{
+	
+	if (tipHibrid == 'M')
+	{
+		this->tipHibrid = tipHibrid;
+		autonomieElectricPlugIn = 0;
+		timpIncarcarePlugIn = 0;
+	}
+	else
+		if (tipHibrid == 'P')
+		{
+			cout << "Autonomie electric (km): ";
+			cin >> autonomieElectricPlugIn;
+			cout << "Timp incarcare (ore): ";
+			cin >> timpIncarcarePlugIn;
+			this->tipHibrid = tipHibrid;
+		}
+		else
+		{
+			// ?
+			throw "Tip hibrid invalid!";
+		}
+}
+
 // --------- CLASA INFOVEHICUL ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 template <class T = Vehicul>
@@ -563,25 +683,25 @@ class InfoVehicul
 {
 public:
 
-	template <class T>
-	void info(const T obj)
+	template <class t>
+	void info(t obj)
 	{
-		cout << "INFORMATII VEHICUL:\n\nUn vehicul este o masina sau un mijloc de transport care permite oamenilor sa se deplaseze de la un loc la altul.\nAcestea pot fi autoturisme, camioane, autobuze, motociclete, biciclete sau chiar nave si avioane.\nVehiculele sunt esentiale pentru mobilitatea noastra in societatea moderna, facilitând transportul de persoane si bunuri.\n";
+		cout << "\nInformatii vehicul:\n\nUn vehicul este o masina sau un mijloc de transport care permite oamenilor sa se deplaseze de la un loc la altul.\nCcestea pot fi autoturisme, camioane, autobuze, motociclete, biciclete sau chiar nave si avioane.\nVehiculele sunt esentiale pentru mobilitatea noastra in societatea moderna, facilitand transportul de persoane si bunuri.\n";
 	}
 
 	template <>
-	void info(const VehiculCarburant obj)
+	void info(VehiculCarburant obj)
 	{
-		cout << "Un vehicul cu carburant utilizeaza combustibili lichizi, precum benzina sau motorina, pentru a functiona.\nAceste tipuri de vehicule sunt echipate cu motoare cu ardere interna care transforma energia chimica a carburantului in energie mecanica,\npropulsând vehiculul pe drumurile publice. Desi exista si vehicule hibride care combina motoare electrice cu motoare cu ardere interna,\ncele cu carburant ramân o optiune populara pentru transportul personal si comercial.\n";
+		cout << "\nUn vehicul cu carburant utilizeaza combustibili lichizi, precum benzina sau motorina, pentru a functiona.\nAceste tipuri de vehicule sunt echipate cu motoare cu ardere interna care transforma energia chimica a carburantului in energie mecanica,\npropulsand vehiculul pe drumurile publice. Desi exista si vehicule hibride care combina motoare electrice cu motoare cu ardere interna,\ncele cu carburant ramân o optiune populara pentru transportul personal si comercial.\n";
 		cout << obj;
 		cout << "Valoarea reala a vehiculului: " << obj.valoareaRealaVehicul() << "\n";
 		cout << "Costul folosirii si intretinerii vehiculului: " << obj.costFolosireSiIntretinere() << "\n";
 	}
 
 	template <>
-	void info(const VehiculHibrid obj)
+	void info(VehiculHibrid obj)
 	{
-		cout << "Un vehicul hibrid este un vehicul care utilizeaza doua sau mai multe surse de energie pentru a functiona.\nAcestea includ motoare electrice, motoare cu ardere interna si alte surse de energie regenerabila, precum energia solara sau hidrogenul.\nVehiculele hibride sunt o optiune populara pentru cei care doresc sa reduca emisiile de gaze cu efect de sera si sa economiseasca combustibil.\n";
+		cout << "\nUn vehicul hibrid este un vehicul care utilizeaza doua sau mai multe surse de energie pentru a functiona.\nAcestea includ motoare electrice, motoare cu ardere interna si alte surse de energie regenerabila, precum energia solara sau hidrogenul.\nVehiculele hibride sunt o optiune populara pentru cei care doresc sa reduca emisiile de gaze cu efect de sera si sa economiseasca combustibil.\n";
 		cout << "In showroom-urile noastre se gasesc vehicule hibride de tipul plug-in si mild.\nPlug-in reprezinta vehiculele hibride care pot fi incarcate la priza si pot merge doar pe baza motorului electric,\nin timp ce mild hibridele sunt echipate cu motoare electrice care asista motoarele cu ardere interna pentru a reduce consumul de combustibil.\nAstfel, vehiculele plug-in beneficiaza si de specificatiile timp incarcare si autonomie electric.\n";
 		cout << obj;
 		cout << "Valoarea reala a vehiculului: " << obj.valoareaRealaVehicul() << "\n";
@@ -591,167 +711,167 @@ public:
 
 // --------- CLASA COLECTIEVEHICULE ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-template <class T = Vehicul>
-class ColectieVehicule
-{
-	vector <T*> vehicule;
-
-public:
-
-	// CONSTRUCTOR FARA PARAMETRI
-	ColectieVehicule();
-
-	// CONSTRUCTOR CU PARAMETRI
-	ColectieVehicule(vector <T*>);
-
-	// COPY CONSTRUCTOR
-	ColectieVehicule(const ColectieVehicule&);
-
-	// OPERATORUL =
-	ColectieVehicule& operator=(const ColectieVehicule&);
-
-	// DESTRUCTOR
-	~ColectieVehicule();
-
-	// OPERATORUL >>
-	friend istream& operator >>(istream&, ColectieVehicule&);
-
-	// OPERATORUL <<
-	friend ostream& operator <<(ostream&, const ColectieVehicule&);
-
-	// FUNCTIE ADAUGARE VEHICUL
-	void adaugareVehicul(T*);
-
-	// FUNCTIE STERGERE VEHICUL
-	void stergereVehicul(int);
-};
-
-// CONSTRUCTOR FARA PARAMETRI
-template <class T>
-ColectieVehicule<T>::ColectieVehicule() : vehicule() {}
-
-// CONSTRUCTOR CU PARAMETRI
-template <class T>
-ColectieVehicule<T>::ColectieVehicule(vector <T*> vehicule) : vehicule(vehicule) {}
-
-// COPY CONSTRUCTOR
-template <class T>
-ColectieVehicule<T>::ColectieVehicule(const ColectieVehicule& obj)
-{
-	this->vehicule.clear();
-	for (T* v : obj.vehicule)
-	{
-		this->vehicule.push_back(v->clone());
-	}
-}
-
-// OPERATORUL =
-template <class T>
-ColectieVehicule<T>& ColectieVehicule<T>::operator=(const ColectieVehicule& obj)
-{
-	if (this != &obj)
-	{
-		for (T* v : this->vehicule)
-		{
-			delete v;
-		}
-		this->vehicule.clear();
-		for (T* v : obj.vehicule)
-		{
-			this->vehicule.push_back(v->clone());
-		}
-	}
-	return *this;
-}
-
-// DESTRUCTOR
-template <class T>
-ColectieVehicule<T>::~ColectieVehicule()
-{
-	for (T* v : vehicule)
-	{
-		delete v;
-	}
-	vehicule.clear();
-}
-
-// OPERATORUL >>
-template <class T>
-istream& operator >>(istream& in, ColectieVehicule<T>& obj)
-{
-	int index = 0;
-
-	cout << "Numar vehicule: ";
-	in >> index;
-	obj.vehicule.clear();
-	for (int i = 0; i < index; i++)
-	{
-		cout << "\nVehiculul " << i + 1 << ":\n";
-		cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
-		bool introducereTip = false;
-		string tip;
-		in.get();
-		while (introducereTip == false)
-		{
-			getline(in, tip);
-			if (tip == "C")
-			{
-				T* v = new VehiculCarburant();
-				in >> *v;
-				obj.vehicule.push_back(v);
-				introducereTip = true;
-			}
-			else
-				if (tip == "H")
-				{
-					T* v = new VehiculHibrid();
-					in >> *v;
-					obj.vehicule.push_back(v);
-					introducereTip = true;
-				}
-				else
-				{
-					cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
-				}
-		}
-	}
-	return in;
-}
-
-// OPERATORUL <<
-template <class T>
-ostream& operator <<(ostream& out, const ColectieVehicule<T>& obj)
-{
-	int index = 1;
-
-	out << "\nNumar vehicule: " << obj.vehicule.size() << "\n";
-	for (T* v : obj.vehicule)
-	{
-		out << "\nVehiculul " << index++ << ":\n";
-		out << *v;
-	}
-	return out;
-}
-
-// FUNCTIE ADAUGARE VEHICUL
-template <class T>
-void ColectieVehicule<T>::adaugareVehicul(T* v)
-{
-	vehicule.push_back(v);
-}
-
-// FUNCTIE STERGERE VEHICUL
-template <class T>
-void ColectieVehicule<T>::stergereVehicul(int index)
-{
-	if (index < 0 || index >= vehicule.size())
-	{
-		cout << "Index invalid!\n";
-		return;
-	}
-	delete vehicule[index];
-	vehicule.erase(vehicule.begin() + index);
-}
+//template <class T = Vehicul>
+//class ColectieVehicule
+//{
+//	vector <T*> vehicule;
+//
+//public:
+//
+//	// CONSTRUCTOR FARA PARAMETRI
+//	ColectieVehicule();
+//
+//	// CONSTRUCTOR CU PARAMETRI
+//	ColectieVehicule(vector <T*>);
+//
+//	// COPY CONSTRUCTOR
+//	ColectieVehicule(const ColectieVehicule&);
+//
+//	// OPERATORUL =
+//	ColectieVehicule& operator=(const ColectieVehicule&);
+//
+//	// DESTRUCTOR
+//	~ColectieVehicule();
+//
+//	// OPERATORUL >>
+//	friend istream& operator >>(istream&, ColectieVehicule&);
+//
+//	// OPERATORUL <<
+//	friend ostream& operator <<(ostream&, const ColectieVehicule&);
+//
+//	// FUNCTIE ADAUGARE VEHICUL
+//	void adaugareVehicul(T*);
+//
+//	// FUNCTIE STERGERE VEHICUL
+//	void stergereVehicul(int);
+//};
+//
+//// CONSTRUCTOR FARA PARAMETRI
+//template <class T>
+//ColectieVehicule<T>::ColectieVehicule() : vehicule() {}
+//
+//// CONSTRUCTOR CU PARAMETRI
+//template <class T>
+//ColectieVehicule<T>::ColectieVehicule(vector <T*> vehicule) : vehicule(vehicule) {}
+//
+//// COPY CONSTRUCTOR
+//template <class T>
+//ColectieVehicule<T>::ColectieVehicule(const ColectieVehicule& obj)
+//{
+//	this->vehicule.clear();
+//	for (T* v : obj.vehicule)
+//	{
+//		this->vehicule.push_back(v->clone());
+//	}
+//}
+//
+//// OPERATORUL =
+//template <class T>
+//ColectieVehicule<T>& ColectieVehicule<T>::operator=(const ColectieVehicule& obj)
+//{
+//	if (this != &obj)
+//	{
+//		for (T* v : this->vehicule)
+//		{
+//			delete v;
+//		}
+//		this->vehicule.clear();
+//		for (T* v : obj.vehicule)
+//		{
+//			this->vehicule.push_back(v->clone());
+//		}
+//	}
+//	return *this;
+//}
+//
+//// DESTRUCTOR
+//template <class T>
+//ColectieVehicule<T>::~ColectieVehicule()
+//{
+//	for (T* v : vehicule)
+//	{
+//		delete v;
+//	}
+//	vehicule.clear();
+//}
+//
+//// OPERATORUL >>
+//template <class T>
+//istream& operator >>(istream& in, ColectieVehicule<T>& obj)
+//{
+//	int index = 0;
+//
+//	cout << "Numar vehicule: ";
+//	in >> index;
+//	obj.vehicule.clear();
+//	for (int i = 0; i < index; i++)
+//	{
+//		cout << "\nVehiculul " << i + 1 << ":\n";
+//		cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
+//		bool introducereTip = false;
+//		string tip;
+//		in.get();
+//		while (introducereTip == false)
+//		{
+//			getline(in, tip);
+//			if (tip == "C")
+//			{
+//				T* v = new VehiculCarburant();
+//				in >> *v;
+//				obj.vehicule.push_back(v);
+//				introducereTip = true;
+//			}
+//			else
+//				if (tip == "H")
+//				{
+//					T* v = new VehiculHibrid();
+//					in >> *v;
+//					obj.vehicule.push_back(v);
+//					introducereTip = true;
+//				}
+//				else
+//				{
+//					cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
+//				}
+//		}
+//	}
+//	return in;
+//}
+//
+//// OPERATORUL <<
+//template <class T>
+//ostream& operator <<(ostream& out, const ColectieVehicule<T>& obj)
+//{
+//	int index = 1;
+//
+//	out << "\nNumar vehicule: " << obj.vehicule.size() << "\n";
+//	for (T* v : obj.vehicule)
+//	{
+//		out << "\nVehiculul " << index++ << ":\n";
+//		out << *v;
+//	}
+//	return out;
+//}
+//
+//// FUNCTIE ADAUGARE VEHICUL
+//template <class T>
+//void ColectieVehicule<T>::adaugareVehicul(T* v)
+//{
+//	vehicule.push_back(v);
+//}
+//
+//// FUNCTIE STERGERE VEHICUL
+//template <class T>
+//void ColectieVehicule<T>::stergereVehicul(int index)
+//{
+//	if (index < 0 || index >= vehicule.size())
+//	{
+//		cout << "Index invalid!\n";
+//		return;
+//	}
+//	delete vehicule[index];
+//	vehicule.erase(vehicule.begin() + index);
+//}
 
 
 // --------- CLASA CLIENT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -933,11 +1053,14 @@ ostream& operator <<(ostream& out, const Client& obj)
 
 	out << "\nNume: " << obj.nume << "\n";
 	out << "Numar vehicule cumparate: " << obj.nrVehiculeCumparate << "\n";
-	out << "Vehicule cumparate:\n";
-	for (int i = 0; i < obj.nrVehiculeCumparate; i++)
+	if (obj.vehiculeCumparate.size())
 	{
-		out << "\nVehiculul " << i + 1 << ":\n";
-		out << *obj.vehiculeCumparate[i];
+		out << "Vehicule cumparate:\n";
+		for (int i = 0; i < obj.nrVehiculeCumparate; i++)
+		{
+			out << "\nVehiculul " << i + 1 << ":\n";
+			out << *obj.vehiculeCumparate[i];
+		}
 	}
 	out << "\nPlata ramasa: " << obj.plataRamasa << "\n";
 	out << "Istoric plati:\n";
@@ -1278,6 +1401,7 @@ ostream& operator <<(ostream& out, const Tranzactie& obj)
 	out << "\nID tranzactie: " << obj.idTranzactie << "\n";
 	out << "Clientul:\n" << obj.client;
 	out << "Vehiculul cumparat:\n" << *obj.vehiculCumparat;
+
 	out << "Suma platita: " << obj.sumaPlatita << "\n";
 	return out;
 }
@@ -1332,6 +1456,16 @@ public:
 	template <>
 	void modificareObject(Vehicul*& obj);
 
+	// ADAUGARE OBIECTE DEJA CREATE IN VECTORII MENIULUI
+	void adaugareObiect(Tranzactie obj);
+
+	void adaugareObiect(Showroom obj);
+
+	void adaugareObiect(Client obj);
+
+	// ADAUGARE OBIECTE DEJA CREATE IN VECTORII MENIULUI VEHICUL*
+	void adaugareObiect(Vehicul*);
+
 	// START MENU
 	void startMenu();
 };
@@ -1379,7 +1513,10 @@ Vehicul* Singleton::creareObject()
 		else
 		{
 			// ?
+			Vehicul* exceptie = new Vehicul();
+			return exceptie;
 			throw "Tip vehicul invalid!";
+			
 		}
 	return obj;
 }
@@ -1409,7 +1546,272 @@ void Singleton::modificareObject(T& obj)
 template <>
 void Singleton::modificareObject(Vehicul*& obj)
 {
-	// de completat
+	if (typeid(*obj) == typeid(VehiculCarburant))
+	{
+		VehiculCarburant* objCarburant = dynamic_cast<VehiculCarburant*>(obj);
+		obj = dynamic_cast<VehiculCarburant*>(obj);
+		int k = 1;
+		while (k == 1)
+		{
+			int comanda;
+			cout << "\n1. Modificare marca\n";
+			cout << "2. Modificare model\n";
+			cout << "3. Modificare an fabricatie\n";
+			cout << "4. Inserare informatie in istoric rulaj\n";
+			cout << "5. Inserare informatie in dotari\n";
+			cout << "6. Modificare pret\n";
+			cout << "7. Modificare tip carburant\n";
+			cout << "8. Modificare consum\n";
+			cout << "\n9. Iesire din submeniu\n";
+			cout << endl << "> ";
+			cin >> comanda;
+			switch (comanda)
+			{
+
+			case 1:
+			{
+				string marca;
+				cout << "Marca noua: ";
+				cin.get();
+				getline(cin, marca);
+				objCarburant->setMarca(marca);
+				break;
+			}
+			case 2:
+			{
+				string model;
+				cout << "Model nou: ";
+				cin.get();
+				getline(cin, model);
+				objCarburant->setModel(model);
+				break;
+			}
+			case 3:
+			{
+				int anFabricatie;
+				cout << "An fabricatie nou: ";
+				cin >> anFabricatie;
+				objCarburant->setAnFabricatie(anFabricatie);
+				break;
+			}
+			case 4:
+			{
+				string data;
+				double rulaj;
+				cout << "Data si rulajul, separate printr-un spatiu: ";
+				cin >> data >> rulaj;
+				objCarburant->inserareIstoricRulaj(data, rulaj);
+				break;
+			}
+			case 5:
+			{
+				string dotare;
+				cout << "Dotare noua: ";
+				cin.get();
+				getline(cin, dotare);
+				objCarburant->inserareDotare(dotare);
+				break;
+			}
+			case 6:
+			{
+				double pret;
+				cout << "Pret nou: ";
+				cin >> pret;
+				objCarburant->setPret(pret);
+				break;
+			}
+			case 7:
+			{
+				string tipCarburant;
+				cout << "Tip carburant nou: ";
+				cin.get();
+				getline(cin, tipCarburant);
+				objCarburant->setTipCarburant(tipCarburant);
+				break;
+			}
+			case 8:
+			{
+				double consum;
+				cout << "Consum nou: ";
+				cin >> consum;
+				objCarburant->setConsum(consum);
+				break;
+			}
+			case 9:
+			{
+
+				k = 0;
+				break;
+			}
+			default:
+			{
+				cout << "\nComanda invalida.\n";
+				break;
+			}
+
+			}
+
+		}
+	}
+	else
+		if (typeid(*obj) == typeid(VehiculHibrid))
+		{
+			VehiculHibrid* objHibrid = dynamic_cast<VehiculHibrid*>(obj);
+			obj = dynamic_cast<VehiculHibrid*>(obj);
+			int k = 1;
+			while (k == 1)
+			{
+				int comanda;
+				cout << "\n1. Modificare marca\n";
+				cout << "2. Modificare model\n";
+				cout << "3. Modificare an fabricatie\n";
+				cout << "4. Inserare informatie in istoric rulaj\n";
+				cout << "5. Inserare informatie in dotari\n";
+				cout << "6. Modificare pret\n";
+				cout << "7. Modificare tip carburant\n";
+				cout << "8. Modificare consum\n";
+				cout << "9. Modificare tip hibrid\n";
+				cout << "10. Modificare autonomie electrica (doar pentru Plug-In Hybrid)\n";
+				cout << "11. Modificare timp incarcare (doar pentru Plug-In Hybrid)\n";
+				cout << "\n12. Iesire din submeniu\n";
+				cout << endl << "> ";
+				cin >> comanda;
+				switch (comanda)
+				{
+
+				case 1:
+				{
+					string marca;
+					cout << "Marca noua: ";
+					cin.get();
+					getline(cin, marca);
+					objHibrid->setMarca(marca);
+					break;
+				}
+				case 2:
+				{
+					string model;
+					cout << "Model nou: ";
+					cin.get();
+					getline(cin, model);
+					objHibrid->setModel(model);
+					break;
+				}
+				case 3:
+				{
+					int anFabricatie;
+					cout << "An fabricatie nou: ";
+					cin >> anFabricatie;
+					objHibrid->setAnFabricatie(anFabricatie);
+					break;
+				}
+				case 4:
+				{
+					string data;
+					double rulaj;
+					cout << "Data si rulajul, separate printr-un spatiu: ";
+					cin >> data >> rulaj;
+					objHibrid->inserareIstoricRulaj(data, rulaj);
+					break;
+				}
+				case 5:
+				{
+					string dotare;
+					cout << "Dotare noua: ";
+					cin.get();
+					getline(cin, dotare);
+					objHibrid->inserareDotare(dotare);
+					break;
+				}
+				case 6:
+				{
+					double pret;
+					cout << "Pret nou: ";
+					cin >> pret;
+					objHibrid->setPret(pret);
+					break;
+				}
+				case 7:
+				{
+					string tipCarburant;
+					cout << "Tip carburant nou: ";
+					cin.get();
+					getline(cin, tipCarburant);
+					objHibrid->setTipCarburant(tipCarburant);
+					break;
+				}
+				case 8:
+				{
+					double consum;
+					cout << "Consum nou: ";
+					cin >> consum;
+					objHibrid->setConsum(consum);
+					break;
+				}
+				case 9:
+				{
+					char tipHibrid;
+					cout << "Tip hibrid nou: ";
+					cin.get();
+					cin >> tipHibrid;
+					objHibrid->setTipHibrid(tipHibrid);
+					break;
+				}
+				case 10:
+				{
+					double autonomieElectrica;
+					cout << "Autonomie electrica noua: ";
+					cin >> autonomieElectrica;
+					objHibrid->setAutonomieElectric(autonomieElectrica);
+					break;
+
+				}
+				case 11:
+				{
+					double timpIncarcare;
+					cout << "Timp incarcare nou: ";
+					cin >> timpIncarcare;
+					objHibrid->setTimpIncarcare(timpIncarcare);
+					break;
+				}
+				case 12:
+				{
+					k = 0;
+					break;
+				}
+				default:
+				{
+					cout << "\nComanda invalida.\n";
+					break;
+				}
+
+				}
+			}
+			
+		}
+}
+
+// ADAUGARE OBIECTE DEJA CREATE IN VECTORII MENIULUI
+void Singleton::adaugareObiect(Tranzactie obj)
+{
+	tranzactii.push_back(obj);
+}
+
+void Singleton::adaugareObiect(Showroom obj)
+{
+	showroomuri.push_back(obj);
+}
+
+void Singleton::adaugareObiect(Client obj)
+{
+	clienti.push_back(obj);
+}
+
+// ADAUGARE OBIECTE DEJA CREATE IN VECTORII MENIULUI VEHICUL*
+void Singleton::adaugareObiect(Vehicul* obj)
+{
+	Vehicul* v = obj->clone();
+	vehicule.push_back(v);
 }
 
 Singleton* Singleton::instance = NULL;
@@ -1465,23 +1867,104 @@ void Singleton::startMenu()
 
 				case 1:
 				{
+					cin.get();
+					Vehicul* v = creareObject<Vehicul*>();
+					adaugareObiect(v);
+					cout << "\nVehiculul a fost adaugat cu succes.\n";
+					break;
 
 				}
 				case 2:
 				{
-
+					int index = 1;
+					for (Vehicul* v : vehicule)
+					{
+						cout << "\n\nVehiculul " << index++ << ":\n";
+						if(typeid(*v) == typeid(VehiculCarburant))
+							printObject(*(dynamic_cast<VehiculCarburant*>(v)));
+						else
+							if (typeid(*v) == typeid(VehiculHibrid))
+								printObject(*(dynamic_cast<VehiculHibrid*>(v)));
+							else
+								printObject(v);
+					}
+					break;
 				}
 				case 3:
 				{
+					int index = 1;
+					for (Vehicul* v : vehicule)
+					{
+						cout << "\nVehiculul " << index++ << ":\n";
+						cout << v->getMarca() << " " << v->getModel() << "\n";
+					}
 
+					index = 0;
+					cout << "\nIndexul vehiculului: ";
+					cin >> index;
+					
+					if (typeid(*vehicule[index - 1]) == typeid(VehiculCarburant))
+					{
+						InfoVehicul <VehiculCarburant> infoCarburant;
+                        infoCarburant.info(dynamic_cast<VehiculCarburant&>(*vehicule[index - 1]));
+					}
+					else
+						if (typeid(*vehicule[index - 1]) == typeid(VehiculHibrid))
+						{
+							InfoVehicul <VehiculHibrid> infoHibrid;
+							infoHibrid.info(dynamic_cast<VehiculHibrid&>(*vehicule[index - 1]));
+						}
+						else
+						{
+							int exceptie = 0;
+							InfoVehicul <Vehicul> info;
+							info.info(exceptie);
+						}
 				}
 				case 4:
 				{
+					int index = 1;
+					for (Vehicul* v : vehicule)
+					{
+						cout << "\n\nVehiculul " << index++ << ":\n";
+						if (typeid(*v) == typeid(VehiculCarburant))
+							printObject(*(dynamic_cast<VehiculCarburant*>(v)));
+						else
+							if (typeid(*v) == typeid(VehiculHibrid))
+								printObject(*(dynamic_cast<VehiculHibrid*>(v)));
+							else
+								printObject(v);
+					}
 
+					index = 0;
+					cout << "\nIndexul vehiculului de sters: ";
+					cin >> index;
+					delete vehicule[index - 1];
+					vehicule.erase(vehicule.begin() + index - 1);
+					cout << "\nVehiculul a fost sters cu succes.\n";
+					break;
 				}
 				case 5:
 				{
+					int index = 1;
+					for (Vehicul* v : vehicule)
+					{
+						cout << "\n\nVehiculul " << index++ << ":\n";
+						if (typeid(*v) == typeid(VehiculCarburant))
+							printObject(*(dynamic_cast<VehiculCarburant*>(v)));
+						else
+							if (typeid(*v) == typeid(VehiculHibrid))
+								printObject(*(dynamic_cast<VehiculHibrid*>(v)));
+							else
+								printObject(v);
+					}
 
+					index = 0;
+					cout << "\nIndexul vehiculului de modificat: ";
+					cin >> index;
+					modificareObject(vehicule[index - 1]);
+					cout << "\nVehiculul a fost modificat cu succes.\n";
+					break;
 				}
 				case 6:
 				{
@@ -1681,7 +2164,43 @@ int Tranzactie::nrTranzactii = 0;
 
 int main()
 {
+	
+	map<string, int> istoricRulaj1;
+	istoricRulaj1["01-01-2017"] = 20000;
+	istoricRulaj1["01-01-2020"] = 50000;
+	set<string> dotari1;
+	dotari1.insert("Aer conditionat");
+	dotari1.insert("Servodirectie");
+	map<string, int> istoricRulaj2;
+	istoricRulaj2["01-01-2020"] = 10000;
+	istoricRulaj2["01-01-2021"] = 30000;
+	set<string> dotari2;
+	dotari2.insert("Aer conditionat");
+	dotari2.insert("Servodirectie");
+	dotari2.insert("Geamuri electrice");
+	VehiculCarburant v1("Dacia", "Logan", 2016, 2, istoricRulaj1, 2, dotari1, 6000, "Benzina", 12.6);
+	VehiculHibrid v2("Toyota", "Prius", 2020, 2, istoricRulaj2, 3, dotari2, 12000, "Benzina", 7.5, 'P', 50, 8);
+	Vehicul* pv1 = v1.clone();
+	Vehicul* pv2 = v2.clone();
+
+	Client c1("Popescu Ion", 0, {}, 0, { {"01-01-2024", 5000}, {"01-02-2024", 5000} });
+	Client c2("Marin Gheorghe", 0, {}, 0, { {"01-01-2024", 1000}, {"01-02-2024", 1000} });
+
+	Showroom s1("Showroom masini", 0, {});
+
+
 	Singleton* s = Singleton::getInstance();
+
+	s->adaugareObiect(pv1);
+	s->adaugareObiect(pv2);
+	s->adaugareObiect(c1);
+	s->adaugareObiect(c2);
+	s->adaugareObiect(s1);
+
+
 	s->startMenu();
+
+	delete pv1;
+	delete pv2;
 	return 0;
 }

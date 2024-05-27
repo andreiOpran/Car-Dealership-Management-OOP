@@ -15,9 +15,6 @@ executarea codului (codul trebuie sa arunce cel putin 6 exceptii dintre care
 minim 3 diferite).
 
 
-6. Exemplificarea conceptelor de upcasting si downcasting
-(trebuie sa foloseasca si dynamic_cast)
-
 
 
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -32,6 +29,8 @@ X - set
 X - list
 X - map
 
+6. Exemplificarea conceptelor de upcasting si downcasting
+(trebuie sa foloseasca si dynamic_cast)
 
 7. Exemplificarea conceptului de mostenire pana la nepot.
 (Parint->Copil->Nepot)
