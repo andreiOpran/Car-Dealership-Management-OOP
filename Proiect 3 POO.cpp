@@ -874,6 +874,7 @@ istream& operator>>(istream& in, Client& obj)
 				// ?
 				throw "Tip vehicul invalid!";
 			}
+	}
 
 		//	bool introducereTip = false;
 		//	while (introducereTip == false)
