@@ -1288,69 +1288,400 @@ class Singleton
 {
 	static Singleton* instance;
 	
-	vector <Tranzactie*> tranzactii;
-	vector <Showroom*> showroomuri;
-	vector <Client*> clienti;
+	vector <Tranzactie> tranzactii;
+	vector <Showroom> showroomuri;
+	vector <Client> clienti;
 	vector <Vehicul*> vehicule;
 	
 public:
 
-	Singleton(const Singleton&) = delete;
-	Singleton& operator=(const Singleton&) = delete;
-
+	// CONSTRUCTOR FARA PARAMETRI
 	Singleton() = default;
 
-	static Singleton* getInstance()
-	{
-		if (Singleton::instance != NULL)
-			return Singleton::instance;
-		else
-		{
-			instance = new Singleton();
-			return instance;
-		}
-	}
+	// COPY CONSTRUCTOR
+	Singleton(const Singleton&) = delete;
+
+	// OPERATORUL =
+	Singleton& operator=(const Singleton&) = delete;
+
+
+	// GET INSTANCE
+	static Singleton* getInstance();
 	
-	void adaugareTranzactie(Tranzactie* obj)
-	{
-		tranzactii.push_back(obj);
-	}
-
-	void adaugareShowroom(Showroom* obj)
-	{
-		showroomuri.push_back(obj);
-	}
-
-	void adaugareClient(Client* obj)
-	{
-		clienti.push_back(obj);
-	}
-
-	void adaugareVehicul(Vehicul* obj)
-	{
-		vehicule.push_back(obj);
-	}
-
+	// CREARE OBIECTE DIN MENIU
 	template <class T>
-	T createObject()
-	{
-		return T();
-	}
-	
+	T creareObject();
 
+	// CREARE OBIECTE DIN MENIU VEHICUL*
+	template <>
+	Vehicul* creareObject();
+
+	// AFISARE OBIECTE DIN MENIU
+	template <class T>
+	void printObject(const T obj);
+
+	// AFISARE OBIECTE DIN MENIU VEHICUL*
+	template <>
+	void printObject(const Vehicul* obj);
+
+	// MODIFICARE OBIECTE DIN MENIU
+	template <class T>
+	void modificareObject(T& obj);
+
+	// MODIFICARE OBIECTE DIN MENIU VEHICUL*
+	template <>
+	void modificareObject(Vehicul*& obj);
+
+	// START MENU
+	void startMenu();
 };
 
+// GET INSTANCE
+Singleton* Singleton::getInstance()
+{
+	if (Singleton::instance != NULL)
+		return Singleton::instance;
+	else
+	{
+		instance = new Singleton();
+		return instance;
+	}
+}
+
+// CREARE OBIECTE DIN MENIU
+template <class T>
+T Singleton::creareObject()
+{
+	T obj;
+	cin >> obj;
+	return obj;
+}
+
+// CREARE OBIECTE DIN MENIU VEHICUL*
+template <>
+Vehicul* Singleton::creareObject()
+{
+	Vehicul* obj;
+	cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
+	string tip;
+	getline(cin, tip);
+	if (tip == "C")
+	{
+		obj = new VehiculCarburant();
+		cin >> *obj;
+	}
+	else
+		if (tip == "H")
+		{
+			obj = new VehiculHibrid();
+			cin >> *obj;
+		}
+		else
+		{
+			// ?
+			throw "Tip vehicul invalid!";
+		}
+	return obj;
+}
+
+// AFISARE OBIECTE DIN MENIU
+template <class T>
+void Singleton::printObject(const T obj)
+{
+	cout << obj;
+}
+
+// AFISARE OBIECTE DIN MENIU VEHICUL*
+template <>
+void Singleton::printObject(const Vehicul* obj)
+{
+	cout << *obj;
+}
+
+// MODIFICARE OBIECTE DIN MENIU
+template <class T>
+void Singleton::modificareObject(T& obj)
+{
+	// de completat
+}
+
+// MODIFICARE OBIECTE DIN MENIU VEHICUL*
+template <>
+void Singleton::modificareObject(Vehicul*& obj)
+{
+	// de completat
+}
+
 Singleton* Singleton::instance = NULL;
+
+// START MENU
+void Singleton::startMenu()
+{
+	bool okAfisareEndlInceput = true;
+	int k = 1, comanda;
+	while (k == 1)
+	{
+		if (okAfisareEndlInceput == false)
+		{
+			cout << endl;
+			cout << "// ------------------------------------------------------------------------------------------------------------------ //" << endl << endl;
+		}
+		if (okAfisareEndlInceput == true)
+		{
+			cout << "\n// --------------- DEALER AUTO --------------- // \n\n";
+			cout << endl;
+			okAfisareEndlInceput = false;
+		}
+		cout << "1. Intrare in submeniul Modele de vehicule\n";
+		cout << "2. Intrare in submeniul Clienti\n";
+		cout << "3. Intrare in submeniul Showroom\n";
+		cout << "4. Intrare in submeniul Tranzactii\n";
+		cout << "5. Generare tranzactie noua, folosind datele din submeniurile Clienti si Showroom\n";
+		cout << "\n6. Iesire din program\n";
+		cout << endl << "> ";
+		cin >> comanda;
+		switch (comanda)
+		{
+
+		case 1:
+		{
+			int ramaiInVehicul = 1;
+			while (ramaiInVehicul == 1)
+			{
+				int comandaVehicul;
+				cout << endl;
+				cout << "// ------------------------------------------------------------------------------------------------------------------ //";
+				cout << endl << endl;
+				cout << "1. Adaugare model de vehicul\n";
+				cout << "2. Afisare tuturor modelelor de vehicule\n";
+				cout << "3. Afisare detaliata al unui vehicul - detalii motor, valoarea reala, costul de folosire si intretinere\n";
+				cout << "4. Stergere vehicul\n";
+				cout << "5. Modificare model vehicul\n";
+				cout << "\n6. Iesire din submeniul Modele de vehicule\n";
+				cout << endl << "> ";
+				cin >> comandaVehicul;
+				switch (comandaVehicul)
+				{
+
+				case 1:
+				{
+
+				}
+				case 2:
+				{
+
+				}
+				case 3:
+				{
+
+				}
+				case 4:
+				{
+
+				}
+				case 5:
+				{
+
+				}
+				case 6:
+				{
+					ramaiInVehicul = 0;
+					break;
+				}
+				default:
+				{
+					cout << "\nComanda invalida.\n";
+					break;
+				}
+
+				}
+			}
+			break;
+		}
+		case 2:
+		{
+						int ramaiInClient = 1;
+						while (ramaiInClient == 1)
+						{
+				int comandaClient;
+				cout << endl;
+				cout << "// ------------------------------------------------------------------------------------------------------------------ //";
+				cout << endl << endl;
+				cout << "1. Adaugare client\n";
+				cout << "2. Afisare clienti\n";
+				cout << "3. Stergere client\n";
+				cout << "4. Modificare client\n";
+				cout << "\n5. Iesire din submeniul Clienti\n";
+				cout << endl << "> ";
+				cin >> comandaClient;
+				switch (comandaClient)
+				{
+
+				case 1:
+				{
+
+				}
+				case 2:
+				{
+
+				}
+				case 3:
+				{
+
+				}
+				case 4:
+				{
+
+				}
+				case 5:
+				{
+					ramaiInClient = 0;
+					break;
+				}
+				default:
+				{
+					cout << "\nComanda invalida.\n";
+					break;
+				}
+
+				}
+			}
+			break;
+		}
+		case 3:
+		{
+			int ramaiInShowroom = 1;
+			while (ramaiInShowroom == 1)
+			{
+				int comandaShowroom;
+				cout << endl;
+				cout << "// ------------------------------------------------------------------------------------------------------------------ //";
+				cout << endl << endl;
+				cout << "1. Adaugare showroom\n";
+				cout << "2. Afisare showroomuri\n";
+				cout << "3. Stergere showroom\n";
+				cout << "4. Modificare showroom\n";
+				cout << "5. Majorare pret vehicul\n";
+				cout << "\n6. Iesire din submeniul Showroom\n";
+				cout << endl << "> ";
+				cin >> comandaShowroom;
+				switch (comandaShowroom)
+				{
+
+				case 1:
+				{
+
+				}
+				case 2:
+				{
+
+				}
+				case 3:
+				{
+
+				}
+				case 4:
+				{
+
+				}
+				case 5:
+				{
+
+				}
+				case 6:
+				{
+					ramaiInShowroom = 0;
+					break;
+				}
+				default:
+				{
+					cout << "\nComanda invalida.\n";
+					break;
+				}
+
+				}
+			}
+			break;
+		}
+		case 4:
+		{
+			int ramaiInTranzactii = 1;
+			while (ramaiInTranzactii == 1)
+			{
+				int comandaTranzactii;
+				cout << endl;
+				cout << "// ------------------------------------------------------------------------------------------------------------------ //";
+				cout << endl << endl;
+				cout << "1. Adaugare tranzactie\n";
+				cout << "2. Afisare tranzactii\n";
+				cout << "3. Stergere tranzactie\n";
+				cout << "4. Modificare tranzactie\n";
+				cout << "\n5. Iesire din submeniul Tranzactii\n";
+				cout << endl << "> ";
+				cin >> comandaTranzactii;
+				switch (comandaTranzactii)
+				{
+
+				case 1:
+				{
+
+				}
+				case 2:
+				{
+
+				}
+				case 3:
+				{
+
+				}
+				case 4:
+				{
+
+				}
+				case 5:
+				{
+					ramaiInTranzactii = 0;
+					break;
+				}
+				default:
+				{
+					cout << "\nComanda invalida.\n";
+					break;
+				}
+
+				}
+			}
+			break;
+		}
+		case 5:
+		{
+			// de completat
+		}
+		case 6:
+		{
+			cout << "\nIesirea din program a fost finalizata cu succes. La revedere!\n";
+			k = 0;
+			break;
+		}
+		default:
+		{
+			cout << "\nComanda invalida.\n";
+			break;
+		}
+
+		break;
+		}
+
+	}
+}
+
 
 int Vehicul::nrVehicule = 0;
 int Tranzactie::nrTranzactii = 0;
 
 int main()
 {
-
-	Client obj;
-	//I info;
-    InfoVehicul<> info;
-    info.info(obj);
+	Singleton* s = Singleton::getInstance();
+	s->startMenu();
 	return 0;
 }
