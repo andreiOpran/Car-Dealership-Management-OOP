@@ -2729,11 +2729,41 @@ void Singleton::startMenu()
 							printObject(c);
 						}
 
-						index = 0;
-						cout << "\nIndexul clientului de sters: ";
-						cin >> index;
-						clienti.erase(clienti.begin() + index - 1);
-						cout << "\nClientul a fost sters cu succes.\n";
+						int comanda;
+
+						while (true)
+						{
+							string comandaStr;
+							cout << "\nIndexul clientului de sters: ";
+							getline(cin, comandaStr);
+							if (comandaStr == "")
+								getline(cin, comandaStr);
+							try
+							{
+								comanda = stoiException(comandaStr);
+								if (comanda < 1 || comanda > clienti.size())
+									throw out_of_range("\nNumarul introdus nu corespunde niciunui client!\n");
+								else
+									if (to_string(comanda) != comandaStr)
+										throw myEx;
+								clienti.erase(clienti.begin() + comanda - 1);
+								cout << "\nClientul a fost sters cu succes.\n";
+								break;
+							}
+							catch (const out_of_range& e)
+							{
+								cout << e.what();
+								cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << clienti.size() << "].\n";
+							}
+							catch (MyException& e)
+							{
+								cout << e.what();
+							}
+							catch (...)
+							{
+								cout << "\nComanda invalida.\n";
+							}
+						}
 					}
 					else
 						cout << "\nNu exista clienti de sters.\n";
@@ -2750,11 +2780,42 @@ void Singleton::startMenu()
 							printObject(c);
 						}
 
-						index = 0;
-						cout << "\nIndexul clientului de modificat: ";
-						cin >> index;
-						modificareObject(clienti[index - 1]);
-						cout << "\nClientul a fost modificat cu succes.\n";
+						int comanda;
+
+						while (true)
+						{
+							string comandaStr;
+							cout << "\nIndexul clientului de modificat: ";
+							getline(cin, comandaStr);
+							if (comandaStr == "")
+								getline(cin, comandaStr);
+							try
+							{
+								comanda = stoiException(comandaStr);
+								if (comanda < 1 || comanda > clienti.size())
+									throw out_of_range("\nNumarul introdus nu corespunde niciunui client!\n");
+								else
+									if (to_string(comanda) != comandaStr)
+										throw myEx;
+								modificareObject(clienti[comanda - 1]);
+								cout << "\nClientul a fost modificat cu succes.\n";
+								break;
+							}
+							catch (const out_of_range& e)
+							{
+								cout << e.what();
+								cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << clienti.size() << "].\n";
+							}
+							catch (MyException& e)
+							{
+								cout << e.what();
+							}
+							catch (...)
+							{
+								cout << "\nComanda invalida.\n";
+							}
+						}
+						
 					}
 					else
 						cout << "\nNu exista clienti de modificat.\n";
