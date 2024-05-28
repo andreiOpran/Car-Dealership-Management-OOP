@@ -926,7 +926,7 @@ public:
 	void inserareIstoricPlati(string data, double suma);
 
 	// GET VEHICULE CUMPARATE
-	vector <Vehicul*> getVehiculeCumparate() const;
+	vector <Vehicul*> getVehicule() const;
 
 	// OPERATIA CLIENT + VEHICUL*
 	Client operator+(Vehicul*);
@@ -1123,7 +1123,7 @@ void Client::inserareIstoricPlati(string data, double suma)
 }
 
 // GET VEHICULE CUMPARATE
-vector <Vehicul*> Client::getVehiculeCumparate() const
+vector <Vehicul*> Client::getVehicule() const
 {
 	return vehiculeCumparate;
 }
@@ -1190,7 +1190,7 @@ public:
 	void setNume(string nume);
 
 	// GET VEHICULE DISPONIBILE
-	list <Vehicul*> getVehiculeDisponibile() const;
+	list <Vehicul*> getVehicule() const;
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -1399,7 +1399,7 @@ void Showroom::setNume(string nume)
 }
 
 // GET VEHICULE DISPONIBILE
-list <Vehicul*> Showroom::getVehiculeDisponibile() const
+list <Vehicul*> Showroom::getVehicule() const
 {
 	return vehiculeDisponibile;
 }
@@ -2042,7 +2042,7 @@ void Singleton::modificareObject(Client& obj)
 			cout << "Indexul vehiculului cumparat de modificat: ";
 			cin >> index;
 			
-			vector<Vehicul*> vehiculeObj = obj.getVehiculeCumparate();
+			vector<Vehicul*> vehiculeObj = obj.getVehicule();
 			if (index - 1 < 0 || index - 1 >= vehiculeObj.size())
 			{
 				throw "Index invalid!\n";
@@ -2116,7 +2116,7 @@ void Singleton::modificareObject(Showroom& obj)
 			int index;
 			cout << "Indexul vehiculului de modificat: ";
 			cin >> index;
-			list <Vehicul*> vehiculeObj = obj.getVehiculeDisponibile();
+			list <Vehicul*> vehiculeObj = obj.getVehicule();
 			list<Vehicul*>::iterator it = vehiculeObj.begin();
 			std::advance(it, index - 1);
 			modificareObject(*it);
@@ -2218,6 +2218,19 @@ void Singleton::adaugareObiect(Vehicul* obj)
 {
 	Vehicul* v = obj->clone();
 	vehicule.push_back(v);
+}
+
+// AFISARE VEHICULE DIN SHOWROOM SAU CLIENT
+template <class T = Showroom>
+void afisareVehicule(T obj)
+{
+	auto deAfisat = obj.getVehicule();
+	int index = 1;
+	for (Vehicul* vehicul : deAfisat)
+	{
+		cout << "\nVehiculul " << index++ << ":\n";
+		cout << *vehicul;
+	}
 }
 
 Singleton* Singleton::instance = NULL;
@@ -2616,7 +2629,7 @@ void Singleton::startMenu()
 					cin >> index;
 					cout << "\nVehiculele disponibile in meniu:\n";
 					int indexVehicul = 1;
-					for (Vehicul* v : vehicule)
+					/*for (Vehicul* v : vehicule)
 					{
 						cout << "\n\nVehiculul " << indexVehicul++ << ":\n";
 						if (typeid(*v) == typeid(VehiculCarburant))
@@ -2626,7 +2639,8 @@ void Singleton::startMenu()
 								printObject(*(dynamic_cast<VehiculHibrid*>(v)));
 							else
 								printObject(v);
-					}
+					}*/
+					afisareVehicule(showroomuri[index - 1]);
 					indexVehicul = 0;
 					cout << "\nIndexul vehiculului de adaugat: ";
 					cin >> indexVehicul;
@@ -2754,7 +2768,7 @@ void Singleton::startMenu()
 			cin >> indexShowroom;
 
 			int indexVehicul = 1;
-			list<Vehicul*> vehiculeObj = showroomuri[indexShowroom - 1].getVehiculeDisponibile();
+			/*list<Vehicul*> vehiculeObj = showroomuri[indexShowroom - 1].getVehicule();
 			for (Vehicul* v : vehiculeObj)
 			{
 				cout << "\n\nVehiculul " << indexVehicul++ << ":\n";
@@ -2765,7 +2779,9 @@ void Singleton::startMenu()
 						printObject(*(dynamic_cast<VehiculHibrid*>(v)));
 					else
 						printObject(v);
-			}
+			}*/
+			list<Vehicul*> vehiculeObj = showroomuri[indexShowroom - 1].getVehicule();
+			afisareVehicule(showroomuri[indexShowroom - 1]);
 			if (vehiculeObj.size() == 0)
 			{
 				cout << "\nNu exista vehicule de afisat.\n";
@@ -2855,13 +2871,12 @@ int main()
 	Vehicul* pv1 = v1.clone();
 	Vehicul* pv2 = v2.clone();
 
-	Client c1("Popescu Ion", 0, {}, 0, { {"01-01-2024", 5000}, {"01-02-2024", 5000} });
+	Client c1("Popescu Ion", 0, {}, 0, {{"01-01-2024", 5000}, {"01-02-2024", 5000}});
 	Client c2("Marin Gheorghe", 0, {}, 0, { {"01-01-2024", 1000}, {"01-02-2024", 1000} });
 
 	Showroom s1("Showroom masini", 0, {});
 	s1 = s1 + pv1;
 	s1 = s1 + pv2;
-
 
 	Singleton* s = Singleton::getInstance();
 
