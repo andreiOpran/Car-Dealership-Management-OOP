@@ -1690,10 +1690,11 @@ void Tranzactie::setVehiculCumparat(Vehicul* vehiculCumparat)
 class MyException : public exception 
 {
 public:
-	const char* what() const throw() {
-		return "\nMyException class\n";
+	virtual const char* what() const throw() {
+		return "\nIntrodu doar cifre!\n";
 	}
-} exceptie ;
+} myEx ;
+
 
 // --------- CLASA SINGLETON ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1760,6 +1761,9 @@ public:
 
 	// ADAUGARE OBIECTE DEJA CREATE IN VECTORII MENIULUI VEHICUL*
 	void adaugareObiect(Vehicul*);
+
+	// FUNCTIA STOIEXCEPTION
+	int stoiException(const string&);
 
 	// START MENU
 	void startMenu();
@@ -1859,7 +1863,7 @@ void Singleton::modificareObject(Vehicul*& obj)
 			cout << "7. Modificare tip carburant\n";
 			cout << "8. Modificare consum\n";
 			cout << "\n9. Iesire din submeniu\n";
-			cout << endl << "> ";
+				cout << endl << "> ";
 			cin >> comanda;
 			switch (comanda)
 			{
@@ -2319,6 +2323,26 @@ void afisareVehicule(T obj)
 	}
 }
 
+// FUNCTIA STOIEXCEPTION
+int Singleton::stoiException(const string& sir)
+{
+	try
+	{
+		size_t lastChar;
+		int numar = stoi(sir, &lastChar);
+		if (lastChar != sir.length())
+		{
+			throw invalid_argument("nimic");
+		}
+		return numar;
+	}
+	catch (const invalid_argument& e)
+	{
+		throw myEx;
+		return 0;
+	}
+}
+
 Singleton* Singleton::instance = NULL;
 
 // START MENU
@@ -2345,8 +2369,38 @@ void Singleton::startMenu()
 		cout << "4. Intrare in submeniul Tranzactii\n";
 		cout << "5. Generare tranzactie noua, folosind datele din submeniurile Clienti si Showroom\n";
 		cout << "\n6. Iesire din program\n";
-		cout << endl << "> ";
-		cin >> comanda;
+		
+		while (true)
+		{
+			string comandaStr;
+			cout << endl << "> ";
+			getline(cin, comandaStr);
+			if(comandaStr == "")
+				getline(cin, comandaStr);
+			try
+			{
+				comanda = stoiException(comandaStr);
+				if (comanda < 1 || comanda > 6)
+					throw out_of_range("\nNumarul introdus nu corespune niciunei comenzi!\n");
+				else
+					if (to_string(comanda) != comandaStr)
+						throw myEx;
+				break;
+			}
+			catch (const out_of_range& e)
+			{
+				cout << e.what();
+			}
+			catch (MyException& e)
+			{
+				cout << e.what();
+			}
+			catch (...)
+			{
+				cout << "\nComanda invalida.\n";
+			}
+		}
+
 		switch (comanda)
 
 		{
@@ -2366,14 +2420,43 @@ void Singleton::startMenu()
 				cout << "4. Stergere vehicul\n";
 				cout << "5. Modificare model vehicul\n";
 				cout << "\n6. Iesire din submeniul Modele de vehicule\n";
-				cout << endl << "> ";
-				cin >> comandaVehicul;
+				
+				while (true)
+				{
+					string comandaVehiculStr;
+					cout << endl << "> ";
+					getline(cin, comandaVehiculStr);
+					if (comandaVehiculStr == "")
+						getline(cin, comandaVehiculStr);
+					try
+					{
+						comandaVehicul = stoiException(comandaVehiculStr);
+						if (comandaVehicul < 1 || comandaVehicul > 6)
+							throw out_of_range("\nNumarul introdus nu corespune niciunei comenzi!\n");
+						else
+							if (to_string(comandaVehicul) != comandaVehiculStr)
+								throw myEx;
+						break;
+					}
+					catch (const out_of_range& e)
+					{
+						cout << e.what();
+					}
+					catch (MyException& e)
+					{
+						cout << e.what();
+					}
+					catch (...)
+					{
+						cout << "\nComanda invalida.\n";
+					}
+				}
+
 				switch (comandaVehicul)
 				{
 
 				case 1:
 				{
-					cin.get();
 					Vehicul* v = creareObject<Vehicul*>();
 					adaugareObiect(v);
 					cout << "\nVehiculul a fost adaugat cu succes.\n";
@@ -2513,14 +2596,45 @@ void Singleton::startMenu()
 				cout << "3. Stergere client\n";
 				cout << "4. Modificare client\n";
 				cout << "\n5. Iesire din submeniul Clienti\n";
-				cout << endl << "> ";
-				cin >> comandaClient;
+
+
+				while (true)
+				{
+					string comandaClientStr;
+					cout << endl << "> ";
+					getline(cin, comandaClientStr);
+					if (comandaClientStr == "")
+						getline(cin, comandaClientStr);
+					try
+					{
+						comandaClient = stoiException(comandaClientStr);
+						if (comandaClient < 1 || comandaClient > 5)
+							throw out_of_range("\nNumarul introdus nu corespune niciunei comenzi!\n");
+						else
+							if (to_string(comandaClient) != comandaClientStr)
+								throw myEx;
+						break;
+					}
+					catch (const out_of_range& e)
+					{
+						cout << e.what();
+					}
+					catch (MyException& e)
+					{
+						cout << e.what();
+					}
+					catch (...)
+					{
+						cout << "\nComanda invalida.\n";
+					}
+				}
+
 				switch (comandaClient)
 				{
 
 				case 1:
 				{
-					cin.get();
+					// cin.get();
 					Client c = creareObject<Client>();
 					adaugareObiect(c);
 					//cout << "\nClientul a fost adaugat cu succes.\n";
@@ -2612,8 +2726,38 @@ void Singleton::startMenu()
 				cout << "6. Adaugare vehicul din lista cu modele de vehicule\n";
 				cout << "7. Afisare detaliata a unui showroom - vehicule disponibile, numar de vehicule, valoarea totala a vehiculelor\n";
 				cout << "\n8. Iesire din submeniul Showroom\n";
-				cout << endl << "> ";
-				cin >> comandaShowroom;
+				
+				while (true)
+				{
+					string comandaShowroomStr;
+					cout << endl << "> ";
+					getline(cin, comandaShowroomStr);
+					if (comandaShowroomStr == "")
+						getline(cin, comandaShowroomStr);
+					try
+					{
+						comandaShowroom = stoiException(comandaShowroomStr);
+						if (comandaShowroom < 1 || comandaShowroom > 8)
+							throw out_of_range("\nNumarul introdus nu corespune niciunei comenzi!\n");
+						else
+							if (to_string(comandaShowroom) != comandaShowroomStr)
+								throw myEx;
+						break;
+					}
+					catch (const out_of_range& e)
+					{
+						cout << e.what();
+					}
+					catch (MyException& e)
+					{
+						cout << e.what();
+					}
+					catch (...)
+					{
+						cout << "\nComanda invalida.\n";
+					}
+				}
+
 				switch (comandaShowroom)
 				{
 
@@ -2645,12 +2789,16 @@ void Singleton::startMenu()
 						cout << "\n\nShowroomul " << index++ << ":\n";
 						printObject(s);
 					}
-
-					index = 0;
-					cout << "\nIndexul showroomului de sters: ";
-					cin >> index;
-					showroomuri.erase(showroomuri.begin() + index - 1);
-					cout << "\nShowroomul a fost sters cu succes.\n";
+					if(showroomuri.size() == 0)
+						cout << "\nNu exista showroomuri de sters.\n";
+					else
+					{
+						index = 0;
+						cout << "\nIndexul showroomului de sters: ";
+						cin >> index;
+						showroomuri.erase(showroomuri.begin() + index - 1);
+						cout << "\nShowroomul a fost sters cu succes.\n";
+					}
 					break;
 				}
 				case 4:
@@ -2795,8 +2943,38 @@ void Singleton::startMenu()
 				cout << "3. Stergere tranzactie\n";
 				cout << "4. Modificare tranzactie\n";
 				cout << "\n5. Iesire din submeniul Tranzactii\n";
-				cout << endl << "> ";
-				cin >> comandaTranzactii;
+				
+				while (true)
+				{
+					string comandaTranzactiiStr;
+					cout << endl << "> ";
+					getline(cin, comandaTranzactiiStr);
+					if (comandaTranzactiiStr == "")
+						getline(cin, comandaTranzactiiStr);
+					try
+					{
+						comandaTranzactii = stoiException(comandaTranzactiiStr);
+						if (comandaTranzactii < 1 || comandaTranzactii > 5)
+							throw out_of_range("\nNumarul introdus nu corespune niciunei comenzi!\n");
+						else
+							if (to_string(comandaTranzactii) != comandaTranzactiiStr)
+								throw myEx;
+						break;
+					}
+					catch (const out_of_range& e)
+					{
+						cout << e.what();
+					}
+					catch (MyException& e)
+					{
+						cout << e.what();
+					}
+					catch (...)
+					{
+						cout << "\nComanda invalida.\n";
+					}
+				}
+
 				switch (comandaTranzactii)
 				{
 
@@ -2828,12 +3006,19 @@ void Singleton::startMenu()
 						cout << "\n\nTranzactia " << index++ << ":\n";
 						printObject(*t);
 					}
-
-					index = 0;
-					cout << "\nIndexul tranzactiei de sters: ";
-					cin >> index;
-					tranzactii.erase(tranzactii.begin() + index - 1);
-					cout << "\nTranzactia a fost stearsa cu succes.\n";
+					if (tranzactii.size() == 0)
+					{
+						cout << "\nNu exista tranzactii de sters.\n";
+						break;
+					}
+					else
+					{
+						cout << "\nIndexul tranzactiei de sters: ";
+						cin >> index;
+						tranzactii.erase(tranzactii.begin() + index - 1);
+						cout << "\nTranzactia a fost stearsa cu succes.\n";
+					}
+					
 					break;
 				}
 				case 4:
@@ -3013,8 +3198,6 @@ int main()
 	s->adaugareObiect(s1);
 
 	s->startMenu();
-	
-
 
 	delete pv1;
 	delete pv2;
