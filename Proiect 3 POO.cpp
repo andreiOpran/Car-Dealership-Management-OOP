@@ -1811,11 +1811,7 @@ Vehicul* Singleton::creareObject()
 		}
 		else
 		{
-			// ?
-			Vehicul* exceptie = new Vehicul();
-			return exceptie;
-			throw "Tip vehicul invalid!";
-			
+			throw invalid_argument("\nTip vehicul invalid!\n");
 		}
 	return obj;
 }
@@ -2457,9 +2453,18 @@ void Singleton::startMenu()
 
 				case 1:
 				{
-					Vehicul* v = creareObject<Vehicul*>();
-					adaugareObiect(v);
-					cout << "\nVehiculul a fost adaugat cu succes.\n";
+					Vehicul* v;
+					try
+					{
+						 v = creareObject<Vehicul*>();
+						 adaugareObiect(v);
+						 cout << "\nVehiculul a fost adaugat cu succes.\n";
+					}
+					catch (const invalid_argument& e)
+					{
+						cout << e.what();
+						cout << "Vehiculul nu a fost adaugat.\n";
+					}
 					break;
 
 				}
@@ -2528,13 +2533,44 @@ void Singleton::startMenu()
 								else
 									printObject(v);
 						}
+						int comanda;
 
-						index = 0;
-						cout << "\nIndexul vehiculului de sters: ";
-						cin >> index;
-						delete vehicule[index - 1];
-						vehicule.erase(vehicule.begin() + index - 1);
-						cout << "\nVehiculul a fost sters cu succes.\n";
+						while (true)
+						{
+							string comandaStr;
+							cout << "\nIndexul vehiculului de sters: ";
+							getline(cin, comandaStr);
+							if (comandaStr == "")
+								getline(cin, comandaStr);
+							try
+							{
+								comanda = stoiException(comandaStr);
+								if (comanda < 1 || comanda > vehicule.size())
+									throw out_of_range("\nNumarul introdus nu corespune niciunui vehicul!\n");
+								else
+									if (to_string(comanda) != comandaStr)
+										throw myEx;
+								delete vehicule[comanda - 1];
+								vehicule.erase(vehicule.begin() + comanda - 1);
+								cout << "\nVehiculul a fost sters cu succes.\n";
+								break;
+							}
+							catch (const out_of_range& e)
+							{
+								cout << e.what();
+								cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << vehicule.size() << "].\n";
+							}
+							catch (MyException& e)
+							{
+								cout << e.what();
+							}
+							catch (...)
+							{
+								cout << "\nComanda invalida.\n";
+
+							}
+						}
+						
 					}
 					else
 						cout << "\nNu exista vehicule de sters.\n";
@@ -2557,11 +2593,41 @@ void Singleton::startMenu()
 									printObject(v);
 						}
 
-						index = 0;
-						cout << "\nIndexul vehiculului de modificat: ";
-						cin >> index;
-						modificareObject(vehicule[index - 1]);
-						cout << "\nVehiculul a fost modificat cu succes.\n";
+						int comanda;
+						
+						while (true)
+						{
+								string comandaStr;
+								cout << "\nIndexul vehiculului de modificat: ";
+								getline(cin, comandaStr);
+								if (comandaStr == "")
+									getline(cin, comandaStr);
+								try
+								{
+									comanda = stoiException(comandaStr);
+									if (comanda < 1 || comanda > vehicule.size())
+										throw out_of_range("\nNumarul introdus nu corespunde niciunui vehicul!\n");
+									else
+										if (to_string(comanda) != comandaStr)
+											throw myEx;
+									modificareObject(vehicule[comanda - 1]);
+									cout << "\nVehiculul a fost modificat cu succes.\n";
+									break;
+								}
+								catch (const out_of_range& e)
+								{
+									cout << e.what();
+									cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << vehicule.size() << "].\n";
+								}
+								catch (MyException& e)
+								{
+									cout << e.what();
+								}
+								catch (...)
+								{
+									cout << "\nComanda invalida.\n";
+								}
+						}
 					}
 					else
 						cout << "\nNu exista vehicule de modificat.\n";
