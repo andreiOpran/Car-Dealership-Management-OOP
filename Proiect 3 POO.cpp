@@ -16,6 +16,52 @@ Platform toolset: Visual Studio 2022 (v143)
 
 using namespace std;
 
+// --------- CLASA OBSERVER ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+template <class T>
+class Observer
+{
+public:
+	virtual void notify(const T&, const string&) = 0;
+};
+
+// --------- CLASA CONSOLEOBSERVER ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+template <class T>
+class ConsoleObserver : public Observer<T>
+{
+	void notify(const T& obj, const string& message) override
+	{
+		cout << endl << message << endl;
+	}
+};
+
+// --------- CLASA SUBJECT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+template <class T>
+class Subject
+{
+protected:
+
+	static vector<Observer<T>*> observers;
+
+public:
+
+	static void addObserver(Observer<T>* observer)
+	{
+		observers.push_back(observer);
+	}
+
+	static void notifyObservers(const T& obj, const string& message)
+	{
+		for (Observer<T>* observer : observers)
+		{
+			observer->notify(obj, message);
+		}
+	}
+
+};
+
 class Vehicul;
 
 // --------- CLASA IOINTERFACEVEHICUL ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -685,15 +731,277 @@ char VehiculHibrid::getTipHibrid() const
 	return tipHibrid;
 }
 
+
+// --------- CLASA SHOWROOM ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class Showroom
+{
+	string nume;
+	int nrVehiculeDisponibile;
+	list <Vehicul*> vehiculeDisponibile; // am folosit list deoarece se pot elimina vehicule eficient in cazul unei vanzari
+
+public:
+
+	// CONSTRUCTOR FARA PARAMETRI
+	Showroom();
+
+	// CONSTRUCTOR CU PARAMETRI
+	Showroom(string, int, list <Vehicul*>);
+
+	// COPY CONSTRUCTOR
+	Showroom(const Showroom&);
+
+	// OPERATORUL =
+	Showroom& operator=(const Showroom&);
+
+	// DESTRUCTOR
+	~Showroom();
+
+	// OPERATORUL >>
+	friend istream& operator >>(istream&, Showroom&);
+
+	// OPERATORUL <<
+	friend ostream& operator <<(ostream&, const Showroom&);
+
+	// FUNCTIE MAJORARE PRET VEHICUL CU 10% LA INDEX DAT
+	void majorarePretVehicul(int);
+
+	// GET NUME SHOWROOM
+	string getNumeShowroom() const;
+
+	// OPERATIA SHOWROOM + VEHICUL
+	Showroom operator+(Vehicul*);
+
+	// OPERATIA SHOWROOM - VEHICUL
+	Showroom operator-(int);
+
+	// SET NUME
+	void setNume(string nume);
+
+	// GET VEHICULE DISPONIBILE
+	list <Vehicul*> getVehicule() const;
+};
+
+// CONSTRUCTOR FARA PARAMETRI
+Showroom::Showroom() : nume("Necunoscut"), nrVehiculeDisponibile(0), vehiculeDisponibile() {}
+
+// CONSTRUCTOR CU PARAMETRI
+Showroom::Showroom(string nume, int nrVehiculeDisponibile, list <Vehicul*> vehiculeDisponibile) :
+	nume(nume), nrVehiculeDisponibile(nrVehiculeDisponibile), vehiculeDisponibile(vehiculeDisponibile) {}
+
+// COPY CONSTRUCTOR
+Showroom::Showroom(const Showroom& obj) : nume(obj.nume), nrVehiculeDisponibile(obj.nrVehiculeDisponibile)
+{
+	this->vehiculeDisponibile.clear();
+	for (Vehicul* v : obj.vehiculeDisponibile)
+	{
+		this->vehiculeDisponibile.push_back(v->clone());
+	}
+}
+
+// OPERATORUL =
+Showroom& Showroom::operator=(const Showroom& obj)
+{
+	if (this != &obj)
+	{
+		this->nume = obj.nume;
+		this->nrVehiculeDisponibile = obj.nrVehiculeDisponibile;
+		for (Vehicul* v : this->vehiculeDisponibile)
+		{
+			delete v;
+		}
+		vehiculeDisponibile.clear();
+		for (Vehicul* v : obj.vehiculeDisponibile)
+		{
+			this->vehiculeDisponibile.push_back(v->clone());
+		}
+	}
+	return *this;
+}
+
+// DESTRUCTOR
+Showroom::~Showroom()
+{
+	for (Vehicul* v : vehiculeDisponibile)
+	{
+		delete v;
+	}
+	vehiculeDisponibile.clear();
+}
+
+// OPERATORUL >>
+istream& operator >>(istream& in, Showroom& obj)
+{
+	int index = 0;
+
+	cout << "Nume: ";
+	getline(in, obj.nume);
+	cout << "Numar vehicule disponibile: ";
+	in >> obj.nrVehiculeDisponibile;
+	obj.vehiculeDisponibile.clear();
+	for (int i = 0; i < obj.nrVehiculeDisponibile; i++)
+	{
+		cout << "\nVehiculul " << i + 1 << ":\n";
+		cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
+		string tip;
+		cin.get();
+		getline(in, tip);
+		if (tip == "C")
+		{
+			Vehicul* v = new VehiculCarburant();
+			in >> *v;
+			obj.vehiculeDisponibile.push_back(v);
+		}
+		else
+			if (tip == "H")
+			{
+				Vehicul* v = new VehiculHibrid();
+				in >> *v;
+				obj.vehiculeDisponibile.push_back(v);
+			}
+			else
+			{
+				// ?
+				throw "Tip vehicul invalid!";
+			}
+
+
+		// ?
+		//bool introducereTip = false;
+		//while (introducereTip == false)
+		//{
+		//	getline(in, tip);
+		//	if (tip == "C")
+		//	{
+		//		Vehicul* v = new VehiculCarburant();
+		//		in >> *v;
+		//		obj.vehiculeDisponibile.push_back(v);
+		//		introducereTip = true;
+		//	}
+		//	else
+		//		if (tip == "H")
+		//		{
+		//			Vehicul* v = new VehiculHibrid();
+		//			in >> *v;
+		//			obj.vehiculeDisponibile.push_back(v);
+		//			introducereTip = true;
+		//		}
+		//		else
+		//		{
+		//			//throw "Tip vehicul invalid!";
+		//			cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
+		//		}
+		//}
+	}
+	return in;
+}
+
+// OPERATORUL <<
+ostream& operator <<(ostream& out, const Showroom& obj)
+{
+	int index = 1;
+
+	out << "\nNume: " << obj.nume << "\n";
+	out << "Numar vehicule disponibile: " << obj.nrVehiculeDisponibile << "\n";
+	if (obj.vehiculeDisponibile.size())
+	{
+		out << "Vehicule disponibile:\n";
+		for (Vehicul* v : obj.vehiculeDisponibile)
+		{
+			out << "\nVehiculul " << index++ << ":\n";
+			out << *v;
+		}
+	}
+	return out;
+}
+
+
+// FUNCTIE MAJORARE PRET VEHICUL CU 10% LA INDEX DAT
+void Showroom::majorarePretVehicul(int index)
+{
+	list <Vehicul*>::iterator it = vehiculeDisponibile.begin();
+	advance(it, index - 1);
+	(*it)->setPret((*it)->getPret() * 1.1);
+}
+
+// GET NUME SHOWROOM
+string Showroom::getNumeShowroom() const
+{
+	return nume;
+}
+
+// OPERATIA SHOWROOM + VEHICUL*
+Showroom Showroom::operator+(Vehicul* obj)
+{
+	Showroom copie = *this;
+	copie.vehiculeDisponibile.push_back(obj->clone()); // clone ?
+	copie.nrVehiculeDisponibile++;
+	return copie;
+}
+
+// OPERATIA SHOWROOM - VEHICUL* (SE VA TRANSMITE CA PARAMETRU INDEX-UL VEHICULULUI DIN VECTORUL DE VEHICULE DISPONIBILE)
+Showroom Showroom::operator-(int index)
+{
+	try {
+		if (index > nrVehiculeDisponibile)
+		{
+			throw 1;
+		}
+		if (index < 0)
+		{
+			throw 2;
+		}
+		Showroom copie = *this;
+		list<Vehicul*>::iterator it = copie.vehiculeDisponibile.begin();
+		std::advance(it, index);
+		delete* it;
+		copie.vehiculeDisponibile.erase(it);
+		copie.nrVehiculeDisponibile--;
+		return copie;
+	}
+	catch (int var)
+	{
+		if (var == 1)
+		{
+			cout << "\n****************************************************************EROARE****************************************************************\n";
+			cout << "\nEroare!\nIn operatia de stergere al unui vehicul din showroom, index-ul introdus este mai mare decat numarul de vehicule disponibile.\nVectorul de vehicule din " << this->getNumeShowroom() << " a ramas nemodificat.\n";
+			cout << "\n****************************************************************EROARE****************************************************************\n";
+			return *this;
+		}
+		else
+			if (var == 2)
+			{
+				cout << "\n*********************************************EROARE*********************************************\n";
+				cout << "\nEroare!\nIn operatia de stergere al unui vehicul din showroom index-ul introdus este negativ.\nVectorul de vehicule din " << this->getNumeShowroom() << " a ramas nemodificat.\n";
+				cout << "\n*********************************************EROARE*********************************************\n";
+				return *this;
+			}
+	}
+	return *this;
+}
+
+// SET NUME
+void Showroom::setNume(string nume)
+{
+	this->nume = nume;
+}
+
+// GET VEHICULE DISPONIBILE
+list <Vehicul*> Showroom::getVehicule() const
+{
+	return vehiculeDisponibile;
+}
+
+
 // --------- CLASA INFOVEHICUL ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-template <class T = Vehicul>
+template <class T>
 class InfoVehicul
 {
 public:
 
-	template <class t>
-	void info(t obj)
+	template <class T>
+	void info(T obj)
 	{
 		cout << "\nInformatii vehicul:\n\nUn vehicul este o masina sau un mijloc de transport care permite oamenilor sa se deplaseze de la un loc la altul.\nCcestea pot fi autoturisme, camioane, autobuze, motociclete, biciclete sau chiar nave si avioane.\nVehiculele sunt esentiale pentru mobilitatea noastra in societatea moderna, facilitand transportul de persoane si bunuri.\n";
 	}
@@ -716,6 +1024,21 @@ public:
 		cout << "Valoarea reala a vehiculului: " << obj.valoareaRealaVehicul() << "\n";
 		cout << "Costul folosirii si intretinerii vehiculului: " << obj.costFolosireSiIntretinere() << "\n";
 	}
+
+	template <>
+	void info(Showroom obj)
+	{
+		cout << "\nUn showroom auto este un spatiu comercial specializat in vanzarea de vehicule noi si second-hand.\nAcestea pot fi autoturisme, camioane, autobuze, motociclete, biciclete sau chiar nave si avioane.\nShowroom-urile auto ofera o varietate de servicii, precum vanzarea de vehicule, finantare, asigurari, service si piese de schimb.\n";
+		cout << obj;
+		int suma = 0;
+		list <Vehicul*> vehicule = obj.getVehicule();
+		for (Vehicul* v : vehicule)
+		{
+			suma += v->getPret();
+		}
+		cout << "\nValoarea totala a vehiculelor din showroom: " << suma << "\n";
+	}
+    
 };
 
 // --------- CLASA COLECTIEVEHICULE ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -885,7 +1208,7 @@ public:
 
 // --------- CLASA CLIENT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class Client
+class Client : public Subject<Client>
 {
 	string nume;
 	int nrVehiculeCumparate;
@@ -936,11 +1259,17 @@ public:
 };
 
 // CONSTRUCTOR FARA PARAMETRI
-Client::Client() : nume("Necunoscut"), nrVehiculeCumparate(0), vehiculeCumparate(), plataRamasa(0), istoricPlati() {}
+Client::Client() : nume("Necunoscut"), nrVehiculeCumparate(0), vehiculeCumparate(), plataRamasa(0), istoricPlati()
+{
+	//notifyObservers(*this, "\nClientul cu numele " + nume + " a fost creat cu succes.\n");
+}
 
 // CONSTRUCTOR CU PARAMETRI
 Client::Client(string nume, int nrVehiculeCumparate, vector <Vehicul*> vehiculeCumparate, double plataRamasa, map <string, double> istoricPlati) :
-	nume(nume), nrVehiculeCumparate(nrVehiculeCumparate), vehiculeCumparate(vehiculeCumparate), plataRamasa(plataRamasa), istoricPlati(istoricPlati) {}
+	nume(nume), nrVehiculeCumparate(nrVehiculeCumparate), vehiculeCumparate(vehiculeCumparate), plataRamasa(plataRamasa), istoricPlati(istoricPlati) 
+{
+	notifyObservers(*this, "\nClientul cu numele " + nume + " a fost creat cu succes.\n");
+}
 
 // COPY CONSTRUCTOR
 Client::Client(const Client& obj) : nume(obj.nume), nrVehiculeCumparate(obj.nrVehiculeCumparate), plataRamasa(obj.plataRamasa),
@@ -1069,6 +1398,7 @@ istream& operator>>(istream& in, Client& obj)
 				obj.istoricPlati.insert({ data, suma });
 			}
 		}
+		Client::notifyObservers(obj, "\nClientul cu numele " + obj.nume + " a fost creat cu succes.\n");
 		return in;
 }
 
@@ -1143,270 +1473,10 @@ double Client::getPlataRamasa() const
 	return plataRamasa;
 }
 
-// --------- CLASA SHOWROOM ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-class Showroom
-{
-	string nume;
-	int nrVehiculeDisponibile;
-	list <Vehicul*> vehiculeDisponibile; // am folosit list deoarece se pot elimina vehicule eficient in cazul unei vanzari
-
-public:
-
-	// CONSTRUCTOR FARA PARAMETRI
-	Showroom();
-
-	// CONSTRUCTOR CU PARAMETRI
-	Showroom(string, int, list <Vehicul*>);
-
-	// COPY CONSTRUCTOR
-	Showroom(const Showroom&);
-
-	// OPERATORUL =
-	Showroom& operator=(const Showroom&);
-
-	// DESTRUCTOR
-	~Showroom();
-
-	// OPERATORUL >>
-	friend istream& operator >>(istream&, Showroom&);
-
-	// OPERATORUL <<
-	friend ostream& operator <<(ostream&, const Showroom&);
-
-	// FUNCTIE MAJORARE PRET VEHICUL CU 10% LA INDEX DAT
-	void majorarePretVehicul(int);
-
-	// GET NUME SHOWROOM
-	string getNumeShowroom() const;
-
-	// OPERATIA SHOWROOM + VEHICUL
-	Showroom operator+(Vehicul*);
-
-	// OPERATIA SHOWROOM - VEHICUL
-	Showroom operator-(int);
-
-	// SET NUME
-	void setNume(string nume);
-
-	// GET VEHICULE DISPONIBILE
-	list <Vehicul*> getVehicule() const;
-};
-
-// CONSTRUCTOR FARA PARAMETRI
-Showroom::Showroom() : nume("Necunoscut"), nrVehiculeDisponibile(0), vehiculeDisponibile() {}
-
-// CONSTRUCTOR CU PARAMETRI
-Showroom::Showroom(string nume, int nrVehiculeDisponibile, list <Vehicul*> vehiculeDisponibile) :
-	nume(nume), nrVehiculeDisponibile(nrVehiculeDisponibile), vehiculeDisponibile(vehiculeDisponibile) {}
-
-// COPY CONSTRUCTOR
-Showroom::Showroom(const Showroom& obj) : nume(obj.nume), nrVehiculeDisponibile(obj.nrVehiculeDisponibile) 
-{
-	this->vehiculeDisponibile.clear();
-	for (Vehicul* v : obj.vehiculeDisponibile)
-	{
-		this->vehiculeDisponibile.push_back(v->clone());
-	}
-}
-
-// OPERATORUL =
-Showroom& Showroom::operator=(const Showroom& obj)
-{
-	if (this != &obj)
-	{
-		this->nume = obj.nume;
-		this->nrVehiculeDisponibile = obj.nrVehiculeDisponibile;
-		for (Vehicul* v : this->vehiculeDisponibile)
-		{
-			delete v;
-		}
-		vehiculeDisponibile.clear();
-		for (Vehicul* v : obj.vehiculeDisponibile)
-		{
-			this->vehiculeDisponibile.push_back(v->clone());
-		}
-	}
-	return *this;
-}
-
-// DESTRUCTOR
-Showroom::~Showroom()
-{
-	for (Vehicul* v : vehiculeDisponibile)
-	{
-		delete v;
-	}
-	vehiculeDisponibile.clear();
-}
-
-// OPERATORUL >>
-istream& operator >>(istream& in, Showroom& obj)
-{
-	int index = 0;
-
-	cout << "Nume: ";
-	getline(in, obj.nume);
-	cout << "Numar vehicule disponibile: ";
-	in >> obj.nrVehiculeDisponibile;
-	obj.vehiculeDisponibile.clear();
-	for (int i = 0; i < obj.nrVehiculeDisponibile; i++)
-	{
-		cout << "\nVehiculul " << i + 1 << ":\n";
-		cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
-		string tip;
-		cin.get();
-		getline(in, tip);
-		if (tip == "C")
-		{
-			Vehicul* v = new VehiculCarburant();
-			in >> *v;
-			obj.vehiculeDisponibile.push_back(v);
-		}
-		else
-			if (tip == "H")
-			{
-				Vehicul* v = new VehiculHibrid();
-				in >> *v;
-				obj.vehiculeDisponibile.push_back(v);
-			}
-			else
-			{
-				// ?
-				throw "Tip vehicul invalid!";
-			}
-
-
-		// ?
-		//bool introducereTip = false;
-		//while (introducereTip == false)
-		//{
-		//	getline(in, tip);
-		//	if (tip == "C")
-		//	{
-		//		Vehicul* v = new VehiculCarburant();
-		//		in >> *v;
-		//		obj.vehiculeDisponibile.push_back(v);
-		//		introducereTip = true;
-		//	}
-		//	else
-		//		if (tip == "H")
-		//		{
-		//			Vehicul* v = new VehiculHibrid();
-		//			in >> *v;
-		//			obj.vehiculeDisponibile.push_back(v);
-		//			introducereTip = true;
-		//		}
-		//		else
-		//		{
-		//			//throw "Tip vehicul invalid!";
-		//			cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
-		//		}
-		//}
-	}
-	return in;
-}
-
-// OPERATORUL <<
-ostream& operator <<(ostream& out, const Showroom& obj)
-{
-	int index = 1;
-
-	out << "\nNume: " << obj.nume << "\n";
-	out << "Numar vehicule disponibile: " << obj.nrVehiculeDisponibile << "\n";
-	if (obj.vehiculeDisponibile.size())
-	{
-		out << "Vehicule disponibile:\n";
-		for (Vehicul* v : obj.vehiculeDisponibile)
-		{
-			out << "\nVehiculul " << index++ << ":\n";
-			out << *v;
-		}
-	}
-	return out;
-}
-
-
-// FUNCTIE MAJORARE PRET VEHICUL CU 10% LA INDEX DAT
-void Showroom::majorarePretVehicul(int index)
-{
-	list <Vehicul*>::iterator it = vehiculeDisponibile.begin();
-	advance(it, index - 1);
-	(*it)->setPret((*it)->getPret() * 1.1);
-}
-
-// GET NUME SHOWROOM
-string Showroom::getNumeShowroom() const
-{
-	return nume;
-}
-
-// OPERATIA SHOWROOM + VEHICUL*
-Showroom Showroom::operator+(Vehicul* obj)
-{
-	Showroom copie = *this;
-	copie.vehiculeDisponibile.push_back(obj->clone()); // clone ?
-	copie.nrVehiculeDisponibile++;
-	return copie;
-}
-
-// OPERATIA SHOWROOM - VEHICUL* (SE VA TRANSMITE CA PARAMETRU INDEX-UL VEHICULULUI DIN VECTORUL DE VEHICULE DISPONIBILE)
-Showroom Showroom::operator-(int index)
-{
-	try {
-		if (index > nrVehiculeDisponibile)
-		{
-			throw 1;
-		}
-		if (index < 0)
-		{
-			throw 2;
-		}
-		Showroom copie = *this;
-		list<Vehicul*>::iterator it = copie.vehiculeDisponibile.begin();
-		std::advance(it, index);
-		delete *it;
-		copie.vehiculeDisponibile.erase(it); 
-		copie.nrVehiculeDisponibile--;
-		return copie;
-
-	}
-	catch (int var)
-	{
-		if (var == 1)
-		{
-			cout << "\n****************************************************************EROARE****************************************************************\n";
-			cout << "\nEroare!\nIn operatia de stergere al unui vehicul din showroom, index-ul introdus este mai mare decat numarul de vehicule disponibile.\nVectorul de vehicule din " << this->getNumeShowroom() << " a ramas nemodificat.\n";
-			cout << "\n****************************************************************EROARE****************************************************************\n";
-			return *this;
-		}
-		else
-			if (var == 2)
-			{
-				cout << "\n*********************************************EROARE*********************************************\n";
-				cout << "\nEroare!\nIn operatia de stergere al unui vehicul din showroom index-ul introdus este negativ.\nVectorul de vehicule din " << this->getNumeShowroom() << " a ramas nemodificat.\n";
-				cout << "\n*********************************************EROARE*********************************************\n";
-				return *this;
-			}
-	}
-	return *this;
-}
-
-// SET NUME
-void Showroom::setNume(string nume)
-{
-	this->nume = nume;
-}
-
-// GET VEHICULE DISPONIBILE
-list <Vehicul*> Showroom::getVehicule() const
-{
-	return vehiculeDisponibile;
-}
 
 // --------- CLASA TRANZACTIE ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class Tranzactie
+class Tranzactie : public Subject<Tranzactie>
 {
 	const int idTranzactie;
 	static int nrTranzactii;
@@ -1458,7 +1528,11 @@ Tranzactie::Tranzactie() : idTranzactie(++nrTranzactii + 1000), client(), vehicu
 
 // CONSTRUCTOR CU PARAMETRI
 Tranzactie::Tranzactie(Client client, Vehicul* vehiculCumparat, double sumaPlatita) :
-	idTranzactie(++nrTranzactii + 2000), client(client), vehiculCumparat(vehiculCumparat), sumaPlatita(sumaPlatita) {}
+	idTranzactie(++nrTranzactii + 2000), client(client), vehiculCumparat(vehiculCumparat), sumaPlatita(sumaPlatita) 
+{
+	Client c1;
+	Tranzactie::notifyObservers(*this, "\nTranzactia cu ID-ul " + to_string(idTranzactie) + " a fost creata cu succes.\n");
+}
 
 // COPY CONSTRUCTOR
 Tranzactie::Tranzactie(const Tranzactie& obj) : idTranzactie(obj.idTranzactie), client(obj.client), sumaPlatita(obj.sumaPlatita)
@@ -1564,6 +1638,9 @@ istream& operator >> (istream& in, Tranzactie& obj)
 
 	cout << "Suma platita: ";
 	in >> obj.sumaPlatita;
+
+	Tranzactie::notifyObservers(obj, "\nTranzactia cu ID-ul " + to_string(obj.idTranzactie) + " a fost creata cu succes.\n");
+
 	return in;
 }
 
@@ -1607,6 +1684,16 @@ void Tranzactie::setVehiculCumparat(Vehicul* vehiculCumparat)
 {
 	this->vehiculCumparat = vehiculCumparat;
 }
+
+// --------- CLASA MYEXCEPTION ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class MyException : public exception 
+{
+public:
+	const char* what() const throw() {
+		return "\nMyException class\n";
+	}
+} exceptie ;
 
 // --------- CLASA SINGLETON ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -2194,7 +2281,6 @@ void Singleton::modificareObject(Tranzactie& obj)
 	}
 }
 
-// MODIFICARE OBIECTE DIN MENIU VEHICUL*
 
 
 // ADAUGARE OBIECTE DEJA CREATE IN VECTORII MENIULUI
@@ -2262,6 +2348,7 @@ void Singleton::startMenu()
 		cout << endl << "> ";
 		cin >> comanda;
 		switch (comanda)
+
 		{
 
 		case 1:
@@ -2436,7 +2523,7 @@ void Singleton::startMenu()
 					cin.get();
 					Client c = creareObject<Client>();
 					adaugareObiect(c);
-					cout << "\nClientul a fost adaugat cu succes.\n";
+					//cout << "\nClientul a fost adaugat cu succes.\n";
 					break;
 				}
 				case 2:
@@ -2523,7 +2610,8 @@ void Singleton::startMenu()
 				cout << "4. Modificare showroom\n";
 				cout << "5. Majorare pret vehicul\n";
 				cout << "6. Adaugare vehicul din lista cu modele de vehicule\n";
-				cout << "\n7. Iesire din submeniul Showroom\n";
+				cout << "7. Afisare detaliata a unui showroom - vehicule disponibile, numar de vehicule, valoarea totala a vehiculelor\n";
+				cout << "\n8. Iesire din submeniul Showroom\n";
 				cout << endl << "> ";
 				cin >> comandaShowroom;
 				switch (comandaShowroom)
@@ -2652,6 +2740,34 @@ void Singleton::startMenu()
 				}
 				case 7:
 				{
+					InfoVehicul <Showroom> infoShowroom;
+					infoShowroom.info(showroomuri[0]);
+
+
+
+					int index = 1;
+					for (Showroom s : showroomuri)
+					{
+						cout << "\n\nShowroomul " << index++ << ": ";
+						cout << s.getNumeShowroom() << "\n";
+					}
+					if (showroomuri.size() == 0)
+					{
+						cout << "\nNu exista showroomuri de afisat.\n";
+						break;
+					}
+					else
+					{
+						cout << "\n\nIndexul showroomului la care doriti sa aflati informatii detaliate: ";
+						cin >> index;
+						InfoVehicul <Showroom> infoShowroom;
+						infoShowroom.info(showroomuri[index - 1]);
+					}
+
+					break;
+				}
+				case 8:
+				{
 					ramaiInShowroom = 0;
 					break;
 				}
@@ -2689,7 +2805,7 @@ void Singleton::startMenu()
 					cin.get();
                     Tranzactie* t = creareObject<Tranzactie*>();
                     adaugareObiect(t);
-					cout << "\nTranzactia a fost adaugata cu succes.\n";
+					//cout << "\nTranzactia a fost adaugata cu succes.\n";
 					break;
 				}
 				case 2:
@@ -2824,7 +2940,7 @@ void Singleton::startMenu()
 
 			clienti[indexClient - 1].setPlataRamasa(clienti[indexClient - 1].getPlataRamasa() + sumaPlatita);
 
-			cout << "\nTranzactia a fost adaugata cu succes.\n";
+			///cout << "\nTranzactia a fost adaugata cu succes.\n";
 
 			break;
 		}
@@ -2847,8 +2963,12 @@ void Singleton::startMenu()
 }
 
 
+
 int Vehicul::nrVehicule = 0;
 int Tranzactie::nrTranzactii = 0;
+
+template <class T>
+vector <Observer<T>*> Subject<T>::observers;
 
 int main()
 {
@@ -2878,6 +2998,12 @@ int main()
 	s1 = s1 + pv1;
 	s1 = s1 + pv2;
 
+	ConsoleObserver<Client> clientObserver;
+	Subject<Client>::addObserver(&clientObserver);
+
+	ConsoleObserver<Tranzactie> tranzactieObserver;
+	Subject<Tranzactie>::addObserver(&tranzactieObserver);
+
 	Singleton* s = Singleton::getInstance();
 
 	s->adaugareObiect(pv1);
@@ -2887,6 +3013,8 @@ int main()
 	s->adaugareObiect(s1);
 
 	s->startMenu();
+	
+
 
 	delete pv1;
 	delete pv2;
