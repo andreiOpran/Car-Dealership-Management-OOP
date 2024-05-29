@@ -119,10 +119,6 @@ protected:
 
 	double pret;
 
-	// ?
-	//int nrInserariIstoricDaune;
-	//list <string> istoricDaune; // descriere dauna
-
 public:
 
 	// CONSTRUCTOR FARA PARAMETRI
@@ -283,9 +279,6 @@ istream& Vehicul::citireVehicul(istream& in)
 	cout << "Model: ";
 	in >> model;
 	
-
-	//int anFabricatie;
-	
 	while (true)
 	{
 		string sir;
@@ -316,11 +309,6 @@ istream& Vehicul::citireVehicul(istream& in)
 			cout << "\nComanda invalida.\n";
 		}
 	}
-
-
-
-	/*cout << "Numar inserari in istoricul rulajului: ";
-	in >> nrInserariIstoricRulaj;*/
 
 	while (true)
 	{
@@ -355,14 +343,11 @@ istream& Vehicul::citireVehicul(istream& in)
 
 	if (nrInserariIstoricRulaj)
 	{
-		//cout << "\nData si rulajul (km), separate printr-un spatiu:\n";
 		for (int i = 0; i < nrInserariIstoricRulaj; i++)
 		{
 			cout << "\nInserarea " << i + 1 << "/" << nrInserariIstoricRulaj << ": ";
 			string data;
 			int rulaj;
-			/*in >> data >> rulaj;
-			istoricRulaj.insert({ data, rulaj });*/
 
 			while (true)
 			{
@@ -399,8 +384,6 @@ istream& Vehicul::citireVehicul(istream& in)
 			istoricRulaj.insert({ data, rulaj });
 		}
 	}
-	/*cout << "Numar dotari: ";
-	in >> nrDotari;*/
 
 	while (true)
 	{
@@ -445,8 +428,6 @@ istream& Vehicul::citireVehicul(istream& in)
 			dotari.insert(dotare);
 		}
 	}
-	/*cout << "Pret: ";
-	in >> pret;*/
 
 	while (true)
 	{
@@ -637,6 +618,7 @@ public:
 
 // CONSTRUCTOR FARA PARAMETRI
 VehiculCarburant::VehiculCarburant() : Vehicul(), tipCarburant("Necunoscut"), consum(0) {}
+
 // CONSTRUCTOR CU PARAMETRI
 VehiculCarburant::VehiculCarburant(string marca, string model, int anFabricatie, int nrInserariIstoricRulaj, map <string, int> istoricRulaj, int nrDotari, set <string> dotari, double pret, string tipCarburant, double consum) :
 	Vehicul(marca, model, anFabricatie, nrInserariIstoricRulaj, istoricRulaj, nrDotari, dotari, pret), tipCarburant(tipCarburant), consum(consum) {}
@@ -665,8 +647,6 @@ istream& VehiculCarburant::citireVehicul(istream& in)
 	Vehicul::citireVehicul(in);
 	cout << "Tip carburant: ";
 	in >> tipCarburant;
-	/*cout << "Consum: ";
-	in >> consum;*/
 
 	while (true)
 	{
@@ -822,12 +802,6 @@ VehiculHibrid::VehiculHibrid(string marca, string model, int anFabricatie, int n
 		autonomieElectricPlugIn = 0;
 		timpIncarcarePlugIn = 0;
 	}
-	else
-		if (tipHibrid != 'P')
-		{
-			// ?
-			throw "Tip hibrid invalid!";
-		}
 }
 
 // COPY CONSTRUCTOR
@@ -884,9 +858,6 @@ istream& VehiculHibrid::citireVehicul(istream& in)
 
 	if (tipHibrid == 'P')
 	{
-		/*cout << "Autonomie electric (km): ";
-		in >> autonomieElectricPlugIn;*/
-
 		while (true)
 		{
 			string sir;
@@ -914,10 +885,6 @@ istream& VehiculHibrid::citireVehicul(istream& in)
 				cout << "\nComanda invalida.\n";
 			}
 		}
-
-		/*cout << "Timp incarcare (ore): ";
-		in >> timpIncarcarePlugIn;*/
-
 		while (true)
 		{
 			string sir;
@@ -1021,11 +988,6 @@ void VehiculHibrid::setTipHibrid(char tipHibrid)
 			cout << "Timp incarcare (ore): ";
 			cin >> timpIncarcarePlugIn;
 			this->tipHibrid = tipHibrid;
-		}
-		else
-		{
-			// ?
-			throw "Tip hibrid invalid!";
 		}
 }
 
@@ -1140,8 +1102,6 @@ istream& operator >>(istream& in, Showroom& obj)
 
 	cout << "Nume: ";
 	getline(in, obj.nume);
-	/*cout << "Numar vehicule disponibile: ";
-	in >> obj.nrVehiculeDisponibile;*/
 
 	while (true)
 	{
@@ -1195,39 +1155,6 @@ istream& operator >>(istream& in, Showroom& obj)
 				in >> *v;
 				obj.vehiculeDisponibile.push_back(v);
 			}
-			else
-			{
-				// ?
-				throw "Tip vehicul invalid!";
-			}
-
-
-		// ?
-		//bool introducereTip = false;
-		//while (introducereTip == false)
-		//{
-		//	getline(in, tip);
-		//	if (tip == "C")
-		//	{
-		//		Vehicul* v = new VehiculCarburant();
-		//		in >> *v;
-		//		obj.vehiculeDisponibile.push_back(v);
-		//		introducereTip = true;
-		//	}
-		//	else
-		//		if (tip == "H")
-		//		{
-		//			Vehicul* v = new VehiculHibrid();
-		//			in >> *v;
-		//			obj.vehiculeDisponibile.push_back(v);
-		//			introducereTip = true;
-		//		}
-		//		else
-		//		{
-		//			//throw "Tip vehicul invalid!";
-		//			cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
-		//		}
-		//}
 	}
 	return in;
 }
@@ -1595,10 +1522,7 @@ public:
 };
 
 // CONSTRUCTOR FARA PARAMETRI
-Client::Client() : nume("Necunoscut"), nrVehiculeCumparate(0), vehiculeCumparate(), plataRamasa(0), istoricPlati()
-{
-	//notifyObservers(*this, "\nClientul cu numele " + nume + " a fost creat cu succes.\n");
-}
+Client::Client() : nume("Necunoscut"), nrVehiculeCumparate(0), vehiculeCumparate(), plataRamasa(0), istoricPlati() {}
 
 // CONSTRUCTOR CU PARAMETRI
 Client::Client(string nume, int nrVehiculeCumparate, vector <Vehicul*> vehiculeCumparate, double plataRamasa, map <string, double> istoricPlati) :
@@ -1658,8 +1582,6 @@ istream& operator>>(istream& in, Client& obj)
 
 	cout << "Nume: ";
 	getline(in, obj.nume);
-	/*cout << "Numar vehicule cumparate: ";
-	in >> obj.nrVehiculeCumparate;*/
 
 	while (true)
 	{
@@ -1696,28 +1618,6 @@ istream& operator>>(istream& in, Client& obj)
 	for (int i = 0; i < obj.nrVehiculeCumparate; i++)
 	{
 		cout << "\nVehiculul " << i + 1 << ":\n";
-		
-		//string tip;
-		//cin.get();
-		//getline(in, tip);
-		//if (tip == "C")
-		//{
-		//	Vehicul* v = new VehiculCarburant();
-		//	in >> *v;
-		//	obj.vehiculeCumparate.push_back(v);
-		//}
-		//else
-		//	if (tip == "H")
-		//	{
-		//		Vehicul* v = new VehiculHibrid();
-		//		in >> *v;
-		//		obj.vehiculeCumparate.push_back(v);
-		//	}
-		//	else
-		//	{
-		//		// ?
-		//		throw "Tip vehicul invalid!";
-		//	}
 		string aux;
 
 		while (true)
@@ -1760,10 +1660,6 @@ istream& operator>>(istream& in, Client& obj)
 	}
 
 
-
-		/*cout << "Plata ramasa: ";
-		in >> obj.plataRamasa;*/
-
 		while (true)
 		{
 			string sir;
@@ -1795,8 +1691,6 @@ istream& operator>>(istream& in, Client& obj)
 		obj.istoricPlati.clear();
 
 		cout << "Istoric plati:\n";
-		/*cout << "Numar inserari in istoric plati: ";
-		in >> index;*/
 
 		while (true)
 		{
@@ -1831,14 +1725,6 @@ istream& operator>>(istream& in, Client& obj)
 
 		if (index)
 		{
-			/*cout << "Data si suma platita, separate printr-un spatiu:\n";
-			string data;
-			double suma;
-			for (int i = 0; i < index; i++)
-			{
-				in >> data >> suma;
-				obj.istoricPlati.insert({ data, suma });
-			}*/
 			
 			for (int i = 0; i < index; i++)
 			{
@@ -2060,8 +1946,6 @@ Tranzactie& Tranzactie::operator=(const Tranzactie& obj)
 // DESTRUCTOR
 Tranzactie::~Tranzactie() 
 {
-	// ?
-	// incearca sa stearga ceva ce a fost sters deja
 	delete vehiculCumparat;
 }
 
@@ -2110,10 +1994,6 @@ istream& operator >> (istream& in, Tranzactie& obj)
 			in >> *v;
 			obj.vehiculCumparat = v;
 		}
-
-
-	/*cout << "Suma platita: ";
-	in >> obj.sumaPlatita;*/
 
 	while (true)
 	{
@@ -3099,21 +2979,6 @@ void Singleton::modificareObject(Client& obj)
 				break;
 			}
 
-			/*int index;
-			cout << "Indexul vehiculului cumparat de modificat: ";
-			cin >> index;
-			
-			vector<Vehicul*> vehiculeObj = obj.getVehicule();
-			if (index - 1 < 0 || index - 1 >= vehiculeObj.size())
-			{
-				throw "Index invalid!\n";
-				break;
-			}
-			else
-			{
-				Vehicul* vehicul = vehiculeObj[index - 1];
-				modificareObject(vehicul);
-			}*/
 			break;
 			
 		}
@@ -3385,8 +3250,6 @@ void Singleton::modificareObject(Tranzactie& obj)
 		{
 			Vehicul* aux;
 			aux = obj.getVehiculCumparat();
-			/*cout << typeid(*obj.getVehiculCumparat()).name();
-			cout << *aux;*/
 			modificareObject(aux);
 
 			obj.setVehiculCumparat(aux);
@@ -3925,10 +3788,8 @@ void Singleton::startMenu()
 
 				case 1:
 				{
-					// cin.get();
 					Client c = creareObject<Client>();
 					adaugareObiect(c);
-					//cout << "\nClientul a fost adaugat cu succes.\n";
 					break;
 				}
 				case 2:
@@ -4114,7 +3975,6 @@ void Singleton::startMenu()
 
 				case 1:
 				{
-					//cin.get();
 					Showroom s = creareObject<Showroom>();
 					adaugareObiect(s);
 					cout << "\nShowroomul a fost adaugat cu succes.\n";
@@ -4468,10 +4328,8 @@ void Singleton::startMenu()
 
 				case 1:
 				{
-					//cin.get();
                     Tranzactie* t = creareObject<Tranzactie*>();
                     adaugareObiect(t);
-					//cout << "\nTranzactia a fost adaugata cu succes.\n";
 					break;
 				}
 				case 2:
