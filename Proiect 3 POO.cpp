@@ -2723,8 +2723,38 @@ void Singleton::modificareObject(Showroom& obj)
 		cout << "\n1. Modificare nume\n";
 		cout << "2. Modificare vehicule disponibile\n";
 		cout << "\n3. Iesire din submeniu\n";
-		cout << endl << "> ";
-		cin >> comanda;
+		
+		while (true)
+		{
+			string comandaStr;
+			cout << endl << "> ";
+			getline(cin, comandaStr);
+			if (comandaStr == "")
+				getline(cin, comandaStr);
+			try
+			{
+				comanda = stoiException(comandaStr);
+				if (comanda < 1 || comanda > 3)
+					throw out_of_range("\nNumarul introdus nu corespunde niciunei comenzi!\n");
+				else
+					if (to_string(comanda) != comandaStr)
+						throw myEx;
+				break;
+			}
+			catch (const out_of_range& e)
+			{
+				cout << e.what();
+			}
+			catch (MyException& e)
+			{
+				cout << e.what();
+			}
+			catch (...)
+			{
+				cout << "\nComanda invalida.\n";
+			}
+		}
+
 		switch (comanda)
 		{
 
@@ -2740,12 +2770,44 @@ void Singleton::modificareObject(Showroom& obj)
 		case 2:
 		{
 			int index;
-			cout << "Indexul vehiculului de modificat: ";
-			cin >> index;
-			list <Vehicul*> vehiculeObj = obj.getVehicule();
-			list<Vehicul*>::iterator it = vehiculeObj.begin();
-			std::advance(it, index - 1);
-			modificareObject(*it);
+
+			while (true)
+			{
+				string comandaStr;
+				cout << "Indexul vehiculului de modificat: ";
+				getline(cin, comandaStr);
+				if (comandaStr == "")
+					getline(cin, comandaStr);
+				try
+				{
+					index = stoiException(comandaStr);
+					if (index - 1 < 0 || index - 1 >= obj.getVehicule().size())
+						throw out_of_range("\nIndex invalid!\n");
+					else
+						if (to_string(index) != comandaStr)
+							throw myEx;
+
+					list <Vehicul*> vehiculeObj = obj.getVehicule();
+					list<Vehicul*>::iterator it = vehiculeObj.begin();
+					advance(it, index - 1);
+					modificareObject(*it);
+
+					break;
+				}
+				catch (const out_of_range& e)
+				{
+					cout << e.what();
+					cout << "Trebuie sa introduci un index care apartine intervalului [1, " << obj.getVehicule().size() << "].\n\n";
+				}
+				catch (MyException& e)
+				{
+					cout << e.what();
+				}
+				catch (...)
+				{
+					cout << "\nComanda invalida.\n";
+				}
+			}
 			break;
 		}
 		case 3:
