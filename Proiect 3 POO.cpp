@@ -3157,8 +3157,6 @@ void Singleton::startMenu()
 				}
 				case 7:
 				{
-					/*InfoVehicul <Showroom> infoShowroom;
-					infoShowroom.info(showroomuri[0]);*/
 
 					int index = 1;
 					for (Showroom s : showroomuri)
@@ -3210,8 +3208,6 @@ void Singleton::startMenu()
 								cout << "\nComanda invalida.\n";
 							}
 						}
-
-
 					}
 
 					break;
@@ -3282,7 +3278,7 @@ void Singleton::startMenu()
 
 				case 1:
 				{
-					cin.get();
+					//cin.get();
                     Tranzactie* t = creareObject<Tranzactie*>();
                     adaugareObiect(t);
 					//cout << "\nTranzactia a fost adaugata cu succes.\n";
@@ -3308,6 +3304,7 @@ void Singleton::startMenu()
 						cout << "\n\nTranzactia " << index++ << ":\n";
 						printObject(*t);
 					}
+
 					if (tranzactii.size() == 0)
 					{
 						cout << "\nNu exista tranzactii de sters.\n";
@@ -3315,12 +3312,42 @@ void Singleton::startMenu()
 					}
 					else
 					{
-						cout << "\nIndexul tranzactiei de sters: ";
-						cin >> index;
-						tranzactii.erase(tranzactii.begin() + index - 1);
-						cout << "\nTranzactia a fost stearsa cu succes.\n";
-					}
-					
+						int comanda;
+
+						while (true)
+						{
+							string comandaStr;
+							cout << "\nIndexul tranzactiei de sters: ";
+							getline(cin, comandaStr);
+							if (comandaStr == "")
+								getline(cin, comandaStr);
+							try
+							{
+								comanda = stoiException(comandaStr);
+								if (comanda < 1 || comanda > tranzactii.size())
+									throw out_of_range("\nNumarul introdus nu corespunde niciunei tranzactii!\n");
+								else
+									if (to_string(comanda) != comandaStr)
+										throw myEx;
+								tranzactii.erase(tranzactii.begin() + comanda - 1);
+								cout << "\nTranzactia a fost stearsa cu succes.\n";
+								break;
+							}
+							catch (const out_of_range& e)
+							{
+								cout << e.what();
+								cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << tranzactii.size() << "].\n";
+							}
+							catch (MyException& e)
+							{
+								cout << e.what();
+							}
+							catch (...)
+							{
+								cout << "\nComanda invalida.\n";
+							}
+						}
+					}					
 					break;
 				}
 				case 4:
@@ -3332,11 +3359,50 @@ void Singleton::startMenu()
 						printObject(*t);
 					}
 
-					index = 0;
-					cout << "\nIndexul tranzactiei de modificat: ";
-					cin >> index;
-                    modificareObject(*tranzactii[index - 1]);
-					cout << "\nTranzactia a fost modificata cu succes.\n";
+					if (tranzactii.size() == 0)
+					{
+						cout << "\nNu exista tranzactii de modificat.\n";
+						break;
+					}
+					else
+					{
+						int comanda;
+
+						while (true)
+						{
+							string comandaStr;
+							cout << "\nIndexul tranzactiei de modificat: ";
+							getline(cin, comandaStr);
+							if (comandaStr == "")
+								getline(cin, comandaStr);
+							try
+							{
+								comanda = stoiException(comandaStr);
+								if (comanda < 1 || comanda > tranzactii.size())
+									throw out_of_range("\nNumarul introdus nu corespunde niciunei tranzactii!\n");
+								else
+									if (to_string(comanda) != comandaStr)
+										throw myEx;
+								modificareObject(*tranzactii[comanda - 1]);
+								cout << "\nTranzactia a fost modificata cu succes.\n";
+								break;
+							}
+							catch (const out_of_range& e)
+							{
+								cout << e.what();
+								cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << tranzactii.size() << "].\n";
+							}
+							catch (MyException& e)
+							{
+								cout << e.what();
+							}
+							catch (...)
+							{
+								cout << "\nComanda invalida.\n";
+							}
+						}
+					}
+
 					break;
 				}
 				case 5:
