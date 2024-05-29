@@ -1735,7 +1735,7 @@ istream& operator>>(istream& in, Client& obj)
 			}
 			catch (MyException& e)
 			{
-				cout << e.what();
+				cout << "\nTip vehicul invalid!\n";
 			}
 			catch (...)
 			{
@@ -2017,7 +2017,6 @@ Tranzactie::Tranzactie() : idTranzactie(++nrTranzactii + 1000), client(), vehicu
 Tranzactie::Tranzactie(Client client, Vehicul* vehiculCumparat, double sumaPlatita) :
 	idTranzactie(++nrTranzactii + 2000), client(client), vehiculCumparat(vehiculCumparat), sumaPlatita(sumaPlatita) 
 {
-	Client c1;
 	Tranzactie::notifyObservers(*this, "\nTranzactia cu ID-ul " + to_string(idTranzactie) + " a fost creata cu succes.\n");
 }
 
@@ -2072,59 +2071,77 @@ istream& operator >> (istream& in, Tranzactie& obj)
 	cout << "Clientul:\n";
 	in >> obj.client;
 	cout << "Vehiculul cumparat:\n";
-	cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
-	string tip;
-	cin.get();
-	getline(in, tip);
-	if (tip == "C")
+	
+
+	string aux;
+
+	while (true)
+	{
+		cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
+
+		getline(in, aux);
+		if (aux == "")
+			getline(in, aux);
+		try
+		{
+			if (aux != "C" && aux != "H")
+				throw myEx;
+			break;
+		}
+		catch (MyException& e)
+		{
+			cout << "\nTip vehicul invalid!\n";
+		}
+		catch (...)
+		{
+			cout << "\nComanda invalida.\n";
+		}
+	}
+	if (aux == "C")
 	{
 		Vehicul* v = new VehiculCarburant();
 		in >> *v;
 		obj.vehiculCumparat = v;
 	}
 	else
-		if (tip == "H")
+		if (aux == "H")
 		{
 			Vehicul* v = new VehiculHibrid();
 			in >> *v;
-			obj.vehiculCumparat = v->clone();
+			obj.vehiculCumparat = v;
 		}
-		else
+
+
+	/*cout << "Suma platita: ";
+	in >> obj.sumaPlatita;*/
+
+	while (true)
+	{
+		string sir;
+		cout << "Suma platita: ";
+		getline(in, sir);
+		if (sir == "")
+			getline(in, sir);
+		try
 		{
-			// ?
-			throw "Tip vehicul invalid!";
+			obj.sumaPlatita = stodExceptionCitire(sir);
+			if (obj.sumaPlatita < 0)
+				throw out_of_range("\nSuma platita nu poate fi negativa!\n");
+			break;
 		}
-
-
-	// ?
-	//bool introducereTip = false;
-	//while (introducereTip == false)
-	//{
-	//	getline(in, tip);
-	//	if (tip == "C")
-	//	{
-	//		Vehicul* v = new VehiculCarburant();
-	//		in >> *v;
-	//		obj.vehiculCumparat = v;
-	//		introducereTip = true;
-	//	}
-	//	else
-	//		if (tip == "H")
-	//		{
-	//			Vehicul* v = new VehiculHibrid();
-	//			in >> *v;
-	//			obj.vehiculCumparat = v;
-	//			introducereTip = true;
-	//		}
-	//		else
-	//		{
-	//			//throw "Tip vehicul invalid!";
-	//			cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
-	//		}
-	//}
-
-	cout << "Suma platita: ";
-	in >> obj.sumaPlatita;
+		catch (MyException& e)
+		{
+			cout << e.what();
+		}
+		catch (const out_of_range& e)
+		{
+			cout << e.what();
+		}
+		catch (...)
+		{
+			cout << "\nComanda invalida.\n";
+		}
+	}
 
 	Tranzactie::notifyObservers(obj, "\nTranzactia cu ID-ul " + to_string(obj.idTranzactie) + " a fost creata cu succes.\n");
 
@@ -2135,8 +2152,8 @@ istream& operator >> (istream& in, Tranzactie& obj)
 ostream& operator <<(ostream& out, const Tranzactie& obj)
 {
 	out << "\nID tranzactie: " << obj.idTranzactie << "\n";
-	out << "Clientul:\n" << obj.client;
-	out << "Vehiculul cumparat:\n" << *obj.vehiculCumparat;
+	out << "\nClientul:\n" << obj.client;
+	out << "\nVehiculul cumparat:\n" << *obj.vehiculCumparat;
 
 	out << "Suma platita: " << obj.sumaPlatita << "\n";
 	return out;
