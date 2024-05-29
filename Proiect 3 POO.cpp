@@ -1140,8 +1140,40 @@ istream& operator >>(istream& in, Showroom& obj)
 
 	cout << "Nume: ";
 	getline(in, obj.nume);
-	cout << "Numar vehicule disponibile: ";
-	in >> obj.nrVehiculeDisponibile;
+	/*cout << "Numar vehicule disponibile: ";
+	in >> obj.nrVehiculeDisponibile;*/
+
+	while (true)
+	{
+		string sir;
+		cout << "Numar vehicule disponibile: ";
+		getline(in, sir);
+		if (sir == "")
+			getline(in, sir);
+		try
+		{
+			obj.nrVehiculeDisponibile = stoiExceptionCitire(sir);
+			if (to_string(obj.nrVehiculeDisponibile) != sir)
+				throw myEx;
+			else
+				if (obj.nrVehiculeDisponibile < 0)
+					throw out_of_range("\nNumarul de vehicule disponibile nu poate fi negativ!\n");
+			break;
+		}
+		catch (MyException& e)
+		{
+			cout << e.what();
+		}
+		catch (const out_of_range& e)
+		{
+			cout << e.what();
+		}
+		catch (...)
+		{
+			cout << "\nComanda invalida.\n";
+		}
+	}
+
 	obj.vehiculeDisponibile.clear();
 	for (int i = 0; i < obj.nrVehiculeDisponibile; i++)
 	{
