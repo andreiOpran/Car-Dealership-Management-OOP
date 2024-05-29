@@ -2092,6 +2092,8 @@ public:
 	// OPERATORUL =
 	Singleton& operator=(const Singleton&) = delete;
 
+	// DESTRUCTOR
+	~Singleton();
 
 	// GET INSTANCE
 	static Singleton* getInstance();
@@ -2145,6 +2147,23 @@ public:
 	// START MENU
 	void startMenu();
 };
+
+// DESTRUCTOR
+Singleton::~Singleton()
+{
+	for (Tranzactie* t : tranzactii)
+	{
+		delete t;
+	}
+
+	for (Vehicul* v : vehicule)
+	{
+		delete v;
+	}
+	
+	//free (instance);
+	delete instance;
+}
 
 // GET INSTANCE
 Singleton* Singleton::getInstance()
