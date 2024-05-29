@@ -1536,7 +1536,7 @@ Client::Client(const Client& obj) : nume(obj.nume), nrVehiculeCumparate(obj.nrVe
 istoricPlati(obj.istoricPlati)
 {
 	this->vehiculeCumparate.clear();
-	for (int i = 0; i < nrVehiculeCumparate; i++)
+	for (int i = 0; i < obj.vehiculeCumparate.size() /*nrVehiculeCumparate*/; i++)
 	{
 		this->vehiculeCumparate.push_back(obj.vehiculeCumparate[i]->clone());
 	}
@@ -1567,7 +1567,7 @@ Client& Client::operator=(const Client& obj)
 // DESTRUCTOR
 Client::~Client()
 {
-	for (int i = 0; i < nrVehiculeCumparate; i++)
+	for (int i = 0; i < vehiculeCumparate.size(); i++)
 	{
 		delete vehiculeCumparate[i];
 	}
@@ -2160,6 +2160,7 @@ Singleton::~Singleton()
 	{
 		delete v;
 	}
+
 	if(instance != NULL)
 	{
 		//free (instance);
@@ -2387,7 +2388,7 @@ void Singleton::modificareObject(Vehicul*& obj)
 			{
 				string dotare;
 				cout << "Dotare noua: ";
-				cin.get();
+				//cin.get();
 				getline(cin, dotare);
 				objCarburant->inserareDotare(dotare);
 				break;
