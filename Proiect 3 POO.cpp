@@ -1,4 +1,4 @@
-﻿/*
+/*
 
 IDE: Visual Studio
 Platform toolset: Visual Studio 2022 (v143)
@@ -2160,9 +2160,11 @@ Singleton::~Singleton()
 	{
 		delete v;
 	}
-	
-	//free (instance);
-	delete instance;
+	if(instance != NULL)
+	{
+		//free (instance);
+		delete instance;
+	}
 }
 
 // GET INSTANCE
