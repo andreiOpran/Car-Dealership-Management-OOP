@@ -18,6 +18,8 @@ Platform toolset: Visual Studio 2022 (v143)
 
 using namespace std;
 
+
+
 // --------- CLASA OBSERVER ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 template <class T>
@@ -63,6 +65,17 @@ public:
 	}
 
 };
+
+// --------- CLASA MYEXCEPTION ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+class MyException : public exception
+{
+public:
+	virtual const char* what() const throw() {
+		return "\nIntrodu doar cifre!\n";
+	}
+} myEx;
+
 
 class Vehicul;
 
@@ -210,6 +223,55 @@ Vehicul& Vehicul::operator=(const Vehicul& obj)
 // DESTRUCTOR
 Vehicul::~Vehicul() {}
 
+
+int stoiExceptionCitire(const string& sir)
+{
+	try
+	{
+		size_t lastChar;
+		int numar = stoi(sir, &lastChar);
+		if (lastChar != sir.length())
+		{
+			throw invalid_argument("");
+		}
+		return numar;
+	}
+	catch (const invalid_argument& e)
+	{
+		throw myEx;
+		return 0;
+	}
+	catch (...)
+	{
+		throw range_error("");
+		return 0;
+	}
+}
+
+double stodExceptionCitire(const string& sir)
+{
+	try
+	{
+		size_t lastChar;
+		double numar = stod(sir, &lastChar);
+		if (lastChar != sir.length())
+		{
+			throw invalid_argument("");
+		}
+		return numar;
+	}
+	catch (const invalid_argument& e)
+	{
+		throw myEx;
+		return 0;
+	}
+	catch (...)
+	{
+		throw range_error("");
+		return 0;
+	}
+}
+
 // OPERATORUL >>
 istream& Vehicul::citireVehicul(istream& in)
 {
@@ -220,27 +282,161 @@ istream& Vehicul::citireVehicul(istream& in)
 	in >> marca;
 	cout << "Model: ";
 	in >> model;
-	cout << "An fabricatie: ";
-	in >> anFabricatie;
-	cout << "Numar inserari in istoricul rulajului: ";
-	in >> nrInserariIstoricRulaj;
+	
+
+	//int anFabricatie;
+	
+	while (true)
+	{
+		string sir;
+		cout << "An fabricatie: ";
+		getline(in, sir);
+		if(sir == "")
+			getline(in, sir);
+		try
+		{
+			anFabricatie = stoiExceptionCitire(sir);
+			if (to_string(anFabricatie) != sir)
+				throw myEx;
+			else
+				if(anFabricatie < 1700)
+				throw out_of_range("\nAnul de fabricatie nu poate fi mai mic ca 1700!\n");
+			break;
+		}
+		catch (MyException& e)
+		{
+			cout << e.what();
+		}
+		catch (const out_of_range& e)
+		{
+			cout << e.what();
+		}
+		catch (...)
+		{
+			cout << "\nComanda invalida.\n";
+		}
+	}
+
+
+
+	/*cout << "Numar inserari in istoricul rulajului: ";
+	in >> nrInserariIstoricRulaj;*/
+
+	while (true)
+	{
+		string sir;
+		cout << "Numar inserari in istoricul rulajului: ";
+		getline(in, sir);
+		if (sir == "")
+			getline(in, sir);
+		try
+		{
+			nrInserariIstoricRulaj = stoiExceptionCitire(sir);
+			if (to_string(nrInserariIstoricRulaj) != sir)
+				throw myEx;
+			else
+				if (nrInserariIstoricRulaj < 0)
+					throw out_of_range("\nNumarul de inserari in istoricul rulajului nu poate fi negativ!\n");
+			break;
+		}
+		catch (MyException& e)
+		{
+			cout << e.what();
+		}
+		catch (const out_of_range& e)
+		{
+			cout << e.what();
+		}
+		catch (...)
+		{
+			cout << "\nComanda invalida.\n";
+		}
+	}
+
 	if (nrInserariIstoricRulaj)
 	{
-		cout << "\nData si rulajul (km), separate printr-un spatiu:\n";
+		//cout << "\nData si rulajul (km), separate printr-un spatiu:\n";
 		for (int i = 0; i < nrInserariIstoricRulaj; i++)
 		{
-			cout << "Inserarea " << i + 1 << "/" << nrInserariIstoricRulaj << ": ";
+			cout << "\nInserarea " << i + 1 << "/" << nrInserariIstoricRulaj << ": ";
 			string data;
 			int rulaj;
-			in >> data >> rulaj;
+			/*in >> data >> rulaj;
+			istoricRulaj.insert({ data, rulaj });*/
+
+			while (true)
+			{
+				string comandaStr;
+				cout << "\nData: ";
+				in >> data;
+				cout << "\nRulaj (km): ";
+				getline(in, comandaStr);
+				if(comandaStr == "")
+					getline(in, comandaStr);
+				try
+				{
+					rulaj = stoiExceptionCitire(comandaStr);
+					if (to_string(rulaj) != comandaStr)
+						throw myEx;
+					else
+						if (rulaj < 0)
+							throw out_of_range("\nRulajul nu poate fi negativ!\n");
+					break;
+				}
+				catch (MyException& e)
+				{
+					cout << e.what();
+				}
+				catch (const out_of_range& e)
+				{
+					cout << e.what();
+				}
+				catch (...)
+				{
+					cout << "\nComanda invalida.\n";
+				}
+			}
 			istoricRulaj.insert({ data, rulaj });
 		}
 	}
-	cout << "Numar dotari: ";
-	in >> nrDotari;
+	/*cout << "Numar dotari: ";
+	in >> nrDotari;*/
+
+	while (true)
+	{
+		string sir;
+		cout << "Numar dotari: ";
+		getline(in, sir);
+		if (sir == "")
+			getline(in, sir);
+		try
+		{
+			nrDotari = stoiExceptionCitire(sir);
+			if (to_string(nrDotari) != sir)
+				throw myEx;
+			else
+				if (nrDotari < 0)
+					throw out_of_range("\nNumarul de dotari nu poate fi negativ!\n");
+			break;
+		}
+		catch (MyException& e)
+		{
+			cout << e.what();
+		}
+		catch (const out_of_range& e)
+		{
+			cout << e.what();
+		}
+		catch (...)
+		{
+			cout << "\nComanda invalida.\n";
+		}
+
+	}
+
 	if (nrDotari)
 	{
-		in.get();
+		//in.get();
 		for (int i = 0; i < nrDotari; i++)
 		{
 			cout << "Dotarea " << i + 1 << "/" << nrDotari << ": ";
@@ -249,8 +445,38 @@ istream& Vehicul::citireVehicul(istream& in)
 			dotari.insert(dotare);
 		}
 	}
-	cout << "Pret: ";
-	in >> pret;
+	/*cout << "Pret: ";
+	in >> pret;*/
+
+	while (true)
+	{
+		string sir;
+		cout << "Pret: ";
+		getline(in, sir);
+		if (sir == "")
+			getline(in, sir);
+		try
+		{
+			pret = stodExceptionCitire(sir);
+			
+				if (pret < 0)
+					throw out_of_range("\nPretul nu poate fi negativ!\n");
+			break;
+		}
+		catch (MyException& e)
+		{
+			cout << e.what();
+		}
+		catch (const out_of_range& e)
+		{
+			cout << e.what();
+		}
+		catch (...)
+		{
+			cout << "\nComanda invalida.\n";
+		}
+	}
+
 	return in;
 }
 istream& operator >>(istream& in, Vehicul& obj)
@@ -439,8 +665,37 @@ istream& VehiculCarburant::citireVehicul(istream& in)
 	Vehicul::citireVehicul(in);
 	cout << "Tip carburant: ";
 	in >> tipCarburant;
-	cout << "Consum: ";
-	in >> consum;
+	/*cout << "Consum: ";
+	in >> consum;*/
+
+	while (true)
+	{
+		string sir;
+		cout << "Consum: ";
+		getline(in, sir);
+		if (sir == "")
+			getline(in, sir);
+		try
+		{
+			consum = stodExceptionCitire(sir);
+			if (consum < 0)
+				throw out_of_range("\nConsumul nu poate fi negativ!\n");
+			break;
+		}
+		catch (MyException& e)
+		{
+			cout << e.what();
+		}
+		catch (const out_of_range& e)
+		{
+			cout << e.what();
+		}
+		catch (...)
+		{
+			cout << "\nComanda invalida.\n";
+		}
+	}
+
 	return in;
 }
 istream& operator >>(istream& in, VehiculCarburant& obj)
@@ -599,55 +854,102 @@ VehiculHibrid::~VehiculHibrid() {}
 istream& VehiculHibrid::citireVehicul(istream& in)
 {
 	VehiculCarburant::citireVehicul(in);
-	cout << "Tip hibrid (P - plug-in, M - mild): ";
 	
 	
-	string tip;
-	in.get();
-	getline(in, tip);
-	if (tip == "P")
+	while (true)
 	{
-		tipHibrid = 'P';
+		cout << "Tip hibrid (P - plug-in, M - mild): ";
+		string aux;
+		getline(in, aux);
+		if (aux == "")
+			getline(in, aux);
+		try 
+		{
+			tipHibrid = aux[0];
+			if(aux.length() != 1 || (tipHibrid != 'P' && tipHibrid != 'M'))
+				throw invalid_argument("\nTip hibrid invalid!\n");
+			break;
+		}
+		catch (const invalid_argument& e)
+		{
+			cout << e.what();
+		}
+		catch (...)
+		{
+			cout << "\nComanda invalida.\n";
+		}
+		
+
 	}
-	else
-		if (tip == "M")
-		{
-			tipHibrid = 'M';
-		}
-		else
-		{
-			// ?
-			throw "Tip hibrid invalid!";
-		}
-
-
-	/*bool introducereTip = false;
-	while (introducereTip == false)
-	{
-		in >> tip;
-		if (tip == "P")
-		{
-			tipHibrid = 'P';
-			introducereTip = true;
-		}
-		else
-			if (tip == "M")
-			{
-				tipHibrid = 'M';
-				introducereTip = true;
-			}
-			else
-			{
-				cout << "Tip hibrid invalid! Introduceti din nou tipul hibridului (P - plug-in, M - mild): ";
-			}
-	}*/
 
 	if (tipHibrid == 'P')
 	{
-		cout << "Autonomie electric (km): ";
-		in >> autonomieElectricPlugIn;
-		cout << "Timp incarcare (ore): ";
-		in >> timpIncarcarePlugIn;
+		/*cout << "Autonomie electric (km): ";
+		in >> autonomieElectricPlugIn;*/
+
+		while (true)
+		{
+			string sir;
+			cout << "Autonomie electric (km): ";
+			getline(in, sir);
+			if (sir == "")
+				getline(in, sir);
+			try
+			{
+				autonomieElectricPlugIn = stodExceptionCitire(sir);
+				if (autonomieElectricPlugIn < 0)
+					throw out_of_range("\nAutonomia electrica nu poate fi negativa!\n");
+				break;
+			}
+			catch (MyException& e)
+			{
+				cout << e.what();
+			}
+			catch (const out_of_range& e)
+			{
+				cout << e.what();
+			}
+			catch (...)
+			{
+				cout << "\nComanda invalida.\n";
+			}
+		}
+
+		/*cout << "Timp incarcare (ore): ";
+		in >> timpIncarcarePlugIn;*/
+
+		while (true)
+		{
+			string sir;
+			cout << "Timp incarcare (ore): ";
+			getline(in, sir);
+			if (sir == "")
+				getline(in, sir);
+			try
+			{
+				timpIncarcarePlugIn = stodExceptionCitire(sir);
+				if (timpIncarcarePlugIn < 0)
+					throw out_of_range("\nTimpul de incarcare nu poate fi negativ!\n");
+				break;
+			}
+			catch (MyException& e)
+			{
+				cout << e.what();
+			}
+			catch (const out_of_range& e)
+			{
+				cout << e.what();
+			}
+			catch (...)
+			{
+				cout << "\nComanda invalida.\n";
+			}
+		}
+	}
+	else
+	{
+		autonomieElectricPlugIn = 0;
+		timpIncarcarePlugIn = 0;
 	}
 	return in;
 }
@@ -1693,16 +1995,6 @@ void Tranzactie::setVehiculCumparat(Vehicul* vehiculCumparat)
 	this->vehiculCumparat = vehiculCumparat;
 }
 
-// --------- CLASA MYEXCEPTION ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-class MyException : public exception 
-{
-public:
-	virtual const char* what() const throw() {
-		return "\nIntrodu doar cifre!\n";
-	}
-} myEx ;
-
 
 // --------- CLASA SINGLETON ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -1964,7 +2256,7 @@ void Singleton::modificareObject(Vehicul*& obj)
 			case 4:
 			{
 				string data;
-				double rulaj;
+				int rulaj;
 
 				while (true)
 				{
@@ -1977,7 +2269,7 @@ void Singleton::modificareObject(Vehicul*& obj)
 						getline(cin, comandaStr);
 					try
 					{
-						rulaj = stodException(comandaStr);
+						rulaj = stoiException(comandaStr);
 						objCarburant->inserareIstoricRulaj(data, rulaj);
 						break;
 					}
