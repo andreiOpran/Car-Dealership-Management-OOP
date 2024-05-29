@@ -2328,13 +2328,18 @@ int Singleton::stoiException(const string& sir)
 		int numar = stoi(sir, &lastChar);
 		if (lastChar != sir.length())
 		{
-			throw invalid_argument("nimic");
+			throw invalid_argument("");
 		}
 		return numar;
 	}
 	catch (const invalid_argument& e)
 	{
 		throw myEx;
+		return 0;
+	}
+	catch (...)
+	{
+		throw range_error("");
 		return 0;
 	}
 }
