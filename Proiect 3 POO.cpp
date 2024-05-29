@@ -5,16 +5,16 @@ Platform toolset: Visual Studio 2022 (v143)
 
 */
 
-#include <iostream>
 #include <cstring>
+#include <iostream>
+#include <list>
+#include <map>
+#include <set>
+#include <sstream>
 #include <string>
 #include <string>
 #include <typeinfo>
 #include <vector>
-#include <set>
-#include <list>
-#include <map>
-#include <sstream>
 
 using namespace std;
 
@@ -110,10 +110,10 @@ protected:
 	string marca;
 	string model;
 	int anFabricatie;
-	
+
 	int nrInserariIstoricRulaj;
 	map <string, int> istoricRulaj; // data, rulaj in km
-	
+
 	int nrDotari;
 	set <string> dotari; // am folosit set pentru a nu avea duplicate
 
@@ -168,10 +168,10 @@ public:
 
 	// INSERARE IN ISTORIC RULAJ
 	void inserareIstoricRulaj(string data, int rulaj);
-	
+
 	// INSERARE DOTARE
 	void inserareDotare(string dotare);
-	
+
 	// GET MARCA
 	string getMarca() const
 	{
@@ -192,12 +192,12 @@ anFabricatie(0), nrInserariIstoricRulaj(0), istoricRulaj(), nrDotari(0), dotari(
 
 // CONSTRUCTOR CU PARAMETRI
 Vehicul::Vehicul(string marca, string model, int anFabricatie, int nrInserariIstoricRulaj, map <string, int> istoricRulaj, int nrDotari, set <string> dotari, double pret) :
-				idVehicul(++nrVehicule + 1000), marca(marca), model(model), anFabricatie(anFabricatie), nrInserariIstoricRulaj(nrInserariIstoricRulaj), istoricRulaj(istoricRulaj),
-				nrDotari(nrDotari), dotari(dotari), pret(pret) {}
+	idVehicul(++nrVehicule + 1000), marca(marca), model(model), anFabricatie(anFabricatie), nrInserariIstoricRulaj(nrInserariIstoricRulaj), istoricRulaj(istoricRulaj),
+	nrDotari(nrDotari), dotari(dotari), pret(pret) {}
 
 // COPY CONSTRUCTOR
-Vehicul::Vehicul(const Vehicul& obj) : idVehicul(obj.idVehicul), marca(obj.marca), model(obj.model), anFabricatie(obj.anFabricatie), nrInserariIstoricRulaj(obj.nrInserariIstoricRulaj), 
-										istoricRulaj(obj.istoricRulaj), nrDotari(obj.nrDotari), dotari(obj.dotari), pret(obj.pret) {}
+Vehicul::Vehicul(const Vehicul& obj) : idVehicul(obj.idVehicul), marca(obj.marca), model(obj.model), anFabricatie(obj.anFabricatie), nrInserariIstoricRulaj(obj.nrInserariIstoricRulaj),
+istoricRulaj(obj.istoricRulaj), nrDotari(obj.nrDotari), dotari(obj.dotari), pret(obj.pret) {}
 
 // OPERATORUL =
 Vehicul& Vehicul::operator=(const Vehicul& obj)
@@ -278,13 +278,13 @@ istream& Vehicul::citireVehicul(istream& in)
 	in >> marca;
 	cout << "Model: ";
 	in >> model;
-	
+
 	while (true)
 	{
 		string sir;
 		cout << "An fabricatie: ";
 		getline(in, sir);
-		if(sir == "")
+		if (sir == "")
 			getline(in, sir);
 		try
 		{
@@ -292,8 +292,8 @@ istream& Vehicul::citireVehicul(istream& in)
 			if (to_string(anFabricatie) != sir)
 				throw myEx;
 			else
-				if(anFabricatie < 1700)
-				throw out_of_range("\nAnul de fabricatie nu poate fi mai mic ca 1700!\n");
+				if (anFabricatie < 1700)
+					throw out_of_range("\nAnul de fabricatie nu poate fi mai mic ca 1700!\n");
 			break;
 		}
 		catch (MyException& e)
@@ -356,7 +356,7 @@ istream& Vehicul::citireVehicul(istream& in)
 				in >> data;
 				cout << "\nRulaj (km): ";
 				getline(in, comandaStr);
-				if(comandaStr == "")
+				if (comandaStr == "")
 					getline(in, comandaStr);
 				try
 				{
@@ -439,9 +439,9 @@ istream& Vehicul::citireVehicul(istream& in)
 		try
 		{
 			pret = stodExceptionCitire(sir);
-			
-				if (pret < 0)
-					throw out_of_range("\nPretul nu poate fi negativ!\n");
+
+			if (pret < 0)
+				throw out_of_range("\nPretul nu poate fi negativ!\n");
 			break;
 		}
 		catch (MyException& e)
@@ -481,7 +481,7 @@ ostream& Vehicul::afisareVehicul(ostream& out) const
 	}
 	poz = 1;
 	out << "Dotari:\n";
-	for(string s : dotari)
+	for (string s : dotari)
 	{
 		out << "Dotarea " << poz++ << ": " << s << "\n";
 	}
@@ -569,7 +569,7 @@ void Vehicul::inserareDotare(string dotare)
 
 // --------- CLASA VEHICULCARBURANT ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-class VehiculCarburant : public Vehicul 
+class VehiculCarburant : public Vehicul
 {
 protected:
 
@@ -613,7 +613,7 @@ public:
 
 	// SET CONSUM
 	void setConsum(double consum);
-	
+
 };
 
 // CONSTRUCTOR FARA PARAMETRI
@@ -771,7 +771,7 @@ public:
 
 	// FUNCTIE COST FOLOSIRE SI INTRETINERE
 	double costFolosireSiIntretinere() const override;
-	
+
 	// FUNCTIE CLONE
 	Vehicul* clone() const override;
 
@@ -805,8 +805,8 @@ VehiculHibrid::VehiculHibrid(string marca, string model, int anFabricatie, int n
 }
 
 // COPY CONSTRUCTOR
-VehiculHibrid::VehiculHibrid(const VehiculHibrid& obj) : VehiculCarburant(obj), tipHibrid(obj.tipHibrid), autonomieElectricPlugIn(obj.autonomieElectricPlugIn), 
-															timpIncarcarePlugIn(obj.timpIncarcarePlugIn) {}
+VehiculHibrid::VehiculHibrid(const VehiculHibrid& obj) : VehiculCarburant(obj), tipHibrid(obj.tipHibrid), autonomieElectricPlugIn(obj.autonomieElectricPlugIn),
+timpIncarcarePlugIn(obj.timpIncarcarePlugIn) {}
 
 // OPERATORUL =
 VehiculHibrid& VehiculHibrid::operator=(const VehiculHibrid& obj)
@@ -828,8 +828,8 @@ VehiculHibrid::~VehiculHibrid() {}
 istream& VehiculHibrid::citireVehicul(istream& in)
 {
 	VehiculCarburant::citireVehicul(in);
-	
-	
+
+
 	while (true)
 	{
 		cout << "Tip hibrid (P - plug-in, M - mild): ";
@@ -837,10 +837,10 @@ istream& VehiculHibrid::citireVehicul(istream& in)
 		getline(in, aux);
 		if (aux == "")
 			getline(in, aux);
-		try 
+		try
 		{
 			tipHibrid = aux[0];
-			if(aux.length() != 1 || (tipHibrid != 'P' && tipHibrid != 'M'))
+			if (aux.length() != 1 || (tipHibrid != 'P' && tipHibrid != 'M'))
 				throw invalid_argument("\nTip hibrid invalid!\n");
 			break;
 		}
@@ -852,7 +852,7 @@ istream& VehiculHibrid::citireVehicul(istream& in)
 		{
 			cout << "\nComanda invalida.\n";
 		}
-		
+
 
 	}
 
@@ -973,7 +973,7 @@ void VehiculHibrid::setTimpIncarcare(double timpIncarcarePlugIn)
 // SET TIP HIBRID
 void VehiculHibrid::setTipHibrid(char tipHibrid)
 {
-	
+
 	if (tipHibrid == 'M')
 	{
 		this->tipHibrid = tipHibrid;
@@ -1301,7 +1301,7 @@ public:
 		}
 		cout << "\nValoarea totala a vehiculelor din showroom: " << suma << "\n";
 	}
-    
+
 };
 
 // --------- CLASA COLECTIEVEHICULE ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1526,7 +1526,7 @@ Client::Client() : nume("Necunoscut"), nrVehiculeCumparate(0), vehiculeCumparate
 
 // CONSTRUCTOR CU PARAMETRI
 Client::Client(string nume, int nrVehiculeCumparate, vector <Vehicul*> vehiculeCumparate, double plataRamasa, map <string, double> istoricPlati) :
-	nume(nume), nrVehiculeCumparate(nrVehiculeCumparate), vehiculeCumparate(vehiculeCumparate), plataRamasa(plataRamasa), istoricPlati(istoricPlati) 
+	nume(nume), nrVehiculeCumparate(nrVehiculeCumparate), vehiculeCumparate(vehiculeCumparate), plataRamasa(plataRamasa), istoricPlati(istoricPlati)
 {
 	notifyObservers(*this, "\nClientul cu numele " + nume + " a fost creat cu succes.\n");
 }
@@ -1565,7 +1565,7 @@ Client& Client::operator=(const Client& obj)
 }
 
 // DESTRUCTOR
-Client::~Client() 
+Client::~Client()
 {
 	for (int i = 0; i < nrVehiculeCumparate; i++)
 	{
@@ -1623,7 +1623,7 @@ istream& operator>>(istream& in, Client& obj)
 		while (true)
 		{
 			cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
-			
+
 			getline(in, aux);
 			if (aux == "")
 				getline(in, aux);
@@ -1655,118 +1655,118 @@ istream& operator>>(istream& in, Client& obj)
 				in >> *v;
 				obj.vehiculeCumparate.push_back(v);
 			}
-			
+
 
 	}
 
 
-		while (true)
-		{
-			string sir;
-			cout << "Plata ramasa: ";
+	while (true)
+	{
+		string sir;
+		cout << "Plata ramasa: ";
+		getline(in, sir);
+		if (sir == "")
 			getline(in, sir);
-			if (sir == "")
-				getline(in, sir);
-			try
-			{
-				obj.plataRamasa = stodExceptionCitire(sir);
-					if (obj.plataRamasa < 0)
-						throw out_of_range("\nPlata ramasa nu poate fi negativa!\n");
-				break;
-			}
-			catch (MyException& e)
-			{
-				cout << e.what();
-			}
-			catch (const out_of_range& e)
-			{
-				cout << e.what();
-			}
-			catch (...)
-			{
-				cout << "\nComanda invalida.\n";
-			}
-		}
-
-		obj.istoricPlati.clear();
-
-		cout << "Istoric plati:\n";
-
-		while (true)
+		try
 		{
-			string sir;
-			cout << "Numar inserari in istoric plati: ";
+			obj.plataRamasa = stodExceptionCitire(sir);
+			if (obj.plataRamasa < 0)
+				throw out_of_range("\nPlata ramasa nu poate fi negativa!\n");
+			break;
+		}
+		catch (MyException& e)
+		{
+			cout << e.what();
+		}
+		catch (const out_of_range& e)
+		{
+			cout << e.what();
+		}
+		catch (...)
+		{
+			cout << "\nComanda invalida.\n";
+		}
+	}
+
+	obj.istoricPlati.clear();
+
+	cout << "Istoric plati:\n";
+
+	while (true)
+	{
+		string sir;
+		cout << "Numar inserari in istoric plati: ";
+		getline(in, sir);
+		if (sir == "")
 			getline(in, sir);
-			if (sir == "")
-				getline(in, sir);
-			try
-			{
-				index = stoiExceptionCitire(sir);
-				if (to_string(index) != sir)
-					throw myEx;
-				else
-					if (index < 0)
-						throw out_of_range("\nNumarul de inserari in istoric plati nu poate fi negativ!\n");
-				break;
-			}
-			catch (MyException& e)
-			{
-				cout << e.what();
-			}
-			catch (const out_of_range& e)
-			{
-				cout << e.what();
-			}
-			catch (...)
-			{
-				cout << "\nComanda invalida.\n";
-			}
-		}
-
-		if (index)
+		try
 		{
-			
-			for (int i = 0; i < index; i++)
-			{
-				cout << "\nInserarea " << i + 1 << "/" << index << ": ";
-				string data;
-				double suma;
+			index = stoiExceptionCitire(sir);
+			if (to_string(index) != sir)
+				throw myEx;
+			else
+				if (index < 0)
+					throw out_of_range("\nNumarul de inserari in istoric plati nu poate fi negativ!\n");
+			break;
+		}
+		catch (MyException& e)
+		{
+			cout << e.what();
+		}
+		catch (const out_of_range& e)
+		{
+			cout << e.what();
+		}
+		catch (...)
+		{
+			cout << "\nComanda invalida.\n";
+		}
+	}
 
-				while (true)
-				{
-					string comandaStr;
-					cout << "\nData: ";
-					in >> data;
-					cout << "Suma: ";
+	if (index)
+	{
+
+		for (int i = 0; i < index; i++)
+		{
+			cout << "\nInserarea " << i + 1 << "/" << index << ": ";
+			string data;
+			double suma;
+
+			while (true)
+			{
+				string comandaStr;
+				cout << "\nData: ";
+				in >> data;
+				cout << "Suma: ";
+				getline(in, comandaStr);
+				if (comandaStr == "")
 					getline(in, comandaStr);
-					if (comandaStr == "")
-						getline(in, comandaStr);
-					try
-					{
-						suma = stodExceptionCitire(comandaStr);
-							if (suma < 0)
-								throw out_of_range("\nSuma platita nu poate fi negativa!\n");
-						break;
-					}
-					catch (MyException& e)
-					{
-						cout << e.what();
-					}
-					catch (const out_of_range& e)
-					{
-						cout << e.what();
-					}
-					catch (...)
-					{
-						cout << "\nComanda invalida.\n";
-					}
+				try
+				{
+					suma = stodExceptionCitire(comandaStr);
+					if (suma < 0)
+						throw out_of_range("\nSuma platita nu poate fi negativa!\n");
+					break;
 				}
-				obj.istoricPlati.insert({ data, suma });
+				catch (MyException& e)
+				{
+					cout << e.what();
+				}
+				catch (const out_of_range& e)
+				{
+					cout << e.what();
+				}
+				catch (...)
+				{
+					cout << "\nComanda invalida.\n";
+				}
 			}
-
+			obj.istoricPlati.insert({ data, suma });
 		}
-		Client::notifyObservers(obj, "\nClientul cu numele " + obj.nume + " a fost creat cu succes.\n");
-		return in;
+
+	}
+	Client::notifyObservers(obj, "\nClientul cu numele " + obj.nume + " a fost creat cu succes.\n");
+	return in;
 }
 
 
@@ -1841,7 +1841,7 @@ Client Client::operator+(Vehicul* obj)
 }
 
 // GET PLATA RAMASA
-double Client::getPlataRamasa() const 
+double Client::getPlataRamasa() const
 {
 	return plataRamasa;
 }
@@ -1901,7 +1901,7 @@ Tranzactie::Tranzactie() : idTranzactie(++nrTranzactii + 1000), client(), vehicu
 
 // CONSTRUCTOR CU PARAMETRI
 Tranzactie::Tranzactie(Client client, Vehicul* vehiculCumparat, double sumaPlatita) :
-	idTranzactie(++nrTranzactii + 2000), client(client), vehiculCumparat(vehiculCumparat), sumaPlatita(sumaPlatita) 
+	idTranzactie(++nrTranzactii + 2000), client(client), vehiculCumparat(vehiculCumparat), sumaPlatita(sumaPlatita)
 {
 	Tranzactie::notifyObservers(*this, "\nTranzactia cu ID-ul " + to_string(idTranzactie) + " a fost creata cu succes.\n");
 }
@@ -1909,7 +1909,7 @@ Tranzactie::Tranzactie(Client client, Vehicul* vehiculCumparat, double sumaPlati
 // COPY CONSTRUCTOR
 Tranzactie::Tranzactie(const Tranzactie& obj) : idTranzactie(obj.idTranzactie), client(obj.client), sumaPlatita(obj.sumaPlatita)
 {
-	
+
 	if (obj.vehiculCumparat)
 	{
 		this->vehiculCumparat = obj.vehiculCumparat->clone();
@@ -1944,7 +1944,7 @@ Tranzactie& Tranzactie::operator=(const Tranzactie& obj)
 }
 
 // DESTRUCTOR
-Tranzactie::~Tranzactie() 
+Tranzactie::~Tranzactie()
 {
 	delete vehiculCumparat;
 }
@@ -1955,7 +1955,7 @@ istream& operator >> (istream& in, Tranzactie& obj)
 	cout << "Clientul:\n";
 	in >> obj.client;
 	cout << "Vehiculul cumparat:\n";
-	
+
 
 	string aux;
 
@@ -2075,12 +2075,12 @@ void Tranzactie::setVehiculCumparat(Vehicul* vehiculCumparat)
 class Singleton
 {
 	static Singleton* instance;
-	
+
 	vector <Tranzactie*> tranzactii;
 	vector <Showroom> showroomuri;
 	vector <Client> clienti;
 	vector <Vehicul*> vehicule;
-	
+
 public:
 
 	// CONSTRUCTOR FARA PARAMETRI
@@ -2095,7 +2095,7 @@ public:
 
 	// GET INSTANCE
 	static Singleton* getInstance();
-	
+
 	// CREARE OBIECTE DIN MENIU
 	template <class T>
 	T creareObject();
@@ -2236,7 +2236,7 @@ void Singleton::modificareObject(Vehicul*& obj)
 			cout << "7. Modificare tip carburant\n";
 			cout << "8. Modificare consum\n";
 			cout << "\n9. Iesire din submeniu\n";
-				
+
 			while (true)
 			{
 				string comandaStr;
@@ -2406,7 +2406,7 @@ void Singleton::modificareObject(Vehicul*& obj)
 					{
 						cout << "\nComanda invalida.\n";
 					}
-					
+
 				}
 
 				break;
@@ -2458,7 +2458,7 @@ void Singleton::modificareObject(Vehicul*& obj)
 					}
 				}
 
-				
+
 				break;
 			}
 			case 9:
@@ -2498,7 +2498,7 @@ void Singleton::modificareObject(Vehicul*& obj)
 				cout << "10. Modificare autonomie electrica (doar pentru Plug-In Hybrid)\n";
 				cout << "11. Modificare timp incarcare (doar pentru Plug-In Hybrid)\n";
 				cout << "\n12. Iesire din submeniu\n";
-				
+
 				while (true)
 				{
 					string comandaStr;
@@ -2740,11 +2740,11 @@ void Singleton::modificareObject(Vehicul*& obj)
 						try
 						{
 							tipHibrid = comandaStr[0];
-							if(comandaStr.size() > 1)
+							if (comandaStr.size() > 1)
 								throw invalid_argument("\nTip hibrid invalid!\n");
 							else
-							if (tipHibrid != 'M' && tipHibrid != 'P')
-								throw invalid_argument("\nTip hibrid invalid!\n");
+								if (tipHibrid != 'M' && tipHibrid != 'P')
+									throw invalid_argument("\nTip hibrid invalid!\n");
 
 							objHibrid->setTipHibrid(tipHibrid);
 							break;
@@ -2812,7 +2812,7 @@ void Singleton::modificareObject(Vehicul*& obj)
 						if (objHibrid->getTipHibrid() == 'P')
 						{
 							double timpIncarcare;
-							
+
 							while (true)
 							{
 								string comandaStr;
@@ -2875,16 +2875,16 @@ void Singleton::modificareObject(Vehicul*& obj)
 // MODIFICARE OBIECTE DIN MENIU
 void Singleton::modificareObject(Client& obj)
 {
-		int k = 1;
-		while (k == 1)
-		{
+	int k = 1;
+	while (k == 1)
+	{
 		int comanda;
 		cout << "\n1. Modificare nume\n";
 		cout << "2. Modificare vehicule cumparate\n";
 		cout << "3. Modificare plata ramasa\n";
 		cout << "4. Inserare informatie in istoric plati\n";
 		cout << "\n5. Iesire din submeniu\n";
-		
+
 		while (true)
 		{
 			string comandaStr;
@@ -2951,7 +2951,7 @@ void Singleton::modificareObject(Client& obj)
 						else
 							if (to_string(index) != comandaStr)
 								throw myEx;
-						
+
 						Vehicul* vehicul = vehiculeObj[index - 1];
 						modificareObject(vehicul);
 
@@ -2980,12 +2980,12 @@ void Singleton::modificareObject(Client& obj)
 			}
 
 			break;
-			
+
 		}
 		case 3:
 		{
 			double plataRamasa;
-			
+
 			while (true)
 			{
 				string comandaStr;
@@ -3018,14 +3018,14 @@ void Singleton::modificareObject(Client& obj)
 					cout << "\nComanda invalida.\n";
 				}
 			}
-		
+
 			break;
 		}
 		case 4:
 		{
 			string data;
 			double suma;
-			
+
 			while (true)
 			{
 				string comandaStr;
@@ -3049,7 +3049,7 @@ void Singleton::modificareObject(Client& obj)
 					{
 						cout << "\nComanda invalida.\n";
 					}
-					
+
 					break;
 				}
 				catch (const invalid_argument& e)
@@ -3084,14 +3084,14 @@ void Singleton::modificareObject(Client& obj)
 
 void Singleton::modificareObject(Showroom& obj)
 {
-		int k = 1;
-		while (k == 1)
-		{
+	int k = 1;
+	while (k == 1)
+	{
 		int comanda;
 		cout << "\n1. Modificare nume\n";
 		cout << "2. Modificare vehicule disponibile\n";
 		cout << "\n3. Iesire din submeniu\n";
-		
+
 		while (true)
 		{
 			string comandaStr;
@@ -3203,7 +3203,7 @@ void Singleton::modificareObject(Tranzactie& obj)
 		cout << "2. Modificare vehicul cumparat\n";
 		cout << "3. Modificare suma platita\n";
 		cout << "\n4. Iesire din submeniu\n";
-		
+
 		while (true)
 		{
 			string comandaStr;
@@ -3313,7 +3313,7 @@ void Singleton::modificareObject(Tranzactie& obj)
 // ADAUGARE OBIECTE DEJA CREATE IN VECTORII MENIULUI
 void Singleton::adaugareObiect(Tranzactie* obj)
 {
-    tranzactii.push_back(obj);
+	tranzactii.push_back(obj);
 }
 
 void Singleton::adaugareObiect(Showroom obj)
@@ -3422,13 +3422,13 @@ void Singleton::startMenu()
 		cout << "4. Intrare in submeniul Tranzactii\n";
 		cout << "5. Generare tranzactie noua, folosind datele din submeniurile Clienti si Showroom\n";
 		cout << "\n6. Iesire din program\n";
-		
+
 		while (true)
 		{
 			string comandaStr;
 			cout << endl << "> ";
 			getline(cin, comandaStr);
-			if(comandaStr == "")
+			if (comandaStr == "")
 				getline(cin, comandaStr);
 			try
 			{
@@ -3473,7 +3473,7 @@ void Singleton::startMenu()
 				cout << "4. Stergere vehicul\n";
 				cout << "5. Modificare model vehicul\n";
 				cout << "\n6. Iesire din submeniul Modele de vehicule\n";
-				
+
 				while (true)
 				{
 					string comandaVehiculStr;
@@ -3513,9 +3513,9 @@ void Singleton::startMenu()
 					Vehicul* v;
 					try
 					{
-						 v = creareObject<Vehicul*>();
-						 adaugareObiect(v);
-						 cout << "\nVehiculul a fost adaugat cu succes.\n";
+						v = creareObject<Vehicul*>();
+						adaugareObiect(v);
+						cout << "\nVehiculul a fost adaugat cu succes.\n";
 					}
 					catch (const invalid_argument& e)
 					{
@@ -3531,6 +3531,26 @@ void Singleton::startMenu()
 					for (Vehicul* v : vehicule)
 					{
 						cout << "\n\nVehiculul " << index++ << ":\n";
+						// dynamic cast fara type_id
+						VehiculCarburant* vehiculCarburant = dynamic_cast<VehiculCarburant*>(v);
+						VehiculHibrid* pointerHibrid = dynamic_cast<VehiculHibrid*>(v);
+						if (pointerHibrid != nullptr)
+						{
+							printObject(*pointerHibrid);
+						}
+						else
+						{
+							VehiculCarburant* pointerCarburant = dynamic_cast<VehiculCarburant*>(v);
+							if (pointerCarburant != nullptr)
+							{
+								printObject(*pointerCarburant);
+							}
+							else
+							{
+								printObject(v);
+							}
+						}
+						/*
 						if(typeid(*v) == typeid(VehiculCarburant))
 							printObject(*(dynamic_cast<VehiculCarburant*>(v)));
 						else
@@ -3538,8 +3558,10 @@ void Singleton::startMenu()
 								printObject(*(dynamic_cast<VehiculHibrid*>(v)));
 							else
 								printObject(v);
+						*/
+
 					}
-					if(vehicule.size() == 0)
+					if (vehicule.size() == 0)
 						cout << "\nNu exista vehicule de afisat.\n";
 					break;
 				}
@@ -3658,7 +3680,7 @@ void Singleton::startMenu()
 
 							}
 						}
-						
+
 					}
 					else
 						cout << "\nNu exista vehicule de sters.\n";
@@ -3682,39 +3704,39 @@ void Singleton::startMenu()
 						}
 
 						int comanda;
-						
+
 						while (true)
 						{
-								string comandaStr;
-								cout << "\nIndexul vehiculului de modificat: ";
+							string comandaStr;
+							cout << "\nIndexul vehiculului de modificat: ";
+							getline(cin, comandaStr);
+							if (comandaStr == "")
 								getline(cin, comandaStr);
-								if (comandaStr == "")
-									getline(cin, comandaStr);
-								try
-								{
-									comanda = stoiException(comandaStr);
-									if (comanda < 1 || comanda > vehicule.size())
-										throw out_of_range("\nNumarul introdus nu corespunde niciunui vehicul!\n");
-									else
-										if (to_string(comanda) != comandaStr)
-											throw myEx;
-									modificareObject(vehicule[comanda - 1]);
-									cout << "\nVehiculul a fost modificat cu succes.\n";
-									break;
-								}
-								catch (const out_of_range& e)
-								{
-									cout << e.what();
-									cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << vehicule.size() << "].\n";
-								}
-								catch (MyException& e)
-								{
-									cout << e.what();
-								}
-								catch (...)
-								{
-									cout << "\nComanda invalida.\n";
-								}
+							try
+							{
+								comanda = stoiException(comandaStr);
+								if (comanda < 1 || comanda > vehicule.size())
+									throw out_of_range("\nNumarul introdus nu corespunde niciunui vehicul!\n");
+								else
+									if (to_string(comanda) != comandaStr)
+										throw myEx;
+								modificareObject(vehicule[comanda - 1]);
+								cout << "\nVehiculul a fost modificat cu succes.\n";
+								break;
+							}
+							catch (const out_of_range& e)
+							{
+								cout << e.what();
+								cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << vehicule.size() << "].\n";
+							}
+							catch (MyException& e)
+							{
+								cout << e.what();
+							}
+							catch (...)
+							{
+								cout << "\nComanda invalida.\n";
+							}
 						}
 					}
 					else
@@ -3901,7 +3923,7 @@ void Singleton::startMenu()
 								cout << "\nComanda invalida.\n";
 							}
 						}
-						
+
 					}
 					else
 						cout << "\nNu exista clienti de modificat.\n";
@@ -3938,7 +3960,7 @@ void Singleton::startMenu()
 				cout << "5. Adaugare vehicul din lista cu modele de vehicule\n";
 				cout << "6. Afisare detaliata a unui showroom - vehicule disponibile, numar de vehicule, valoarea totala a vehiculelor\n";
 				cout << "\n7. Iesire din submeniul Showroom\n";
-				
+
 				while (true)
 				{
 					string comandaShowroomStr;
@@ -3988,7 +4010,7 @@ void Singleton::startMenu()
 						cout << "\n\nShowroomul " << index++ << ":\n";
 						printObject(s);
 					}
-					if(showroomuri.size() == 0)
+					if (showroomuri.size() == 0)
 						cout << "\nNu exista showroomuri de afisat.\n";
 					break;
 				}
@@ -4000,7 +4022,7 @@ void Singleton::startMenu()
 						cout << "\n\nShowroomul " << index++ << ":\n";
 						printObject(s);
 					}
-					if(showroomuri.size() == 0)
+					if (showroomuri.size() == 0)
 						cout << "\nNu exista showroomuri de sters.\n";
 					else
 					{
@@ -4051,7 +4073,7 @@ void Singleton::startMenu()
 						printObject(s);
 					}
 
-					if(showroomuri.size() == 0)
+					if (showroomuri.size() == 0)
 						cout << "\nNu exista showroomuri de modificat.\n";
 					else
 					{
@@ -4093,7 +4115,7 @@ void Singleton::startMenu()
 					}
 					break;
 				}
-				
+
 				case 5:
 				{
 					int index = 1;
@@ -4103,7 +4125,7 @@ void Singleton::startMenu()
 						printObject(s);
 					}
 
-					if(showroomuri.size() == 0)
+					if (showroomuri.size() == 0)
 						cout << "\nNu exista showroomuri la care sa se adauge vehicule.\n";
 					else
 					{
@@ -4238,8 +4260,8 @@ void Singleton::startMenu()
 								else
 									if (to_string(comanda) != comandaStr)
 										throw myEx;
-								
-								
+
+
 								InfoVehicul <Showroom> infoShowroom;
 								infoShowroom.info(showroomuri[comanda - 1]);
 								break;
@@ -4291,7 +4313,7 @@ void Singleton::startMenu()
 				cout << "3. Stergere tranzactie\n";
 				cout << "4. Modificare tranzactie\n";
 				cout << "\n5. Iesire din submeniul Tranzactii\n";
-				
+
 				while (true)
 				{
 					string comandaTranzactiiStr;
@@ -4328,19 +4350,19 @@ void Singleton::startMenu()
 
 				case 1:
 				{
-                    Tranzactie* t = creareObject<Tranzactie*>();
-                    adaugareObiect(t);
+					Tranzactie* t = creareObject<Tranzactie*>();
+					adaugareObiect(t);
 					break;
 				}
 				case 2:
 				{
 					int index = 1;
-					for(Tranzactie* t : tranzactii)
+					for (Tranzactie* t : tranzactii)
 					{
 						cout << "\n\nTranzactia " << index++ << ":\n";
 						printObject(*t);
 					}
-					if(tranzactii.size() == 0)
+					if (tranzactii.size() == 0)
 						cout << "\nNu exista tranzactii de afisat.\n";
 					break;
 				}
@@ -4395,7 +4417,7 @@ void Singleton::startMenu()
 								cout << "\nComanda invalida.\n";
 							}
 						}
-					}					
+					}
 					break;
 				}
 				case 4:
@@ -4470,7 +4492,7 @@ void Singleton::startMenu()
 		}
 		case 5:
 		{
-			
+
 			int indexShowroom = 1;
 			for (Showroom s : showroomuri)
 			{
@@ -4575,83 +4597,83 @@ void Singleton::startMenu()
 
 						while (true)
 						{
-								string comandaStr;
-								cout << "\nIndexul clientului care cumpara vehiculul: ";
+							string comandaStr;
+							cout << "\nIndexul clientului care cumpara vehiculul: ";
+							getline(cin, comandaStr);
+							if (comandaStr == "")
 								getline(cin, comandaStr);
-								if (comandaStr == "")
+							try
+							{
+								indexClient = stoiException(comandaStr);
+								if (indexClient < 1 || indexClient > clienti.size())
+									throw out_of_range("\nNumarul introdus nu corespunde niciunui client!\n");
+								else
+									if (to_string(indexClient) != comandaStr)
+										throw myEx;
+
+								int sumaPlatita;
+								while (true)
+								{
+									string comandaStr;
+									cout << "\nSuma platita: ";
 									getline(cin, comandaStr);
-								try
-								{
-									indexClient = stoiException(comandaStr);
-									if (indexClient < 1 || indexClient > clienti.size())
-										throw out_of_range("\nNumarul introdus nu corespunde niciunui client!\n");
-									else
-										if (to_string(indexClient) != comandaStr)
-											throw myEx;
-									
-									int sumaPlatita;
-									while (true)
-									{
-										string comandaStr;
-										cout << "\nSuma platita: ";
+									if (comandaStr == "")
 										getline(cin, comandaStr);
-										if (comandaStr == "")
-											getline(cin, comandaStr);
-										try
-										{
-											sumaPlatita = stoiException(comandaStr);
-											if (sumaPlatita < 0)
-												throw out_of_range("\nSuma platita nu poate fi negativa!\n");
-											else
-												if (to_string(sumaPlatita) != comandaStr)
-													throw myEx;
+									try
+									{
+										sumaPlatita = stoiException(comandaStr);
+										if (sumaPlatita < 0)
+											throw out_of_range("\nSuma platita nu poate fi negativa!\n");
+										else
+											if (to_string(sumaPlatita) != comandaStr)
+												throw myEx;
 
-											Vehicul* auxVehicul;
-											list<Vehicul*>::iterator it = vehiculeObj.begin();
-											advance(it, indexVehicul - 1);
-											auxVehicul = *it;
-											Tranzactie* t = new Tranzactie(clienti[indexClient - 1], auxVehicul->clone(), sumaPlatita);
-											Vehicul* auxVehicul2;
-											list <Vehicul*>::iterator it2 = vehiculeObj.begin();
-											advance(it2, indexVehicul - 1);
-											auxVehicul2 = *it2;
-											clienti[indexClient - 1] = clienti[indexClient - 1] + auxVehicul2->clone();
-											showroomuri[indexShowroom - 1] = showroomuri[indexShowroom - 1] - (indexVehicul - 1);
-											adaugareObiect(t);
-											clienti[indexClient - 1].setPlataRamasa(clienti[indexClient - 1].getPlataRamasa() + sumaPlatita);
+										Vehicul* auxVehicul;
+										list<Vehicul*>::iterator it = vehiculeObj.begin();
+										advance(it, indexVehicul - 1);
+										auxVehicul = *it;
+										Tranzactie* t = new Tranzactie(clienti[indexClient - 1], auxVehicul->clone(), sumaPlatita);
+										Vehicul* auxVehicul2;
+										list <Vehicul*>::iterator it2 = vehiculeObj.begin();
+										advance(it2, indexVehicul - 1);
+										auxVehicul2 = *it2;
+										clienti[indexClient - 1] = clienti[indexClient - 1] + auxVehicul2->clone();
+										showroomuri[indexShowroom - 1] = showroomuri[indexShowroom - 1] - (indexVehicul - 1);
+										adaugareObiect(t);
+										clienti[indexClient - 1].setPlataRamasa(clienti[indexClient - 1].getPlataRamasa() + sumaPlatita);
 
-											break;
-										}
-										catch (const out_of_range& e)
-										{
-											cout << e.what();
-										}
-										catch (MyException& e)
-										{
-											cout << e.what();
-										}
-										catch (...)
-										{
-											cout << "\nComanda invalida.\n";
-										}
+										break;
 									}
+									catch (const out_of_range& e)
+									{
+										cout << e.what();
+									}
+									catch (MyException& e)
+									{
+										cout << e.what();
+									}
+									catch (...)
+									{
+										cout << "\nComanda invalida.\n";
+									}
+								}
 
 
-									break;
-								}
-								catch (const out_of_range& e)
-								{
-									cout << e.what();
-									cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << clienti.size() << "].\n";
-								}
-								catch (MyException& e)
-								{
-									cout << e.what();
-								}
-								catch (...)
-								{
-									cout << "\nComanda invalida.\n";
-								}
+								break;
+							}
+							catch (const out_of_range& e)
+							{
+								cout << e.what();
+								cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << clienti.size() << "].\n";
+							}
+							catch (MyException& e)
+							{
+								cout << e.what();
+							}
+							catch (...)
+							{
+								cout << "\nComanda invalida.\n";
+							}
 						}
 					}
 					else
@@ -4659,7 +4681,7 @@ void Singleton::startMenu()
 						cout << "\nNu exista vreun client care sa ia parte la procesul de vanzare.\n";
 						break;
 					}
-					
+
 				}
 				else
 				{
@@ -4672,7 +4694,7 @@ void Singleton::startMenu()
 				cout << "\nNu exista showroomuri, astfel nu se poate genera o tranzactie.\n";
 				break;
 			}
-					
+
 
 			break;
 		}
@@ -4718,12 +4740,24 @@ int main()
 	dotari2.insert("Aer conditionat");
 	dotari2.insert("Servodirectie");
 	dotari2.insert("Geamuri electrice");
+	map<string, int> istoricRulaj3;
+	istoricRulaj3["01-01-2019"] = 30000;
+	istoricRulaj3["01-01-2020"] = 50000;
+	set<string> dotari3;
+	dotari3.insert("Aer conditionat");
+	dotari3.insert("Servodirectie");
+	dotari3.insert("Geamuri electrice");
+	dotari3.insert("Navigatie");
+	dotari3.insert("Senzori parcare");
+	dotari3.insert("Senzori lumini");
 	VehiculCarburant v1("Dacia", "Logan", 2016, 2, istoricRulaj1, 2, dotari1, 6000, "Benzina", 12.6);
 	VehiculHibrid v2("Toyota", "Prius", 2020, 2, istoricRulaj2, 3, dotari2, 12000, "Benzina", 7.5, 'P', 50, 8);
+	VehiculCarburant v3("Dacia", "Duster", 2016, 2, istoricRulaj3, 2, dotari3, 11000, "Benzina", 11.6);
 	Vehicul* pv1 = v1.clone();
 	Vehicul* pv2 = v2.clone();
+	Vehicul* pv3 = v3.clone();
 
-	Client c1("Popescu Ion", 0, {}, 0, {{"01-01-2024", 5000}, {"01-02-2024", 5000}});
+	Client c1("Popescu Ion", 0, {}, 0, { {"01-01-2024", 5000}, {"01-02-2024", 5000} });
 	Client c2("Marin Gheorghe", 0, {}, 0, { {"01-01-2024", 1000}, {"01-02-2024", 1000} });
 
 	Showroom s1("Showroom masini", 0, {});
@@ -4740,6 +4774,7 @@ int main()
 
 	s->adaugareObiect(pv1);
 	s->adaugareObiect(pv2);
+	s->adaugareObiect(pv3);
 	s->adaugareObiect(c1);
 	s->adaugareObiect(c2);
 	s->adaugareObiect(s1);
