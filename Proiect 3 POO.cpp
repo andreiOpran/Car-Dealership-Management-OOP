@@ -3422,78 +3422,209 @@ void Singleton::startMenu()
 		}
 		case 5:
 		{
+			
 			int indexShowroom = 1;
 			for (Showroom s : showroomuri)
 			{
 				cout << "\n\nShowroomul " << indexShowroom++ << ":\n";
 				printObject(s);
 			}
-			if (showroomuri.size() == 0)
+			if (showroomuri.size())
 			{
-				cout << "\nNu exista showroomuri de afisat.\n";
-				break;
-			}
-			cout << "\nIndexul showroomului: ";
-			cin >> indexShowroom;
+				indexShowroom = 0;
+				while (true)
+				{
+					string comandaStr;
+					cout << "\nIndexul showroomului: ";
+					getline(cin, comandaStr);
+					if (comandaStr == "")
+						getline(cin, comandaStr);
+					try
+					{
+						indexShowroom = stoiException(comandaStr);
+						if (indexShowroom < 1 || indexShowroom > showroomuri.size())
+							throw out_of_range("\nNumarul introdus nu corespunde niciunui showroom!\n");
+						else
+							if (to_string(indexShowroom) != comandaStr)
+								throw myEx;
+						break;
+					}
+					catch (const out_of_range& e)
+					{
+						cout << e.what();
+						cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << showroomuri.size() << "].\n";
+					}
+					catch (MyException& e)
+					{
+						cout << e.what();
+					}
+					catch (...)
+					{
+						cout << "\nComanda invalida.\n";
+					}
+				}
 
-			int indexVehicul = 1;
-			/*list<Vehicul*> vehiculeObj = showroomuri[indexShowroom - 1].getVehicule();
-			for (Vehicul* v : vehiculeObj)
-			{
-				cout << "\n\nVehiculul " << indexVehicul++ << ":\n";
-				if (typeid(*v) == typeid(VehiculCarburant))
-					printObject(*(dynamic_cast<VehiculCarburant*>(v)));
-				else
-					if (typeid(*v) == typeid(VehiculHibrid))
-						printObject(*(dynamic_cast<VehiculHibrid*>(v)));
+				list <Vehicul*> vehiculeObj = showroomuri[indexShowroom - 1].getVehicule();
+				int indexVehicul = 1;
+				for (Vehicul* v : vehiculeObj)
+				{
+					cout << "\n\nVehiculul " << indexVehicul++ << ":\n";
+					if (typeid(*v) == typeid(VehiculCarburant))
+						printObject(*(dynamic_cast<VehiculCarburant*>(v)));
 					else
-						printObject(v);
-			}*/
-			list<Vehicul*> vehiculeObj = showroomuri[indexShowroom - 1].getVehicule();
-			afisareVehicule(showroomuri[indexShowroom - 1]);
-			if (vehiculeObj.size() == 0)
+						if (typeid(*v) == typeid(VehiculHibrid))
+							printObject(*(dynamic_cast<VehiculHibrid*>(v)));
+						else
+							printObject(v);
+				}
+
+				if (vehiculeObj.size())
+				{
+
+					indexVehicul = 0;
+					while (true)
+					{
+						string comandaStr;
+						cout << "\nIndexul vehiculului de cumparat: ";
+						getline(cin, comandaStr);
+						if (comandaStr == "")
+							getline(cin, comandaStr);
+						try
+						{
+							indexVehicul = stoiException(comandaStr);
+							if (indexVehicul < 1 || indexVehicul > vehiculeObj.size())
+								throw out_of_range("\nNumarul introdus nu corespunde niciunui vehicul!\n");
+							else
+								if (to_string(indexVehicul) != comandaStr)
+									throw myEx;
+							break;
+						}
+						catch (const out_of_range& e)
+						{
+							cout << e.what();
+							cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << vehiculeObj.size() << "].\n";
+						}
+						catch (MyException& e)
+						{
+							cout << e.what();
+						}
+						catch (...)
+						{
+							cout << "\nComanda invalida.\n";
+						}
+					}
+
+					int indexClient = 1;
+					for (Client c : clienti)
+					{
+						cout << "\n\nClientul " << indexClient++ << ":\n";
+						printObject(c);
+					}
+
+					if (clienti.size())
+					{
+						indexClient = 0;
+
+						while (true)
+						{
+								string comandaStr;
+								cout << "\nIndexul clientului care cumpara vehiculul: ";
+								getline(cin, comandaStr);
+								if (comandaStr == "")
+									getline(cin, comandaStr);
+								try
+								{
+									indexClient = stoiException(comandaStr);
+									if (indexClient < 1 || indexClient > clienti.size())
+										throw out_of_range("\nNumarul introdus nu corespunde niciunui client!\n");
+									else
+										if (to_string(indexClient) != comandaStr)
+											throw myEx;
+									
+									int sumaPlatita;
+									while (true)
+									{
+										string comandaStr;
+										cout << "\nSuma platita: ";
+										getline(cin, comandaStr);
+										if (comandaStr == "")
+											getline(cin, comandaStr);
+										try
+										{
+											sumaPlatita = stoiException(comandaStr);
+											if (sumaPlatita < 0)
+												throw out_of_range("\nSuma platita nu poate fi negativa!\n");
+											else
+												if (to_string(sumaPlatita) != comandaStr)
+													throw myEx;
+
+											Vehicul* auxVehicul;
+											list<Vehicul*>::iterator it = vehiculeObj.begin();
+											advance(it, indexVehicul - 1);
+											auxVehicul = *it;
+											Tranzactie* t = new Tranzactie(clienti[indexClient - 1], auxVehicul->clone(), sumaPlatita);
+											Vehicul* auxVehicul2;
+											list <Vehicul*>::iterator it2 = vehiculeObj.begin();
+											advance(it2, indexVehicul - 1);
+											auxVehicul2 = *it2;
+											clienti[indexClient - 1] = clienti[indexClient - 1] + auxVehicul2->clone();
+											showroomuri[indexShowroom - 1] = showroomuri[indexShowroom - 1] - (indexVehicul - 1);
+											adaugareObiect(t);
+											clienti[indexClient - 1].setPlataRamasa(clienti[indexClient - 1].getPlataRamasa() + sumaPlatita);
+
+											break;
+										}
+										catch (const out_of_range& e)
+										{
+											cout << e.what();
+										}
+										catch (MyException& e)
+										{
+											cout << e.what();
+										}
+										catch (...)
+										{
+											cout << "\nComanda invalida.\n";
+										}
+									}
+
+
+									break;
+								}
+								catch (const out_of_range& e)
+								{
+									cout << e.what();
+									cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << clienti.size() << "].\n";
+								}
+								catch (MyException& e)
+								{
+									cout << e.what();
+								}
+								catch (...)
+								{
+									cout << "\nComanda invalida.\n";
+								}
+						}
+					}
+					else
+					{
+						cout << "\nNu exista vreun client care sa ia parte la procesul de vanzare.\n";
+						break;
+					}
+					
+				}
+				else
+				{
+					cout << "\nShowroom-ul nu are vehicule disponibile.\n";
+					break;
+				}
+			}
+			else
 			{
-				cout << "\nNu exista vehicule de afisat.\n";
+				cout << "\nNu exista showroomuri, astfel nu se poate genera o tranzactie.\n";
 				break;
 			}
-			cout << "\nIndexul vehiculului: ";
-			cin >> indexVehicul;
-
-			int indexClient = 1;
-			for (Client c : clienti)
-			{
-				cout << "\n\nClientul " << indexClient++ << ":\n";
-				printObject(c);
-			}
-			if (clienti.size() == 0)
-			{
-				cout << "\nNu exista clienti de afisat.\n";
-				break;
-			}
-			cout << "\nIndexul clientului: ";
-			cin >> indexClient;
-
-			double sumaPlatita;
-			cout << "\nSuma platita: ";
-			cin >> sumaPlatita;
-
-			Vehicul* auxVehicul;
-			list<Vehicul*>::iterator it = vehiculeObj.begin();
-			std::advance(it, indexVehicul - 1);
-			auxVehicul = *it;
-			Tranzactie* t = new Tranzactie(clienti[indexClient - 1], auxVehicul->clone(), sumaPlatita);
-			Vehicul* auxVehicul2;
-			list <Vehicul*>::iterator it2 = vehiculeObj.begin();
-			std::advance(it2, indexVehicul - 1);
-			auxVehicul2 = *it2;
-			clienti[indexClient - 1] = clienti[indexClient - 1] + auxVehicul2->clone();
-			showroomuri[indexShowroom - 1] = showroomuri[indexShowroom - 1] - (indexVehicul - 1);
-
-			adaugareObiect(t);
-
-			clienti[indexClient - 1].setPlataRamasa(clienti[indexClient - 1].getPlataRamasa() + sumaPlatita);
-
-			///cout << "\nTranzactia a fost adaugata cu succes.\n";
+					
 
 			break;
 		}
