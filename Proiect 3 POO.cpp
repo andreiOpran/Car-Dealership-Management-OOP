@@ -2076,6 +2076,7 @@ void Singleton::modificareObject(Vehicul*& obj)
 						cout << e.what();
 					}
 					catch (const out_of_range& e)
+
 					{
 						cout << e.what();
 					}
@@ -2527,7 +2528,55 @@ void Singleton::modificareObject(Client& obj)
 		}
 		case 2:
 		{
-			int index;
+			vector<Vehicul*> vehiculeObj = obj.getVehicule();
+			if (vehiculeObj.size())
+			{
+				int index;
+
+				while (true)
+				{
+					string comandaStr;
+					cout << "Indexul vehiculului cumparat de modificat: ";
+					getline(cin, comandaStr);
+					if (comandaStr == "")
+						getline(cin, comandaStr);
+					try
+					{
+						index = stoiException(comandaStr);
+						if (index - 1 < 0 || index - 1 >= vehiculeObj.size())
+							throw out_of_range("\nIndex invalid!\n");
+						else
+							if (to_string(index) != comandaStr)
+								throw myEx;
+						
+						Vehicul* vehicul = vehiculeObj[index - 1];
+						modificareObject(vehicul);
+
+
+						break;
+					}
+					catch (const out_of_range& e)
+					{
+						cout << e.what();
+						cout << "Trebuie sa introduci un index care apartine intervalului [1, " << vehiculeObj.size() << "].\n\n";
+					}
+					catch (MyException& e)
+					{
+						cout << e.what();
+					}
+					catch (...)
+					{
+						cout << "\nComanda invalida.\n";
+					}
+				}
+			}
+			else
+			{
+				cout << "\nClientul nu are vehicule cumparate.\n";
+				break;
+			}
+
+			/*int index;
 			cout << "Indexul vehiculului cumparat de modificat: ";
 			cin >> index;
 			
@@ -2541,25 +2590,86 @@ void Singleton::modificareObject(Client& obj)
 			{
 				Vehicul* vehicul = vehiculeObj[index - 1];
 				modificareObject(vehicul);
-			}
+			}*/
 			break;
 			
 		}
 		case 3:
 		{
 			double plataRamasa;
-			cout << "Plata ramasa noua: ";
-			cin >> plataRamasa;
-			obj.setPlataRamasa(plataRamasa);
+			
+			while (true)
+			{
+				string comandaStr;
+				cout << "Plata ramasa noua: ";
+				getline(cin, comandaStr);
+				if (comandaStr == "")
+					getline(cin, comandaStr);
+				try
+				{
+					plataRamasa = stodException(comandaStr);
+					if (plataRamasa < 0)
+						throw out_of_range("\nPlata ramasa nu poate fi negativa!\n");
+					obj.setPlataRamasa(plataRamasa);
+					break;
+				}
+				catch (const invalid_argument& e)
+				{
+					cout << e.what();
+				}
+				catch (MyException& e)
+				{
+					cout << e.what();
+				}
+				catch (const out_of_range& e)
+				{
+					cout << e.what();
+				}
+				catch (...)
+				{
+					cout << "\nComanda invalida.\n";
+				}
+			}
+		
 			break;
 		}
 		case 4:
 		{
 			string data;
 			double suma;
-			cout << "Data si suma platita, separate printr-un spatiu: ";
+			
+			while (true)
+			{
+				string comandaStr;
+				cout << "\nData: ";
+				cin >> data;
+				cout << "\nSuma platita: ";
+				getline(cin, comandaStr);
+				if (comandaStr == "")
+					getline(cin, comandaStr);
+				try
+				{
+					suma = stodException(comandaStr);
+					obj.inserareIstoricPlati(data, suma);
+					break;
+				}
+				catch (const invalid_argument& e)
+				{
+					cout << e.what();
+				}
+				catch (MyException& e)
+				{
+					cout << e.what();
+				}
+				catch (...)
+				{
+					cout << "\nComanda invalida.\n";
+				}
+			}
+			
+			/*cout << "Data si suma platita, separate printr-un spatiu: ";
 			cin >> data >> suma;
-			obj.inserareIstoricPlati(data, suma);
+			obj.inserareIstoricPlati(data, suma);*/
 			break;
 		}
 		case 5:
