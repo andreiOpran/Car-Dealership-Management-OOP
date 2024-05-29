@@ -2512,8 +2512,39 @@ void Singleton::modificareObject(Client& obj)
 		cout << "3. Modificare plata ramasa\n";
 		cout << "4. Inserare informatie in istoric plati\n";
 		cout << "\n5. Iesire din submeniu\n";
-		cout << endl << "> ";
-		cin >> comanda;
+		
+		while (true)
+		{
+			string comandaStr;
+			cout << endl << "> ";
+			getline(cin, comandaStr);
+			if (comandaStr == "")
+				getline(cin, comandaStr);
+			try
+			{
+				comanda = stoiException(comandaStr);
+				if (comanda < 1 || comanda > 5)
+					throw out_of_range("\nNumarul introdus nu corespunde niciunei comenzi!\n");
+				else
+					if (to_string(comanda) != comandaStr)
+						throw myEx;
+				break;
+			}
+			catch (const out_of_range& e)
+			{
+				cout << e.what();
+			}
+			catch (MyException& e)
+			{
+				cout << e.what();
+			}
+			catch (...)
+			{
+				cout << "\nComanda invalida.\n";
+			}
+		}
+
+
 		switch (comanda)
 		{
 
@@ -2666,10 +2697,6 @@ void Singleton::modificareObject(Client& obj)
 					cout << "\nComanda invalida.\n";
 				}
 			}
-			
-			/*cout << "Data si suma platita, separate printr-un spatiu: ";
-			cin >> data >> suma;
-			obj.inserareIstoricPlati(data, suma);*/
 			break;
 		}
 		case 5:
@@ -2746,8 +2773,38 @@ void Singleton::modificareObject(Tranzactie& obj)
 		cout << "2. Modificare vehicul cumparat\n";
 		cout << "3. Modificare suma platita\n";
 		cout << "\n4. Iesire din submeniu\n";
-		cout << endl << "> ";
-		cin >> comanda;
+		
+		while (true)
+		{
+			string comandaStr;
+			cout << endl << "> ";
+			getline(cin, comandaStr);
+			if (comandaStr == "")
+				getline(cin, comandaStr);
+			try
+			{
+				comanda = stoiException(comandaStr);
+				if (comanda < 1 || comanda > 4)
+					throw out_of_range("\nNumarul introdus nu corespunde niciunei comenzi!\n");
+				else
+					if (to_string(comanda) != comandaStr)
+						throw myEx;
+				break;
+			}
+			catch (const out_of_range& e)
+			{
+				cout << e.what();
+			}
+			catch (MyException& e)
+			{
+				cout << e.what();
+			}
+			catch (...)
+			{
+				cout << "\nComanda invalida.\n";
+			}
+		}
+
 		switch (comanda)
 		{
 
@@ -2763,8 +2820,8 @@ void Singleton::modificareObject(Tranzactie& obj)
 		{
 			Vehicul* aux;
 			aux = obj.getVehiculCumparat();
-			cout << typeid(*obj.getVehiculCumparat()).name();
-			cout << *aux;
+			/*cout << typeid(*obj.getVehiculCumparat()).name();
+			cout << *aux;*/
 			modificareObject(aux);
 
 			obj.setVehiculCumparat(aux);
@@ -2773,9 +2830,39 @@ void Singleton::modificareObject(Tranzactie& obj)
 		case 3:
 		{
 			double sumaPlatita;
-			cout << "Suma platita noua: ";
-			cin >> sumaPlatita;
-			obj.setSumaPlatita(sumaPlatita);
+
+			while (true)
+			{
+				string comandaStr;
+				cout << "Suma platita noua: ";
+				getline(cin, comandaStr);
+				if (comandaStr == "")
+					getline(cin, comandaStr);
+				try
+				{
+					sumaPlatita = stodException(comandaStr);
+					if (sumaPlatita < 0)
+						throw out_of_range("\nSuma platita nu poate fi negativa!\n");
+					obj.setSumaPlatita(sumaPlatita);
+					break;
+				}
+				catch (const invalid_argument& e)
+				{
+					cout << e.what();
+				}
+				catch (MyException& e)
+				{
+					cout << e.what();
+				}
+				catch (const out_of_range& e)
+				{
+					cout << e.what();
+				}
+				catch (...)
+				{
+					cout << "\nComanda invalida.\n";
+				}
+			}
 			break;
 		}
 		case 4:
