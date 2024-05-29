@@ -1658,81 +1658,226 @@ istream& operator>>(istream& in, Client& obj)
 
 	cout << "Nume: ";
 	getline(in, obj.nume);
-	cout << "Numar vehicule cumparate: ";
-	in >> obj.nrVehiculeCumparate;
+	/*cout << "Numar vehicule cumparate: ";
+	in >> obj.nrVehiculeCumparate;*/
+
+	while (true)
+	{
+		string sir;
+		cout << "Numar vehicule cumparate: ";
+		getline(in, sir);
+		if (sir == "")
+			getline(in, sir);
+		try
+		{
+			obj.nrVehiculeCumparate = stoiExceptionCitire(sir);
+			if (to_string(obj.nrVehiculeCumparate) != sir)
+				throw myEx;
+			else
+				if (obj.nrVehiculeCumparate < 0)
+					throw out_of_range("\nNumarul de vehicule cumparate nu poate fi negativ!\n");
+			break;
+		}
+		catch (MyException& e)
+		{
+			cout << e.what();
+		}
+		catch (const out_of_range& e)
+		{
+			cout << e.what();
+		}
+		catch (...)
+		{
+			cout << "\nComanda invalida.\n";
+		}
+	}
+
 	obj.vehiculeCumparate.clear();
 	for (int i = 0; i < obj.nrVehiculeCumparate; i++)
 	{
 		cout << "\nVehiculul " << i + 1 << ":\n";
-		cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
-		string tip;
-		cin.get();
-		getline(in, tip);
-		if (tip == "C")
+		
+		//string tip;
+		//cin.get();
+		//getline(in, tip);
+		//if (tip == "C")
+		//{
+		//	Vehicul* v = new VehiculCarburant();
+		//	in >> *v;
+		//	obj.vehiculeCumparate.push_back(v);
+		//}
+		//else
+		//	if (tip == "H")
+		//	{
+		//		Vehicul* v = new VehiculHibrid();
+		//		in >> *v;
+		//		obj.vehiculeCumparate.push_back(v);
+		//	}
+		//	else
+		//	{
+		//		// ?
+		//		throw "Tip vehicul invalid!";
+		//	}
+		string aux;
+
+		while (true)
+		{
+			cout << "Tipul vehiculului (C - carburant, H - hibrid): ";
+			
+			getline(in, aux);
+			if (aux == "")
+				getline(in, aux);
+			try
+			{
+				if (aux != "C" && aux != "H")
+					throw myEx;
+				break;
+			}
+			catch (MyException& e)
+			{
+				cout << e.what();
+			}
+			catch (...)
+			{
+				cout << "\nComanda invalida.\n";
+			}
+		}
+		if (aux == "C")
 		{
 			Vehicul* v = new VehiculCarburant();
 			in >> *v;
 			obj.vehiculeCumparate.push_back(v);
 		}
 		else
-			if (tip == "H")
+			if (aux == "H")
 			{
 				Vehicul* v = new VehiculHibrid();
 				in >> *v;
 				obj.vehiculeCumparate.push_back(v);
 			}
-			else
-			{
-				// ?
-				throw "Tip vehicul invalid!";
-			}
+			
+
 	}
 
-		//	bool introducereTip = false;
-		//	while (introducereTip == false)
-		//	{
-		//		getline(in, tip);
-		//		if (tip == "C")
-		//		{
-		//			Vehicul* v = new VehiculCarburant();
-		//			in >> *v;
-		//			obj.vehiculeCumparate.push_back(v);
-		//			introducereTip = true;
-		//		}
-		//		else
-		//			if (tip == "H")
-		//			{
-		//				Vehicul* v = new VehiculHibrid();
-		//				in >> *v;
-		//				obj.vehiculeCumparate.push_back(v);
-		//				introducereTip = true;
-		//			}
-		//			else
-		//			{
-		//				//throw "Tip vehicul invalid!";
-		//				cout << "\nTip vehicul invalid! Introduceti din nou tipul vehiculului (C - carburant, H - hibrid): ";
-		//			}
-		//	}
-		//}
 
-		cout << "Plata ramasa: ";
-		in >> obj.plataRamasa;
+
+		/*cout << "Plata ramasa: ";
+		in >> obj.plataRamasa;*/
+
+		while (true)
+		{
+			string sir;
+			cout << "Plata ramasa: ";
+			getline(in, sir);
+			if (sir == "")
+				getline(in, sir);
+			try
+			{
+				obj.plataRamasa = stodExceptionCitire(sir);
+					if (obj.plataRamasa < 0)
+						throw out_of_range("\nPlata ramasa nu poate fi negativa!\n");
+				break;
+			}
+			catch (MyException& e)
+			{
+				cout << e.what();
+			}
+			catch (const out_of_range& e)
+			{
+				cout << e.what();
+			}
+			catch (...)
+			{
+				cout << "\nComanda invalida.\n";
+			}
+		}
 
 		obj.istoricPlati.clear();
 
 		cout << "Istoric plati:\n";
-		cout << "Numar inserari in istoric plati: ";
-		in >> index;
+		/*cout << "Numar inserari in istoric plati: ";
+		in >> index;*/
+
+		while (true)
+		{
+			string sir;
+			cout << "Numar inserari in istoric plati: ";
+			getline(in, sir);
+			if (sir == "")
+				getline(in, sir);
+			try
+			{
+				index = stoiExceptionCitire(sir);
+				if (to_string(index) != sir)
+					throw myEx;
+				else
+					if (index < 0)
+						throw out_of_range("\nNumarul de inserari in istoric plati nu poate fi negativ!\n");
+				break;
+			}
+			catch (MyException& e)
+			{
+				cout << e.what();
+			}
+			catch (const out_of_range& e)
+			{
+				cout << e.what();
+			}
+			catch (...)
+			{
+				cout << "\nComanda invalida.\n";
+			}
+		}
+
 		if (index)
 		{
-			cout << "Data si suma platita, separate printr-un spatiu:\n";
+			/*cout << "Data si suma platita, separate printr-un spatiu:\n";
 			string data;
 			double suma;
 			for (int i = 0; i < index; i++)
 			{
 				in >> data >> suma;
 				obj.istoricPlati.insert({ data, suma });
+			}*/
+			
+			for (int i = 0; i < index; i++)
+			{
+				cout << "\nInserarea " << i + 1 << "/" << index << ": ";
+				string data;
+				double suma;
+
+				while (true)
+				{
+					string comandaStr;
+					cout << "\nData: ";
+					in >> data;
+					cout << "Suma: ";
+					getline(in, comandaStr);
+					if (comandaStr == "")
+						getline(in, comandaStr);
+					try
+					{
+						suma = stodExceptionCitire(comandaStr);
+							if (suma < 0)
+								throw out_of_range("\nSuma platita nu poate fi negativa!\n");
+						break;
+					}
+					catch (MyException& e)
+					{
+						cout << e.what();
+					}
+					catch (const out_of_range& e)
+					{
+						cout << e.what();
+					}
+					catch (...)
+					{
+						cout << "\nComanda invalida.\n";
+					}
+				}
+				obj.istoricPlati.insert({ data, suma });
 			}
+
 		}
 		Client::notifyObservers(obj, "\nClientul cu numele " + obj.nume + " a fost creat cu succes.\n");
 		return in;
