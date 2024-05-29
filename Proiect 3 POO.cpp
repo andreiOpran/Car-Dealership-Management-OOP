@@ -8,11 +8,13 @@ Platform toolset: Visual Studio 2022 (v143)
 #include <iostream>
 #include <cstring>
 #include <string>
+#include <string>
 #include <typeinfo>
 #include <vector>
 #include <set>
 #include <list>
 #include <map>
+#include <sstream>
 
 using namespace std;
 
@@ -1765,6 +1767,9 @@ public:
 	// FUNCTIA STOIEXCEPTION
 	int stoiException(const string&);
 
+	// FUNCTIA STODEXCEPTION
+	double stodException(const string&);
+
 	// START MENU
 	void startMenu();
 };
@@ -1859,8 +1864,38 @@ void Singleton::modificareObject(Vehicul*& obj)
 			cout << "7. Modificare tip carburant\n";
 			cout << "8. Modificare consum\n";
 			cout << "\n9. Iesire din submeniu\n";
+				
+			while (true)
+			{
+				string comandaStr;
 				cout << endl << "> ";
-			cin >> comanda;
+				getline(cin, comandaStr);
+				if (comandaStr == "")
+					getline(cin, comandaStr);
+				try
+				{
+					comanda = stoiException(comandaStr);
+					if (comanda < 1 || comanda > 9)
+						throw out_of_range("\nNumarul introdus nu corespunde niciunei comenzi!\n");
+					else
+						if (to_string(comanda) != comandaStr)
+							throw myEx;
+					break;
+				}
+				catch (const out_of_range& e)
+				{
+					cout << e.what();
+				}
+				catch (MyException& e)
+				{
+					cout << e.what();
+				}
+				catch (...)
+				{
+					cout << "\nComanda invalida.\n";
+				}
+			}
+
 			switch (comanda)
 			{
 
@@ -1885,18 +1920,74 @@ void Singleton::modificareObject(Vehicul*& obj)
 			case 3:
 			{
 				int anFabricatie;
-				cout << "An fabricatie nou: ";
-				cin >> anFabricatie;
-				objCarburant->setAnFabricatie(anFabricatie);
+
+				while (true)
+				{
+					string comandaStr;
+					cout << "\nAn fabricatie nou: ";
+					getline(cin, comandaStr);
+					if (comandaStr == "")
+						getline(cin, comandaStr);
+					try
+					{
+						anFabricatie = stoiException(comandaStr);
+						if (anFabricatie < 1700)
+							throw out_of_range("\nAnul de fabricatie nu poate fi mai mic ca 1700!\n");
+						else
+							if (to_string(anFabricatie) != comandaStr)
+								throw myEx;
+
+						objCarburant->setAnFabricatie(anFabricatie);
+						break;
+					}
+					catch (const out_of_range& e)
+					{
+						cout << e.what();
+					}
+					catch (MyException& e)
+					{
+						cout << e.what();
+					}
+					catch (...)
+					{
+						cout << "\nComanda invalida.\n";
+					}
+				}
 				break;
 			}
 			case 4:
 			{
 				string data;
 				double rulaj;
-				cout << "Data si rulajul, separate printr-un spatiu: ";
-				cin >> data >> rulaj;
-				objCarburant->inserareIstoricRulaj(data, rulaj);
+
+				while (true)
+				{
+					string comandaStr;
+					cout << "\nData: ";
+					cin >> data;
+					cout << "\nRulaj: ";
+					getline(cin, comandaStr);
+					if (comandaStr == "")
+						getline(cin, comandaStr);
+					try
+					{
+						rulaj = stodException(comandaStr);
+						objCarburant->inserareIstoricRulaj(data, rulaj);
+						break;
+					}
+					catch (const invalid_argument& e)
+					{
+						cout << e.what();
+					}
+					catch (MyException& e)
+					{
+						cout << e.what();
+					}
+					catch (...)
+					{
+						cout << "\nComanda invalida.\n";
+					}
+				}
 				break;
 			}
 			case 5:
@@ -1911,9 +2002,41 @@ void Singleton::modificareObject(Vehicul*& obj)
 			case 6:
 			{
 				double pret;
-				cout << "Pret nou: ";
-				cin >> pret;
-				objCarburant->setPret(pret);
+
+				while (true)
+				{
+					string comandaStr;
+					cout << "\nPret nou: ";
+					getline(cin, comandaStr);
+					if (comandaStr == "")
+						getline(cin, comandaStr);
+					try
+					{
+						pret = stodException(comandaStr);
+						if (pret < 0)
+							throw out_of_range("\nPretul nu poate fi negativ!\n");
+						objCarburant->setPret(pret);
+						break;
+					}
+					catch (const invalid_argument& e)
+					{
+						cout << e.what();
+					}
+					catch (MyException& e)
+					{
+						cout << e.what();
+					}
+					catch (const out_of_range& e)
+					{
+						cout << e.what();
+					}
+					catch (...)
+					{
+						cout << "\nComanda invalida.\n";
+					}
+					
+				}
+
 				break;
 			}
 			case 7:
@@ -1928,9 +2051,41 @@ void Singleton::modificareObject(Vehicul*& obj)
 			case 8:
 			{
 				double consum;
-				cout << "Consum nou: ";
-				cin >> consum;
-				objCarburant->setConsum(consum);
+
+				while (true)
+				{
+					string comandaStr;
+					cout << "\nConsum nou: ";
+					getline(cin, comandaStr);
+					if (comandaStr == "")
+						getline(cin, comandaStr);
+					try
+					{
+						consum = stodException(comandaStr);
+						if (consum < 0)
+							throw out_of_range("\nConsumul nu poate fi negativ!\n");
+						objCarburant->setConsum(consum);
+						break;
+					}
+					catch (const invalid_argument& e)
+					{
+						cout << e.what();
+					}
+					catch (MyException& e)
+					{
+						cout << e.what();
+					}
+					catch (const out_of_range& e)
+					{
+						cout << e.what();
+					}
+					catch (...)
+					{
+						cout << "\nComanda invalida.\n";
+					}
+				}
+
+				
 				break;
 			}
 			case 9:
@@ -1970,8 +2125,42 @@ void Singleton::modificareObject(Vehicul*& obj)
 				cout << "10. Modificare autonomie electrica (doar pentru Plug-In Hybrid)\n";
 				cout << "11. Modificare timp incarcare (doar pentru Plug-In Hybrid)\n";
 				cout << "\n12. Iesire din submeniu\n";
-				cout << endl << "> ";
-				cin >> comanda;
+				
+				while (true)
+				{
+					string comandaStr;
+					cout << endl << "> ";
+					getline(cin, comandaStr);
+					if (comandaStr == "")
+						getline(cin, comandaStr);
+					try
+					{
+						comanda = stoiException(comandaStr);
+						if (comanda < 1 || comanda > 12)
+							throw out_of_range("\nNumarul introdus nu corespunde niciunei comenzi!\n");
+						else
+							if (to_string(comanda) != comandaStr)
+								throw myEx;
+						break;
+					}
+					catch (const out_of_range& e)
+					{
+						cout << e.what();
+					}
+					catch (MyException& e)
+					{
+						cout << e.what();
+					}
+					catch (const invalid_argument& e)
+					{
+						cout << e.what();
+					}
+					catch (...)
+					{
+						cout << "\nComanda invalida.\n";
+					}
+				}
+
 				switch (comanda)
 				{
 
@@ -1996,18 +2185,74 @@ void Singleton::modificareObject(Vehicul*& obj)
 				case 3:
 				{
 					int anFabricatie;
-					cout << "An fabricatie nou: ";
-					cin >> anFabricatie;
-					objHibrid->setAnFabricatie(anFabricatie);
+
+					while (true)
+					{
+						string comandaStr;
+						cout << "\nAn fabricatie nou: ";
+						getline(cin, comandaStr);
+						if (comandaStr == "")
+							getline(cin, comandaStr);
+						try
+						{
+							anFabricatie = stoiException(comandaStr);
+							if (anFabricatie < 1700)
+								throw out_of_range("\nAnul de fabricatie nu poate fi mai mic ca 1700!\n");
+							else
+								if (to_string(anFabricatie) != comandaStr)
+									throw myEx;
+
+							objHibrid->setAnFabricatie(anFabricatie);
+							break;
+						}
+						catch (const out_of_range& e)
+						{
+							cout << e.what();
+						}
+						catch (MyException& e)
+						{
+							cout << e.what();
+						}
+						catch (...)
+						{
+							cout << "\nComanda invalida.\n";
+						}
+					}
 					break;
 				}
 				case 4:
 				{
 					string data;
 					double rulaj;
-					cout << "Data si rulajul, separate printr-un spatiu: ";
-					cin >> data >> rulaj;
-					objHibrid->inserareIstoricRulaj(data, rulaj);
+
+					while (true)
+					{
+						string comandaStr;
+						cout << "\nData: ";
+						cin >> data;
+						cout << "\nRulaj: ";
+						getline(cin, comandaStr);
+						if (comandaStr == "")
+							getline(cin, comandaStr);
+						try
+						{
+							rulaj = stodException(comandaStr);
+							objHibrid->inserareIstoricRulaj(data, rulaj);
+							break;
+						}
+						catch (const invalid_argument& e)
+						{
+							cout << e.what();
+						}
+						catch (MyException& e)
+						{
+							cout << e.what();
+						}
+						catch (...)
+						{
+							cout << "\nComanda invalida.\n";
+						}
+					}
 					break;
 				}
 				case 5:
@@ -2022,9 +2267,41 @@ void Singleton::modificareObject(Vehicul*& obj)
 				case 6:
 				{
 					double pret;
-					cout << "Pret nou: ";
-					cin >> pret;
-					objHibrid->setPret(pret);
+
+					while (true)
+					{
+						string comandaStr;
+						cout << "\nPret nou: ";
+						getline(cin, comandaStr);
+						if (comandaStr == "")
+							getline(cin, comandaStr);
+						try
+						{
+							pret = stodException(comandaStr);
+							if (pret < 0)
+								throw out_of_range("\nPretul nu poate fi negativ!\n");
+							objHibrid->setPret(pret);
+							break;
+						}
+						catch (const invalid_argument& e)
+						{
+							cout << e.what();
+						}
+						catch (MyException& e)
+						{
+							cout << e.what();
+						}
+						catch (const out_of_range& e)
+						{
+							cout << e.what();
+						}
+						catch (...)
+						{
+							cout << "\nComanda invalida.\n";
+						}
+
+					}
+
 					break;
 				}
 				case 7:
@@ -2039,45 +2316,170 @@ void Singleton::modificareObject(Vehicul*& obj)
 				case 8:
 				{
 					double consum;
-					cout << "Consum nou: ";
-					cin >> consum;
-					objHibrid->setConsum(consum);
+
+					while (true)
+					{
+						string comandaStr;
+						cout << "\nConsum nou: ";
+						getline(cin, comandaStr);
+						if (comandaStr == "")
+							getline(cin, comandaStr);
+						try
+						{
+							consum = stodException(comandaStr);
+							if (consum < 0)
+								throw out_of_range("\nConsumul nu poate fi negativ!\n");
+							objHibrid->setConsum(consum);
+							break;
+						}
+						catch (const invalid_argument& e)
+						{
+							cout << e.what();
+						}
+						catch (MyException& e)
+						{
+							cout << e.what();
+						}
+						catch (const out_of_range& e)
+						{
+							cout << e.what();
+						}
+						catch (...)
+						{
+							cout << "\nComanda invalida.\n";
+						}
+					}
+
+
 					break;
 				}
 				case 9:
 				{
 					char tipHibrid;
-					cout << "Tip hibrid nou: ";
-					cin.get();
-					cin >> tipHibrid;
-					objHibrid->setTipHibrid(tipHibrid);
+
+					while (true)
+					{
+						string comandaStr;
+						cout << "\nTip hibrid nou (M - Mild Hybrid, P - Plug-In Hybrid): ";
+						getline(cin, comandaStr);
+						if (comandaStr == "")
+							getline(cin, comandaStr);
+						try
+						{
+							tipHibrid = comandaStr[0];
+							if(comandaStr.size() > 1)
+								throw invalid_argument("\nTip hibrid invalid!\n");
+							else
+							if (tipHibrid != 'M' && tipHibrid != 'P')
+								throw invalid_argument("\nTip hibrid invalid!\n");
+
+							objHibrid->setTipHibrid(tipHibrid);
+							break;
+						}
+						catch (const invalid_argument& e)
+						{
+							cout << e.what();
+						}
+					}
 					break;
 				}
 				case 10:
 				{
-					if (objHibrid->getTipHibrid() == 'P')
-					{
-						double autonomieElectrica;
-						cout << "Autonomie electrica noua: ";
-						cin >> autonomieElectrica;
-						objHibrid->setAutonomieElectric(autonomieElectrica);
+					try {
+						if (objHibrid->getTipHibrid() == 'P')
+						{
+							double autonomieElectrica;
+
+							while (true)
+							{
+								string comandaStr;
+								cout << "Autonomie electrica noua: ";
+								getline(cin, comandaStr);
+								if (comandaStr == "")
+									getline(cin, comandaStr);
+								try
+								{
+									autonomieElectrica = stodException(comandaStr);
+									if (autonomieElectrica < 0)
+										throw out_of_range("\nAutonomia electrica nu poate fi negativa!\n");
+									objHibrid->setAutonomieElectric(autonomieElectrica);
+									break;
+								}
+								catch (const invalid_argument& e)
+								{
+									cout << e.what();
+								}
+								catch (MyException& e)
+								{
+									cout << e.what();
+								}
+								catch (const out_of_range& e)
+								{
+									cout << e.what();
+								}
+								catch (...)
+								{
+									cout << "\nComanda invalida.\n";
+								}
+							}
+						}
+						else
+							throw invalid_argument("\nAutonomia electrica se poate modifica doar pentru Plug-In Hybrid!\nVehiculul selectat este Mild Hybrid.\n");
 					}
-					else
-						throw "Autonomie electrica se poate modifica doar pentru Plug-In Hybrid!";
+					catch (const invalid_argument& e)
+					{
+						cout << e.what();
+					}
 					break;
 
 				}
 				case 11:
 				{
-					if (objHibrid->getTipHibrid() == 'P')
-					{
-						double timpIncarcare;
-						cout << "Timp incarcare nou: ";
-						cin >> timpIncarcare;
-						objHibrid->setTimpIncarcare(timpIncarcare);
+					try {
+						if (objHibrid->getTipHibrid() == 'P')
+						{
+							double timpIncarcare;
+							
+							while (true)
+							{
+								string comandaStr;
+								cout << "Timp incarcare nou: ";
+								getline(cin, comandaStr);
+								if (comandaStr == "")
+									getline(cin, comandaStr);
+								try
+								{
+									timpIncarcare = stodException(comandaStr);
+									if (timpIncarcare < 0)
+										throw out_of_range("\nTimpul incarcare nu poate fi negativ!\n");
+									objHibrid->setTimpIncarcare(timpIncarcare);
+									break;
+								}
+								catch (const invalid_argument& e)
+								{
+									cout << e.what();
+								}
+								catch (MyException& e)
+								{
+									cout << e.what();
+								}
+								catch (const out_of_range& e)
+								{
+									cout << e.what();
+								}
+								catch (...)
+								{
+									cout << "\nComanda invalida.\n";
+								}
+							}
+						}
+						else
+							throw invalid_argument("\nTimpul incarcare se poate modifica doar pentru Plug-In Hybrid!\nVehiculul selectat este Mild Hybrid.\n");
 					}
-					else
-						throw "Timp incarcare se poate modifica doar pentru Plug-In Hybrid!";
+					catch (const invalid_argument& e)
+					{
+						cout << e.what();
+					}
 					break;
 				}
 				case 12:
@@ -2344,6 +2746,31 @@ int Singleton::stoiException(const string& sir)
 	}
 }
 
+// FUNCTIA STODEXCEPTION
+double Singleton::stodException(const string& sir)
+{
+	try
+	{
+		size_t lastChar;
+		double numar = stod(sir, &lastChar);
+		if (lastChar != sir.length())
+		{
+			throw invalid_argument("");
+		}
+		return numar;
+	}
+	catch (const invalid_argument& e)
+	{
+		throw myEx;
+		return 0;
+	}
+	catch (...)
+	{
+		throw range_error("");
+		return 0;
+	}
+}
+
 Singleton* Singleton::instance = NULL;
 
 // START MENU
@@ -2382,7 +2809,7 @@ void Singleton::startMenu()
 			{
 				comanda = stoiException(comandaStr);
 				if (comanda < 1 || comanda > 6)
-					throw out_of_range("\nNumarul introdus nu corespune niciunei comenzi!\n");
+					throw out_of_range("\nNumarul introdus nu corespunde niciunei comenzi!\n");
 				else
 					if (to_string(comanda) != comandaStr)
 						throw myEx;
@@ -2433,7 +2860,7 @@ void Singleton::startMenu()
 					{
 						comandaVehicul = stoiException(comandaVehiculStr);
 						if (comandaVehicul < 1 || comandaVehicul > 6)
-							throw out_of_range("\nNumarul introdus nu corespune niciunei comenzi!\n");
+							throw out_of_range("\nNumarul introdus nu corespunde niciunei comenzi!\n");
 						else
 							if (to_string(comandaVehicul) != comandaVehiculStr)
 								throw myEx;
@@ -2551,7 +2978,7 @@ void Singleton::startMenu()
 							{
 								comanda = stoiException(comandaStr);
 								if (comanda < 1 || comanda > vehicule.size())
-									throw out_of_range("\nNumarul introdus nu corespune niciunui vehicul!\n");
+									throw out_of_range("\nNumarul introdus nu corespunde niciunui vehicul!\n");
 								else
 									if (to_string(comanda) != comandaStr)
 										throw myEx;
@@ -2680,7 +3107,7 @@ void Singleton::startMenu()
 					{
 						comandaClient = stoiException(comandaClientStr);
 						if (comandaClient < 1 || comandaClient > 5)
-							throw out_of_range("\nNumarul introdus nu corespune niciunei comenzi!\n");
+							throw out_of_range("\nNumarul introdus nu corespunde niciunei comenzi!\n");
 						else
 							if (to_string(comandaClient) != comandaClientStr)
 								throw myEx;
@@ -2870,7 +3297,7 @@ void Singleton::startMenu()
 					{
 						comandaShowroom = stoiException(comandaShowroomStr);
 						if (comandaShowroom < 1 || comandaShowroom > 8)
-							throw out_of_range("\nNumarul introdus nu corespune niciunei comenzi!\n");
+							throw out_of_range("\nNumarul introdus nu corespunde niciunei comenzi!\n");
 						else
 							if (to_string(comandaShowroom) != comandaShowroomStr)
 								throw myEx;
@@ -3258,7 +3685,7 @@ void Singleton::startMenu()
 					{
 						comandaTranzactii = stoiException(comandaTranzactiiStr);
 						if (comandaTranzactii < 1 || comandaTranzactii > 5)
-							throw out_of_range("\nNumarul introdus nu corespune niciunei comenzi!\n");
+							throw out_of_range("\nNumarul introdus nu corespunde niciunei comenzi!\n");
 						else
 							if (to_string(comandaTranzactii) != comandaTranzactiiStr)
 								throw myEx;
