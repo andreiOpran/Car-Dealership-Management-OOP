@@ -1447,9 +1447,15 @@ void Client::inserareIstoricPlati(string data, double suma)
 {
 	if (suma > plataRamasa)
 	{
-		throw  "Suma platita este mai mare decat plata ramasa!";
+		throw  invalid_argument("\nSuma platita este mai mare decat plata ramasa!\n");
 		return;
 	}
+	else
+		if (suma < 0)
+		{
+			throw invalid_argument("\nSuma platita este mai mica decat 0!\n");
+			return;
+		}
 	istoricPlati.insert({ data, suma });
 	plataRamasa -= suma;
 }
@@ -2681,7 +2687,18 @@ void Singleton::modificareObject(Client& obj)
 				try
 				{
 					suma = stodException(comandaStr);
-					obj.inserareIstoricPlati(data, suma);
+					try {
+						obj.inserareIstoricPlati(data, suma);
+					}
+					catch (const invalid_argument& e)
+					{
+						cout << e.what();
+					}
+					catch (...)
+					{
+						cout << "\nComanda invalida.\n";
+					}
+					
 					break;
 				}
 				catch (const invalid_argument& e)
@@ -3189,20 +3206,51 @@ void Singleton::startMenu()
 						}
 
 						index = 0;
-						cout << "\nIndexul vehiculului: ";
-						cin >> index;
 
-						if (typeid(*vehicule[index - 1]) == typeid(VehiculCarburant))
+						while (true)
 						{
-							InfoVehicul <VehiculCarburant> infoCarburant;
-							infoCarburant.info(dynamic_cast<VehiculCarburant&>(*vehicule[index - 1]));
-						}
-						else
-							if (typeid(*vehicule[index - 1]) == typeid(VehiculHibrid))
+							string comandaStr;
+							cout << "\nIndexul vehiculului: ";
+							getline(cin, comandaStr);
+							if (comandaStr == "")
+								getline(cin, comandaStr);
+							try
 							{
-								InfoVehicul <VehiculHibrid> infoHibrid;
-								infoHibrid.info(dynamic_cast<VehiculHibrid&>(*vehicule[index - 1]));
+								index = stoiException(comandaStr);
+								if (index < 1 || index > vehicule.size())
+									throw out_of_range("\nNumarul introdus nu corespunde niciunui vehicul!\n");
+								else
+									if (to_string(index) != comandaStr)
+										throw myEx;
+
+								if (typeid(*vehicule[index - 1]) == typeid(VehiculCarburant))
+								{
+									InfoVehicul <VehiculCarburant> infoCarburant;
+									infoCarburant.info(dynamic_cast<VehiculCarburant&>(*vehicule[index - 1]));
+								}
+								else
+									if (typeid(*vehicule[index - 1]) == typeid(VehiculHibrid))
+									{
+										InfoVehicul <VehiculHibrid> infoHibrid;
+										infoHibrid.info(dynamic_cast<VehiculHibrid&>(*vehicule[index - 1]));
+									}
+
+								break;
 							}
+							catch (const out_of_range& e)
+							{
+								cout << e.what();
+								cout << "Trebuie sa introduceti un index care apartine intervalului [1, " << vehicule.size() << "].\n";
+							}
+							catch (MyException& e)
+							{
+								cout << e.what();
+							}
+							catch (...)
+							{
+								cout << "\nComanda invalida.\n";
+							}
+						}
 					}
 					else
 						cout << "\nNu exista vehicule de afisat.\n";
@@ -3540,10 +3588,9 @@ void Singleton::startMenu()
 				cout << "2. Afisare showroomuri\n";
 				cout << "3. Stergere showroom\n";
 				cout << "4. Modificare showroom\n";
-				cout << "5. Majorare pret vehicul\n";
-				cout << "6. Adaugare vehicul din lista cu modele de vehicule\n";
-				cout << "7. Afisare detaliata a unui showroom - vehicule disponibile, numar de vehicule, valoarea totala a vehiculelor\n";
-				cout << "\n8. Iesire din submeniul Showroom\n";
+				cout << "5. Adaugare vehicul din lista cu modele de vehicule\n";
+				cout << "6. Afisare detaliata a unui showroom - vehicule disponibile, numar de vehicule, valoarea totala a vehiculelor\n";
+				cout << "\n7. Iesire din submeniul Showroom\n";
 				
 				while (true)
 				{
@@ -3555,7 +3602,7 @@ void Singleton::startMenu()
 					try
 					{
 						comandaShowroom = stoiException(comandaShowroomStr);
-						if (comandaShowroom < 1 || comandaShowroom > 8)
+						if (comandaShowroom < 1 || comandaShowroom > 7)
 							throw out_of_range("\nNumarul introdus nu corespunde niciunei comenzi!\n");
 						else
 							if (to_string(comandaShowroom) != comandaShowroomStr)
@@ -3700,42 +3747,8 @@ void Singleton::startMenu()
 					}
 					break;
 				}
+				
 				case 5:
-				{
-					cout << "\nFunctia nu este implementata.\n";
-					// ?
-					/*int index = 1;
-					for (Showroom s : showroomuri)
-					{
-						cout << "\n\nShowroomul " << index++ << ":\n";
-						printObject(s);
-					}
-
-					index = 0;
-					cout << "\nIndexul showroomului la care se va majora pretul: ";
-					cin >> index;
-					int indexVehicul = 1;
-					cout << "\nVehiculele disponibile in showroom:\n";
-					list<Vehicul*> vehiculeObj = showroomuri[index - 1].getVehiculeDisponibile();	
-					for (Vehicul* v : vehiculeObj)
-					{
-						cout << "\n\nVehiculul " << indexVehicul++ << ":\n";
-						if (typeid(*v) == typeid(VehiculCarburant))
-							printObject(*(dynamic_cast<VehiculCarburant*>(v)));
-						else
-							if (typeid(*v) == typeid(VehiculHibrid))
-								printObject(*(dynamic_cast<VehiculHibrid*>(v)));
-							else
-								printObject(v);
-					}
-					indexVehicul = 0;
-					cout << "\nIndexul vehiculului la care se va majora pretul: ";
-					cin >> indexVehicul;
-					showroomuri[index].majorarePretVehicul(indexVehicul);
-					cout << "\nPretul vehiculului a fost majorat cu succes.\n";*/
-					break;
-				}
-				case 6:
 				{
 					int index = 1;
 					for (Showroom s : showroomuri)
@@ -3846,7 +3859,7 @@ void Singleton::startMenu()
 
 					break;
 				}
-				case 7:
+				case 6:
 				{
 
 					int index = 1;
@@ -3903,7 +3916,7 @@ void Singleton::startMenu()
 
 					break;
 				}
-				case 8:
+				case 7:
 				{
 					ramaiInShowroom = 0;
 					break;
