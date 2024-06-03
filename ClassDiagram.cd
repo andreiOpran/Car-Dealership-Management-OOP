@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="VehiculHibrid">
+    <Position X="0.5" Y="14" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAAAAIAAACQEAQAAAIgAIAAAAAAAAAIAAQgEAAgAAA=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="VehiculCarburant">
+    <Position X="0.5" Y="9.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABAAAAAABQEASAAAAgAAIAAgAAAQAAAAAgEAAAAAA=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Vehicul">
+    <Position X="0.5" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIBIERAAAQEQSAAAAgAAAREAiAAAAAAACwEAIJQAA=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Tranzactie">
+    <Position X="5.75" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AGAABABAAoAACABAAAAAAQAAAAAAAEAABAAgBAAAAAA=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Subject&lt;T&gt;">
+    <Position X="4.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAAAAAAAIAAAQAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Singleton">
+    <Position X="10.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAAAAIAAIAAAQAACAAQAACEFAAAUAABAkIAAAAAA=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Showroom">
+    <Position X="8.25" Y="2" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AgAAAEEBAgAAAAAAEAAAAAAAAAAEAAAACgAgAAAAAAA=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Observer&lt;T&gt;">
+    <Position X="3.25" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MyException">
+    <Position X="10.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IOInterfaceVehicul">
+    <Position X="0.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="InterfaceVehicul" Collapsed="true">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAQAAAAgAAAAAAAAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="InfoVehicul&lt;T&gt;">
+    <Position X="8.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ConsoleObserver&lt;T&gt;">
+    <Position X="6" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAA=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Client">
+    <Position X="3.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAEEAAAAAAAAAgAAASAAEAAAEQACAAAAgAgAAAAQ=</HashCode>
+      <FileName>Proiect 3 POO.cpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
