@@ -2,7 +2,6 @@
 
 ## Main Classes
 
-
 ### Vehicle
 Base class for vehicles, implementing `IOInterfaceVehicle` and `InterfaceVehicle`. Contains attributes such as brand, model, manufacture year, mileage history, features, and price.
 
@@ -38,5 +37,7 @@ Class that manages observers and notifies them of changes.
 - **Interactive Menu:** Allows users to interact with the application in an easy and intuitive way.
 - **Observer Design Pattern:** Notifies observers when changes occur in monitored objects.
 - **Inheritance:** Implements inheritance between classes to ensure code reuse and logical organization.
+  - **Parent-Child-Grandchild Hierarchy:** The project uses a three-level inheritance hierarchy with parent, child, and grandchild classes.
 - **Exception Handling:** Efficient error management through defined exception classes.
 - **Use of STL:** Utilizes standard collections (map, set, list, vector) for data management.
+- **Upcasting and Downcasting:** Uses `dynamic_cast` for safe upcasting and downcasting between class types.
